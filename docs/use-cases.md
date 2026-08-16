@@ -30,7 +30,7 @@ flowchart LR
     MAP[/Map Service/]
     META[/Social Channel - Meta/]
 
-    subgraph Ipelegeng
+    subgraph Ipelege
         UC1[UC-1 Register account]
         UC2[UC-2 Apply for provider category]
         UC3[UC-3 Create listing]

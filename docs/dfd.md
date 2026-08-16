@@ -17,7 +17,7 @@ flowchart TB
     META[/Meta - Facebook Page & WhatsApp/]
     G([Growth Operator])
 
-    SYS{{Ipelegeng Platform}}
+    SYS{{Ipelege Platform}}
 
     C -->|registration, search, booking request, rating| SYS
     SYS -->|listings, booking status, driver location| C

@@ -1,13 +1,13 @@
-# Ipelegeng
+# Ipelege
 
 **A multi-category services marketplace for Botswana.**
 
-*Ipelegeng* is Setswana for "self-reliance."
+*Ipelege* is Setswana for "self-reliance."
 
 Most service work in Botswana is informal. Hairdressers, drivers, tent-and-chair
 hire operators, home cooks, plumbers, electricians and truck owners run real
 businesses without fixed premises or any reliable way to reach customers beyond
-word of mouth and WhatsApp status posts. Ipelegeng gives them a channel — and
+word of mouth and WhatsApp status posts. Ipelege gives them a channel — and
 gives customers one place to find, book and pay verified providers.
 
 ---

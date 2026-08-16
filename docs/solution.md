@@ -1,6 +1,6 @@
 # Solution
 
-Ipelegeng is a single mobile marketplace where customers find, book and pay
+Ipelege is a single mobile marketplace where customers find, book and pay
 verified informal service providers across every category they need — and where
 providers reach customers without paying anything until real work arrives.
 

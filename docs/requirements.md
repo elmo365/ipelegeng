@@ -44,7 +44,7 @@ Phase two: bus ticket booking. Out of scope for this document.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-2a.1 | A listing can be published to the Ipelegeng Facebook Page, subject to explicit opt-in consent defaulted off | Should |
+| FR-2a.1 | A listing can be published to the Ipelege Facebook Page, subject to explicit opt-in consent defaulted off | Should |
 | FR-2a.2 | Outbound posts are rendered from structured fields only — never from provider free text | Must |
 | FR-2a.3 | Outbound posts contain no phone number, email, handle, exact address or provider full name | Must |
 | FR-2a.4 | Photos used in outbound posts are screened for visible contact details and excluded if flagged | Should |

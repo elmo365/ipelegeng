@@ -11,10 +11,10 @@ Facebook Marketplace and Instagram, which had wider and more trusted reach, in a
 market where word-of-mouth referral remained dominant. Being a better product
 than a Facebook group did not win, because nobody was looking.
 
-Ipelegeng's answer: go where the audience already is, and pull them back.
+Ipelege's answer: go where the audience already is, and pull them back.
 
 - **Facebook = discovery.** People already scroll it daily.
-- **Ipelegeng = transaction.** Verified providers, booking, ratings, recourse.
+- **Ipelege = transaction.** Verified providers, booking, ratings, recourse.
 
 ## ⚠️ The constraint that shapes everything here
 
@@ -46,7 +46,7 @@ growth-operations job with a small engineering assist.
 
 ### Phase 1 — Page auto-posting (buildable)
 
-When a listing goes live in the app, publish a post to the Ipelegeng Facebook
+When a listing goes live in the app, publish a post to the Ipelege Facebook
 Page via the Graph API.
 
 **Requirements**
@@ -107,7 +107,7 @@ Build the fence, but do not mistake it for the moat.
 
 Groups are where the rental audience is. That work is manual and human:
 
-- Post as the Ipelegeng page or a staff account into relevant Gaborone and
+- Post as the Ipelege page or a staff account into relevant Gaborone and
   Francistown groups
 - Respect group rules; many ban commercial posts outright
 - **Watch spam limits.** Common guidance is roughly 3–5 groups per day, spaced

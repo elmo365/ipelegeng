@@ -1,0 +1,43 @@
+{
+  "project": "Ipelege",
+  "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
+  "current": {
+    "file": "HANDOFF.md",
+    "saved": "2026-08-16T14:23:00+02:00",
+    "branch": "main",
+    "lastCommit": {
+      "hash": "5aea5f2",
+      "subject": "Add Ipelegeng specification documents"
+    },
+    "summary": "Bootstrapped the repository: read all 21 specification documents, initialised git and pushed the spec set to github.com/elmo365/ipelegeng, stood up Serena and CodeGraph indexes, and corrected the app name from Ipelegeng to Ipelege throughout the docs.",
+    "state": "pre-build; specification documents only, no application code",
+    "working": [
+      "git repo on main, initial commit 5aea5f2, pushed and verified in sync with origin",
+      "push auth via Windows Credential Manager (user elmo365)",
+      "Serena project activated with six memories written",
+      "CodeGraph initialised at .codegraph/"
+    ],
+    "notWorking": [
+      "CodeGraph indexes zero symbols - no source code exists yet",
+      "Serena symbolic tools inert - no language server, markdown-only repo",
+      "claude-context index_codebase fails: Error validating collection creation (Zilliz account side)",
+      "gh CLI installed but not authenticated"
+    ],
+    "nextSteps": [
+      "Decide whether the Ipelege rename extends to the GitHub repo, local folder and Ipelegeng.code-workspace - docs are done, those three are not",
+      "Commission scoped legal opinion on EPS Regulations 2019 and the commission-credit balance",
+      "Decide data hosting to satisfy Data Protection Act 2024 residency requirement",
+      "Write the account-closure balance policy into provider terms",
+      "Close the booking-completion definition gap in docs/booking.md",
+      "Choose the backend stack",
+      "Write the test strategy document"
+    ],
+    "blockers": [
+      "EPS licensing position - external, can invalidate the commission-credit design and the project plan",
+      "Data residency / hosting decision - external, constrains all infrastructure",
+      "Lead-gen vs full-service - compliance and market evidence point opposite ways",
+      "Six categories at launch - reopened by comparable-platforms research"
+    ]
+  },
+  "archives": []
+}

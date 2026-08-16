@@ -48,7 +48,7 @@ a marketing one, because it determines what has to be finished first.
 
 ## Positioning against incumbents
 
-Ipelegeng is locally owned and settles in pula. That is a genuine
+Ipelege is locally owned and settles in pula. That is a genuine
 differentiator against foreign-built ride platforms.
 
 Note the interface is English only (NFR-9) — localisation is not part of the

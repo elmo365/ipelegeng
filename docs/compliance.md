@@ -45,7 +45,7 @@ with the platform and holds a balance, is that balance a payment account?**
 
 The answer turns on redeemability. Most regimes distinguish stored value —
 which is e-money — from prepaid credit for the issuer's *own* services, which
-generally is not. Ipelegeng's balance is intended to be the latter.
+generally is not. Ipelege's balance is intended to be the latter.
 
 ### Design rules that keep it that way
 
@@ -56,7 +56,7 @@ the balance toward looking like stored value:
 |---|---|
 | **No cash-out, ever** — including on account closure | Redeemability is the defining feature of e-money |
 | **No transfer between users** | Transferable value is a payment instrument |
-| **Balance pays Ipelegeng fees only** — never a third party | Paying third parties is money transmission |
+| **Balance pays Ipelege fees only** — never a third party | Paying third parties is money transmission |
 | **No customer-side balances at all** | Customers never fund an account |
 | **Top-up amounts kept modest; no incentive to hold large balances** | Large float attracts prudential interest |
 | **Don't call it a "wallet" in the product** | "Commission credit" or "advertising credit" describes what it is; "wallet" invites the wrong characterisation |
@@ -98,7 +98,7 @@ reported prison terms range from three to twelve years for some violations.
 
 ### Requirements with architectural consequences
 
-| Requirement | Consequence for Ipelegeng |
+| Requirement | Consequence for Ipelege |
 |---|---|
 | **Data residency** — a copy of personal data must remain in Botswana for the duration of processing | **Hosting decision is constrained.** A single foreign cloud region is not sufficient on its own. Needs either local hosting or a replicated copy held in Botswana. Settle before choosing infrastructure. |
 | **Consent as a central principle**; conditions for valid consent | Explicit, granular, withdrawable consent at signup and at each KYC step. Consent state must be stored and versioned, not assumed. |

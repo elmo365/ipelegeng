@@ -1,6 +1,6 @@
 # Comparable platforms — what worked, what didn't
 
-Research into platforms that attempted something close to Ipelegeng, used to
+Research into platforms that attempted something close to Ipelege, used to
 answer open questions with evidence rather than instinct.
 
 **Read this before locking the launch scope.** Several findings contradict
@@ -27,7 +27,7 @@ works. It didn't hold: too many jobs still went wrong with well-vetted
 individuals, and customers were not willing to pay for vetting and convenience
 on their own.
 
-> **Direct challenge to Ipelegeng.** "Trust is the product" is pillar three of
+> **Direct challenge to Ipelege.** "Trust is the product" is pillar three of
 > the [solution](solution.md). Lynk tested that proposition in a comparable
 > market and found customers wouldn't pay for it. Worth having an answer.
 
@@ -37,7 +37,7 @@ and moved to full-service, taking responsibility for delivery. Thumbtack reached
 unicorn status on lead-gen in the US; the same model did not transfer.
 
 > **Sharpest tension in the whole spec.** The compliance-driven design in
-> [compliance](compliance.md) pushes Ipelegeng *toward* lead-gen: customer pays
+> [compliance](compliance.md) pushes Ipelege *toward* lead-gen: customer pays
 > provider directly, platform touches no money, no escrow, no recourse over
 > payment. That is the model Lynk abandoned. Regulation pushes one way, market
 > evidence pushes the other. **This needs a deliberate decision, not a default.**
@@ -71,7 +71,7 @@ moved to standardised service definitions.
 pay more than that for higher quality and reliability, against roughly 20% at
 Uber and 30% at TaskRabbit. Note Lynk charged the *customer* and deliberately
 chose not to charge providers, on the reasoning that providers had least ability
-to pay — the opposite of Ipelegeng's CON-1.
+to pay — the opposite of Ipelege's CON-1.
 
 > **Useful signal for the unset commission rate.** 10% is a market-tested
 > ceiling in a comparable economy. But it is a *customer-side* figure; the
@@ -129,7 +129,7 @@ assumptions do not travel.
 
 ## Case 3 — Gojek, Grab, WeChat · *the super-app pattern*
 
-The model Ipelegeng is aiming at. The consistent pattern is that **none of them
+The model Ipelege is aiming at. The consistent pattern is that **none of them
 launched as a super app.**
 
 Gojek began in 2010 as a motorcycle-taxi call service and added GoFood, GoPay
@@ -197,7 +197,7 @@ and 4321property also operate rental portals.
 
 The closest analogue to this project — same continent, same informal-sector
 thesis, better funded — did not survive. The nearest survivor did it by going
-narrow for a decade. The super-app model Ipelegeng aims at was reached by
+narrow for a decade. The super-app model Ipelege aims at was reached by
 companies that spent years single-service first.
 
 None of that means don't build it. Botswana is not Kenya, the room-rental

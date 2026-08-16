@@ -20,7 +20,7 @@ after licensing is trying to build all six to the same depth at once.
 
 ```mermaid
 gantt
-    title Ipelegeng — phase one
+    title Ipelege — phase one
     dateFormat YYYY-MM-DD
     axisFormat %b
 
