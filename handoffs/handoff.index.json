@@ -3,62 +3,77 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-18T03:21:00+02:00",
+    "saved": "2026-08-18T06:15:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "dcc4735",
-      "subject": "Rename app to Ipelege throughout docs; save session handoff"
+      "hash": "e06616c",
+      "subject": "Import design system; close specification gaps; decide stack"
     },
-    "summary": "Imported the Claude Design system into the repo, then closed the specification gaps the import exposed. Eight new documents (design-system, design-deltas, database, admin, cancellation, safety, components, test-strategy) and eleven revised. Backend, admin, routing and hosting decided. Coding deferred to next session by user direction.",
-    "state": "pre-build; 29 specification documents plus a parked Flutter scaffold",
+    "summary": "Built the Flutter shell: theme, navigation, shared components, money formatting, 47 passing tests. Governing rule, given by the user mid-session: central theme-driven UI, nothing hardcoded per screen. Then swept README, CONTRIBUTING, sdlc-overview and design-system so no document still describes the repo as pre-build.",
+    "state": "29 specification documents plus a running Flutter shell; no product screens, no backend",
     "decisions": [
-      "Backend: Django 5 + DRF + GeoDjango on PostgreSQL 16 + PostGIS",
-      "Admin: Django admin in the same project, built alongside each feature it unblocks - not a separate app, not Flutter Web",
-      "Routing: Valhalla, not OSRM - ghcr.io/gis-ops/docker-valhalla publishes linux/arm64; osrm/osrm-backend Docker Hub images are amd64-only and last published July 2021",
-      "Nine launch categories, not six - small trades split into plumbing, electrical, tiling; catering separated from hire",
-      "Hosting: self-managed VPS for root access the append-only ledger requires; Oracle Always Free ARM for phase 0, Botswana-resident for production",
-      "Auth phased: email+password+phone+names via django-allauth now, SMS OTP when an aggregator is affordable; phone unique from day one",
-      "Safety model is traceability not prevention - record who/where/when and make reporting fast"
+      "Central theme-driven UI is the governing rule of lib/ - screens use plain Material widgets and app_theme.dart decides how they look",
+      "Bundle IBM Plex TTFs in app/assets/fonts rather than google_fonts - it fetches at runtime and the app must start on a bad connection",
+      "Two sibling StatefulShellRoutes, not one nested set - that is what makes a mode switch discard the other side's stack rather than suspend it",
+      "Push, lateral and replace get named methods in routing/navigation.dart rather than raw go/push calls at screens",
+      "Money is formatted only through Money / MoneyText - never at a call site, never from device locale; U+202F separator, U+2212 minus",
+      "Category hues reconverted from oklch(0.55 0.12 h) rather than eyeballed; two clip a channel at the gamut edge and that is recorded in the token comment",
+      "Placeholder screens take everything from the theme, so replacing one changes behaviour without changing the look"
     ],
     "working": [
-      "Design imported: tokens, type scale, motion, navigation, screen inventory in docs/design-system.md",
-      "OKLCH to sRGB conversion done accurately; app/lib/theme/tokens.dart holds the full palette as an AppPalette ThemeExtension",
-      "Flutter 3.41.6 / Dart 3.11.4 verified; project bw.co.ipelege created with go_router, flutter_riverpod, intl, decimal",
-      "Documentation set internally consistent and cross-linked"
+      "flutter analyze clean, flutter test green - 47 tests across money, both themes, navigation and components",
+      "App boots into the consumer shell; per-tab stacks survive switches, mode switch replaces the bar, wallet reachable only by push from the dashboard",
+      "Theme is genuinely central - no screen carries a colour or a size",
+      "Fonts bundled, so type is correct offline and on first run",
+      "CodeGraph current - its watcher indexed every file as it was written"
     ],
     "notWorking": [
-      "No application code - app/lib/main.dart is the generated stub",
-      "Design HTML archive truncated at 256 KiB - eight specification tables lost including backRules, navState, haptics, loadingStates, savedStates, motionSpecs",
-      "18 brand PNGs not in repo - live only in the design project",
-      "Hosting not provisioned - user creating Oracle account, will supply SSH"
+      "No product screens - every route renders PlaceholderScreen",
+      "Never run on a device or emulator; everything so far is flutter test",
+      "ThemeMode does not persist - resets to system each launch, needs the settings store",
+      "Serena cannot read Dart here until VS Code is relaunched - project.yml now says languages: [dart] but the MCP server caches config at startup; .serena/ and .codegraph/ are gitignored so the fix is local only",
+      "Eight design tables still lost to import truncation; 18 brand PNGs still only in the design project; hosting still unprovisioned"
     ],
     "doNotRepeat": [
-      "DesignSync get_file has a hard 256 KiB cap with no offset parameter - retrying returns the same truncation",
-      "Pulling binary assets via get_file costs ~35k tokens per PNG - download from the design project in a browser instead",
-      "Blog posts and GitHub issue pages gave contradictory answers on OSRM ARM support - query the Docker Hub and GHCR registry manifests directly",
-      "git add --dry-run output is filtered to nothing by the rtk hook - use git ls-files --others --exclude-standard or stage then inspect git diff --staged --stat",
+      "Bash heredocs for large Dart files - a ~350 line cat > file <<'EOF' failed to open the heredoc and bash choked on the first apostrophe; use the Write tool",
+      "Google Fonts CSS API for font files - it serves woff2 only, which Flutter cannot use; take TTFs from the IBM/plex GitHub releases (fonts/complete/ttf/)",
+      "Re-activating a Serena project to pick up a config change - returns success, keeps the cached config; needs a full VS Code relaunch",
+      "findsOneWidget on a pushed screen title - PlaceholderScreen renders its title twice (app bar and body); use findsWidgets",
+      "Decimal.signum is deprecated in decimal 3.x - use .sign, still an int",
+      "DesignSync get_file has a hard 256 KiB cap with no offset parameter",
+      "git add --dry-run output is filtered to nothing by the rtk hook - use git ls-files --others --exclude-standard",
       "bc is not installed in this Git Bash environment"
     ],
     "nextSteps": [
-      "Build the Flutter shell: motion.dart, typography.dart, app_theme.dart, Money formatter (Pula, explicit, never device locale)",
-      "Navigation: go_router with two bottom-nav shells, per-tab stacks, push/lateral/replace rules",
-      "Wire main.dart to the theme with Light/Dark/System, replacing the stub",
-      "Take SSH from user and provision Oracle box - Docker Compose with Postgres 16 + PostGIS, Redis, MinIO, Caddy, all arm64-native",
-      "Recover the eight truncated design tables from Claude Design, backRules especially",
+      "Relaunch VS Code so Serena picks up languages: [dart]",
+      "Run the app on a real handset - check type scale, nav bar, and that no motion loops",
+      "Build the first real screens: consumer Home, category browse, listing detail",
+      "Recover the eight truncated design tables, backRules especially, before building back behaviour",
+      "Take SSH from the user and provision the Oracle box - Postgres 16 + PostGIS, Redis, MinIO, Caddy, all arm64-native",
       "Get a hosting quote from Digital Delta DC1 (BoFiNet, Block 8)",
-      "Remaining specs: offline and connectivity, API contract shape, environments and CI, observability, refresh CONTRIBUTING.md"
+      "Remaining specs: offline and connectivity, API contract shape, environments and CI, observability"
     ],
     "blockers": [
-      "What the verified badge stands behind - admin saw a trade certificate, customers read safe to let into my home. Raise the check or lower the claim. Biggest open item.",
+      "What the verified badge stands behind - StatusChip.verified renders the claim; what it means is undecided. Biggest single item.",
       "LEDGER_ACCOUNT: one per provider or one per provider per category - blocks the ledger schema",
-      "Dispute window and full-trail retention are one decision, not two - the window must be shorter",
+      "Dispute window and full-trail retention are one decision, not two",
       "The wallet naming contradicts a binding constraint in compliance.md - goes to counsel with the EPS question",
-      "What happens to already-accepted bookings when a category is revoked - blocks the revocation screen and safety suspension",
+      "What happens to already-accepted bookings when a category is revoked",
       "EPS licensing position - external, unchanged",
-      "Data residency - external, now narrower: local Tier III capacity confirmed, only the price is missing"
+      "Data residency - external, narrower: local Tier III capacity confirmed, only the price is missing"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-18-0615.md",
+      "saved": "2026-08-18T03:21:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "dcc4735",
+        "subject": "Rename app to Ipelege throughout docs; save session handoff"
+      },
+      "summary": "Imported the Claude Design system into the repo, then closed the specification gaps the import exposed. Eight new documents and eleven revised. Backend, admin, routing and hosting decided. Coding deferred to the next session by user direction."
+    },
     {
       "file": "handoffs/2026-08-18-0321.md",
       "saved": "2026-08-16T14:23:00+02:00",

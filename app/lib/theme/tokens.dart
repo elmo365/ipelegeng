@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// Colour tokens from the Ipelege design system.
 ///
 /// The design authors colour in OKLCH, which Flutter cannot parse. These are
@@ -8,6 +6,8 @@ import 'package:flutter/material.dart';
 ///
 /// See docs/design-system.md for the source values and what each token means.
 library;
+
+import 'package:flutter/material.dart';
 
 /// Brand colours. Fixed across both themes.
 abstract final class Brand {
@@ -225,4 +225,105 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
 extension PaletteAccess on BuildContext {
   AppPalette get palette => Theme.of(this).extension<AppPalette>()!;
+}
+
+/// One launch category: its tile hue, monogram and label.
+///
+/// Hues are `oklch(0.55 0.12 <hue>)` converted to sRGB. A few clip a channel
+/// at the gamut edge — that is expected and matches what the design shows on
+/// an sRGB screen. Monograms are placeholders until real iconography lands.
+@immutable
+class CategoryToken {
+  const CategoryToken({
+    required this.key,
+    required this.monogram,
+    required this.label,
+    required this.hue,
+  });
+
+  final String key;
+  final String monogram;
+  final String label;
+  final Color hue;
+}
+
+/// The nine launch categories, in the order the home grid lays them out.
+///
+/// Nine, not six: small trades are split because each carries different KYC
+/// requirements and so cannot share one verification flow.
+/// See docs/categories.md.
+abstract final class Categories {
+  static const rides = CategoryToken(
+    key: 'rides',
+    monogram: 'RI',
+    label: 'Rides',
+    hue: Color(0xFF007DAA),
+  );
+  static const movers = CategoryToken(
+    key: 'movers',
+    monogram: 'MV',
+    label: 'Movers & hauling',
+    hue: Color(0xFF008493),
+  );
+  static const rentals = CategoryToken(
+    key: 'rentals',
+    monogram: 'PR',
+    label: 'Property rentals',
+    hue: Color(0xFF3D73B6),
+  );
+  static const beauty = CategoryToken(
+    key: 'beauty',
+    monogram: 'HB',
+    label: 'Hairdressing & beauty',
+    hue: Color(0xFF00829D),
+  );
+  static const plumbing = CategoryToken(
+    key: 'plumbing',
+    monogram: 'PL',
+    label: 'Plumbing',
+    hue: Color(0xFF2677B2),
+  );
+  static const electrical = CategoryToken(
+    key: 'electrical',
+    monogram: 'EL',
+    label: 'Electrical',
+    hue: Color(0xFF4F6EB7),
+  );
+  static const tiling = CategoryToken(
+    key: 'tiling',
+    monogram: 'TL',
+    label: 'Tiling',
+    hue: Color(0xFF00877B),
+  );
+  static const catering = CategoryToken(
+    key: 'catering',
+    monogram: 'CA',
+    label: 'Catering',
+    hue: Color(0xFF008687),
+  );
+  static const hire = CategoryToken(
+    key: 'hire',
+    monogram: 'HR',
+    label: 'Hire',
+    hue: Color(0xFF258651),
+  );
+
+  static const all = <CategoryToken>[
+    rides,
+    movers,
+    rentals,
+    beauty,
+    plumbing,
+    electrical,
+    tiling,
+    catering,
+    hire,
+  ];
+
+  static CategoryToken? byKey(String key) {
+    for (final c in all) {
+      if (c.key == key) return c;
+    }
+    return null;
+  }
 }

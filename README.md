@@ -126,4 +126,17 @@ Both are detailed in [compliance](docs/compliance.md).
 
 ## Status
 
-Pre-build. This repository currently holds specification documents only.
+Specification complete enough to build against, and the build has started.
+
+- **`docs/`** — 29 specification documents. The stack is decided: Flutter,
+  Django 5 + DRF + GeoDjango, PostgreSQL 16 + PostGIS, Valhalla for routing,
+  self-managed hosting.
+- **`app/`** — the Flutter shell: theme, navigation and shared components, with
+  placeholder screens where the product screens go. No product screens and no
+  backend yet.
+
+Two questions above still need answering before the parts they touch can be
+built — EPS licensing, and where data may be hosted. Neither blocks the app
+shell.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) before writing code.

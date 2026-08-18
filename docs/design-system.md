@@ -11,6 +11,25 @@ Where the design and the older specification documents disagree, see
 Target: Flutter, Android-first, Android 8+, binary under 30 MB, 3G, 1–2 GB RAM
 handsets. Material 3 bones, Ipelege skin.
 
+## Where this lives in code
+
+The system below is implemented, not aspirational. It is **central and
+theme-driven**: a screen uses plain Material widgets and the theme decides how
+they look, so nothing here is re-specified per screen.
+
+| This document | Code |
+|---|---|
+| [Colour](#color), [category hues](#category-hues) | `app/lib/theme/tokens.dart` — `Brand`, `Status`, `Neutral`, `AppPalette`, `Categories` |
+| [Spacing, touch, responsive](#spacing-touch-responsive) | `app/lib/theme/dimens.dart` — `Space`, `Radii`, `Touch`, `Breakpoints` |
+| [Type](#type) | `app/lib/theme/typography.dart`; faces bundled in `app/assets/fonts` |
+| [Motion](#motion) | `app/lib/theme/motion.dart` — `Motion`, `PageMotion` |
+| [Components](#components) | `app/lib/theme/app_theme.dart` for anything Material already themes; `app/lib/ui/components/` for the rest |
+| [Navigation](#navigation) | `app/lib/routing/` — `routes`, `nav_tabs`, `navigation`, `app_router` |
+
+Colour tokens are **generated**: the design authors in OKLCH, which Flutter
+cannot parse, so `tokens.dart` holds converted sRGB values. Re-run the
+conversion when a token changes rather than eyeballing a hex code.
+
 ## Five decisions the system is built around
 
 1. **Material 3 bones, Ipelege skin.** Stock Material patterns — bottom nav,

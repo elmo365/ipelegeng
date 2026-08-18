@@ -24,8 +24,8 @@ flowchart LR
 | **3 Design — back office** | [admin](admin.md) | Complete |
 | **3 Design — adjudication** | [cancellation](cancellation.md) | Mechanism specified and benchmarked; the policy itself is undecided |
 | **3 Design — safety** | [safety](safety.md) | Specified and benchmarked. **One decision blocks launch:** what the verified badge actually stands behind. |
-| **4 Implementation** | [project-plan](project-plan.md), [components](components.md) | Not started; stack and adopt/build decisions made |
-| **5 Testing** | [test-strategy](test-strategy.md) | Written; nothing to run it against yet |
+| **4 Implementation** | [project-plan](project-plan.md), [components](components.md) | **Started.** Stack and adopt/build decisions made; the Flutter shell — theme, navigation, shared components — is built. No product screens, no backend. |
+| **5 Testing** | [test-strategy](test-strategy.md) | Written. Running against the app shell: money formatting, both themes, navigation, components. Nothing backend-side to run against yet. |
 | **6 Deployment** | Blocked on hosting/residency decision | Not started |
 | **7 Maintenance** | — | — |
 
