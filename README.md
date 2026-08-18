@@ -19,12 +19,14 @@ gives customers one place to find, book and pay verified providers.
 | **Who pays** | Service providers only. Never the customer, in any category. |
 | **How** | Wallet top-up; commission deducted per completed booking. No bookings, no cost. |
 | **Launch cities** | Gaborone, Francistown |
-| **Launch categories** | Rides · Movers & hauling · Property rentals · Hairdressing & beauty · Small trades · Event hire |
-| **Seeding priority** | Movers → rentals → beauty → trades, hire |
+| **Launch categories** | Rides · Movers & hauling · Property rentals · Hairdressing & beauty · Plumbing · Electrical · Tiling · Catering · Hire |
+| **Seeding priority** | Movers → rentals → beauty → trades → catering, hire |
 | **Phase two** | Bus ticket booking |
 | **Payments at launch** | EFT + Orange Money; gateway TJ or PayGate |
-| **Mobile** | Flutter |
-| **Admin panel** | Undecided — see [open questions](docs/open-questions.md) |
+| **Rates** | Ride commission 8% of fare · VAT 14% on the fee · fee and VAT always post as two lines |
+| **Mobile** | Flutter, Android-first |
+| **Backend** | Django 5 + DRF + GeoDjango on PostgreSQL 16 + PostGIS |
+| **Admin** | Django admin in the same project — not a separate app, not Flutter Web. See [admin](docs/admin.md). |
 
 ---
 
@@ -46,7 +48,7 @@ Start with the [SDLC overview](docs/sdlc-overview.md) for reading order.
 | [Go-to-market](docs/go-to-market.md) | City sequencing, cold-start strategy |
 | [Distribution](docs/distribution.md) | Facebook as a channel — what can and can't be automated |
 | [Requirements](docs/requirements.md) | Functional, non-functional, constraints — with IDs |
-| [Compliance](docs/compliance.md) | **Botswana EPS licensing & Data Protection Act constraints** |
+| [Compliance](docs/compliance.md) | **Botswana EPS licensing & Data Protection Act constraints — plus the build-time checklist of what to look out for** |
 | [Comparable platforms](docs/comparable-platforms.md) | **What Lynk, SweepSouth and the super-apps got right and wrong** |
 
 ### Design
@@ -57,15 +59,29 @@ Start with the [SDLC overview](docs/sdlc-overview.md) for reading order.
 | [Data model](docs/data-model.md) | ER diagram, entity dictionary, ledger design |
 | [Activity diagrams](docs/activity-diagrams.md) | Onboarding, booking, rides, top-up, rentals |
 | [Data flow diagrams](docs/dfd.md) | Context, level 1, level 2 |
-| [System flowcharts](docs/system-flowcharts.md) | State machines, idempotent posting, callbacks |
+| [System flowcharts](docs/system-flowcharts.md) | State machines, idempotent posting, callbacks, the admin→app loop |
 | [Architecture](docs/architecture.md) | Components, stack decisions, deployment, security |
 | [Booking model](docs/booking.md) | Service direction, discovery, commission timing |
+| [Database](docs/database.md) | **Physical schema, privileges, indexes, the event outbox, retention** |
+| [Admin & back office](docs/admin.md) | **Why it is on the critical path, and how it interacts with the app** |
+| [Cancellation & evidence](docs/cancellation.md) | **Evidence-based adjudication, benchmarked against Uber/Lyft/Bolt** |
+| [Safety & trust](docs/safety.md) | **Strangers meeting in person — what the badge stands behind, incident handling** |
 
-### Planning
+### UI design
+
+| Document | What's in it |
+|---|---|
+| [Design system](docs/design-system.md) | Tokens, type scale, motion, navigation, components |
+| [Design deltas](docs/design-deltas.md) | **Where the design moved past these specifications** |
+| [`design/`](design/) | Archived source from Claude Design |
+
+### Planning & testing
 
 | Document | What's in it |
 |---|---|
 | [Project plan](docs/project-plan.md) | Phases, Gantt, milestones, critical path |
+| [Components](docs/components.md) | **What to adopt vs build — maps, routing, ledger, auth** |
+| [Test strategy](docs/test-strategy.md) | Property-based ledger tests, concurrency, compliance |
 | [Open questions](docs/open-questions.md) | Decisions still outstanding |
 
 ---

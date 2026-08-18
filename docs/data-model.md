@@ -24,6 +24,7 @@ elsewhere in the spec.
 ```mermaid
 erDiagram
     USER ||--o| USER_PROFILE : "has (erasable)"
+    USER ||--o{ ERASURE_REQUEST : "may request"
     USER ||--o{ PROVIDER_CATEGORY : "verified in"
     USER ||--o{ CONSENT_RECORD : grants
     USER ||--|| LEDGER_ACCOUNT : owns
@@ -61,18 +62,46 @@ erDiagram
     EXTERNAL_POST ||--o{ GROUP_POST_LOG : "manually reposted as"
 
     ADMIN_ACTION }o--|| USER : "performed by"
+    ADMIN_ACTION ||--o{ DOMAIN_EVENT : "causes"
+    DISPUTE ||--o{ LEGAL_HOLD : "places"
+    BOOKING ||--o{ BOOKING_ATTESTATION : "evidenced by"
+    DOMAIN_EVENT ||--o{ OUTBOUND_MESSAGE : "delivered as"
+    USER ||--o{ DEVICE : "signed in on"
+    DEVICE ||--o{ OUTBOUND_MESSAGE : "push delivered to"
 ```
 
 ## Entity dictionary
 
 ### Identity (erasable)
 
-**USER** — `id`, `phone`, `status`, `created_at`, `role_admin`
-The stable anchor. Deliberately thin.
+**USER** — `id`, `email`, `password`, `phone`, `phone_hash`,
+`phone_verified_at`, `status`, `created_at`, `is_staff`
+The stable anchor and the Django auth model. Deliberately thin, but no longer
+phone-only: phase 0 registration uses email + password because SMS OTP is
+deferred until an aggregator is affordable
+([components](components.md#auth--adopt-and-phase-it)). `email` and `password`
+must live here for authentication to work at all.
 
-**USER_PROFILE** — `user_id`, `full_name`, `email`, `photo_url`, `id_number`
-All directly identifying data. **This is the table an erasure request empties.**
-Everything else survives.
+`phone` is **unique from the start, even while unverified** — the rule cannot be
+verified yet but it can be enforced, which turns a future migration conflict
+into a registration-time error today.
+
+On erasure `email` is overwritten with a placeholder rather than nulled, because
+Django requires a unique non-null `USERNAME_FIELD`.
+
+**USER_PROFILE** — `user_id`, `first_name`, `surname`, `photo_url`, `id_number`,
+`erased_at`
+All remaining directly identifying data. **This is the table an erasure request
+empties.** Everything else survives.
+
+**ERASURE_REQUEST** — `id`, `user_id`, `requested_at`, `status`
+(queued | blocked | completed), `blocking_reason`, `completed_at`,
+`backups_clear_at`
+Erasure is a tracked request, not an immediate delete. A user with an open
+dispute or a live booking is **blocked**, with the reason shown in the app
+rather than the request silently doing nothing. `backups_clear_at` records when
+the last backup containing the person ages out of the stated window — an
+erasure that leaves someone in last night's dump is not an erasure.
 
 **CONSENT_RECORD** — `id`, `user_id`, `consent_type`, `version`, `granted_at`,
 `withdrawn_at`
@@ -140,6 +169,26 @@ period and enforce it.
 **DISPUTE** — `id`, `booking_id`, `raised_by`, `reason`, `status`,
 `resolution`, `resolved_by`
 
+**BOOKING_ATTESTATION** — `id`, `booking_id`, `kind` (arrival | completion |
+customer_arrival), `actor_id`, `attested_at`, `point`, `accuracy_m`, `is_mock`,
+`distance_to_target_m`, `photo_ref`
+Evidence that someone was where they said they were. `attested_at` is the
+**server clock** — a device clock is an input the subject controls. Without
+this, seven of the nine categories produce no evidence a service happened at
+all, and reversals cannot be adjudicated. Append-only, same treatment as
+`BOOKING_EVENT`. See [cancellation](cancellation.md).
+
+Location data, so it is personal data: it carries a retention period, and
+`accuracy_m` travels with the coordinate because it bounds what the record can
+honestly be claimed to prove.
+
+**LEGAL_HOLD** — `id`, `subject_type`, `subject_id`, `reason`, `placed_at`,
+`released_at`
+Exempts evidence from the retention sweepers while a dispute or reversal is
+open. **Placed in the same transaction that raises the dispute**, not by a
+follow-up job that can fail. A sweeper that deletes evidence in a live case is a
+defect with legal consequences and is the default behaviour of a naive one.
+
 ### Ledger
 
 **LEDGER_ACCOUNT** — `id`, `owner_type` (provider | platform_revenue |
@@ -200,6 +249,42 @@ marketing category.
 **ADMIN_ACTION** — `id`, `admin_id`, `action_type`, `target_type`, `target_id`,
 `reason`, `occurred_at`
 Every admin action. Non-optional under the audit requirement FR-6.6.
+
+### Events & devices
+
+Added 2026-08-17. The specification described admin decisions and it described
+app screens, but nothing joined them — so a back-office approval had no
+specified route to the phone waiting for it. See
+[admin](admin.md#the-adminapp-loop).
+
+**DOMAIN_EVENT** — `id`, `event_type`, `aggregate_type`, `aggregate_id`,
+`actor_id`, `admin_action_id`, `payload`, `occurred_at`, `processed_at`,
+`attempts`, `last_error`
+A transactional outbox. **The event row is written in the same database
+transaction as the state change it describes**, so an approval and its
+notification cannot come apart: if one commits, both do. A relay worker
+dispatches unprocessed rows, at-least-once, which is why every consumer is
+idempotent.
+
+`admin_action_id` makes the interconnection queryable both ways — *what did this
+decision cause*, and *why did this provider get this message*. The second is the
+question support actually asks.
+
+Emission belongs to the domain service, never to an admin view or a Django
+signal. Signals fire on `save()`, which would emit production notifications
+during a fixture load.
+
+**DEVICE** — `id`, `user_id`, `push_token`, `platform`, `biometric_enrolled`,
+`app_version`, `last_seen_at`, `revoked_at`
+Where a push can land, and what Settings → Security lists as sessions.
+`biometric_enrolled` is **per device**, not per account: biometrics must be
+re-enabled after a device change, and a new device always gets an SMS code. On
+the user row it would silently skip that rule.
+
+**OUTBOUND_MESSAGE** gains `domain_event_id` and a unique constraint on
+`(domain_event_id, channel_id, user_id)` — the thing that makes at-least-once
+relay delivery safe. Same technique as the ledger's `idempotency_key`, for the
+same reason.
 
 ## Worked example: commission on a completed booking
 

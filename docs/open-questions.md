@@ -5,13 +5,108 @@ build.
 
 ## Resolved since last revision
 
-- **Launch categories.** Six: rides, movers & hauling, property rentals,
-  hairdressing & beauty, small trades, event hire. See
-  [categories](categories.md).
-- **Mobile framework.** Flutter.
+- **Launch categories.** **Nine**, not six — "small trades" split into plumbing,
+  electrical and tiling, each with its own KYC requirements; catering separated
+  from hire. See [categories](categories.md).
+- **Mobile framework.** Flutter, Android-first.
+- **Backend stack.** Django 5 + DRF + GeoDjango on PostgreSQL 16 + PostGIS.
+  Decided 2026-08-17. See [architecture](architecture.md#backend--decided).
+- **Admin panel.** Django admin inside the same project — not a separate
+  application, not Flutter Web. Built alongside each feature it unblocks, not
+  as a phase two. See [admin](admin.md).
+- **Ride commission and VAT.** 8% of the fare; 14% VAT on the fee. Fee and VAT
+  post as separate journal entries, never bundled. See
+  [monetization](monetization.md#rates-and-vat).
 - **Service direction.** Set per listing by the provider, chosen by the customer
   at booking. See [booking](booking.md).
 - **Launch payment rails.** EFT + Orange Money. See [payments](payments.md).
+
+## ⚠️ Newly opened — 2026-08-17
+
+Raised by the design import and the cancellation benchmarking. Each is
+recorded where it belongs; collected here so none is lost.
+
+**Blocking a schema decision** — see [database](database.md#open):
+
+- [ ] **`LEDGER_ACCOUNT`: one per provider, or one per provider per category?**
+      Affects the primary key and every balance query. Blocks the ledger schema.
+- [ ] Are negative balances permitted, and in which states?
+- [ ] Retention period for `TRIP_LOCATION`, which sets the partition drop window
+- [ ] Statutory retention for journal entries — confirm the assumed 7 years
+
+**Blocking cancellation** — see [cancellation](cancellation.md#open):
+
+- [ ] **The cancellation policy itself.** Who may raise a reversal, within what
+      window, and which causes qualify. Everything specified so far is
+      mechanism; none of it is policy.
+- [ ] **The dispute window and full-trail retention are one decision, not two.**
+      The window must be shorter than retention, or evidence is deleted before
+      it is needed.
+- [ ] Whether a declined reversal can be contested, and by what route
+- [ ] Whether arrival attestation is mandatory per category, and what happens
+      when a provider simply never taps it
+- [ ] Thresholds: the 5-minute wait, the GPS accuracy cutoff, the proximity
+      radius that counts as "arrived". Benchmarked, not decided — and Gaborone
+      yard addresses are not Manhattan street addresses.
+- [ ] Partial reversals, and whether a no-show fee can exist at all when the
+      platform never touches the customer's money
+
+**Contradicts an existing binding constraint:**
+
+- [ ] **The balance is called a "wallet" in the product.**
+      [compliance](compliance.md) lists *don't call it a wallet* as a binding
+      constraint; the design deliberately reversed it and defends the position
+      structurally instead. **Not settled** — put it in the same question to
+      counsel as EPS licensing. See
+      [design-deltas](design-deltas.md#3-wallet-balance-not-commission-credit).
+
+**Safety** — see [safety](safety.md#open). Nothing in the spec covered this:
+
+- [ ] **What does the verified badge actually stand behind?** Today it means an
+      admin saw a trade certificate. Customers read it as *safe to let into my
+      home*. Either raise the check (police clearance for home-entry and
+      passenger categories) or lower the claim (say what was checked) —
+      **doing neither is a misrepresentation.** Biggest open item on this list.
+- [ ] For a multi-worker business, does the badge cover the **account** or the
+      **person who turns up**? Small businesses are the normal case here.
+- [ ] Re-verification cadence — a certificate seen in January says nothing about
+      a conviction in June
+- [ ] **Rentals viewings are invisible to us** — the enquiry leaves the app, so a
+      stranger meeting at an empty property has no record. In scope or explicitly
+      out?
+- [ ] Panic button destination: emergency services, nominated contact, or a
+      monitored line? Each is an operating commitment, and South Africa now
+      **mandates** one for e-hailing.
+- [ ] Who owns the incident queue out of hours, and the response target for a
+      critical report
+- [ ] Whether audio trip recording is proportionate under the DPA
+
+**Blocking a screen from shipping:**
+
+- [ ] **What happens to already-accepted bookings when a category is revoked.**
+      Undefined in the spec, and the design says the state therefore "has no
+      honest copy yet". The admin revoke action cannot ship without it.
+
+**Auth phasing** — see [components](components.md#auth--adopt-and-phase-it):
+
+- [ ] **Phase 0 registration is email + password + phone + names**, deferring
+      SMS OTP until an aggregator is affordable. This departs from FR-1.1/FR-1.2,
+      where the phone number *is* the identity.
+- [ ] **"One phone, one account" cannot be verified in phase 0.** Enforce
+      uniqueness on the unverified column anyway, or the phase 1 migration
+      inherits every duplicate created in the meantime.
+- [ ] Whether phase 1 phone verification uses Firebase Auth's free quota or a
+      local SMS aggregator
+- [ ] The design's OTP screens and "SMS code on every new device" rule do not
+      apply in phase 0 — the register screen needs a variant, and the design
+      project should be told
+
+**Operational:**
+
+- [ ] Who staffs the [admin queues](admin.md#queues--the-actual-daily-work), and
+      what verification SLA they can sustain — the app copy has to name a
+      review window, so this is a product decision, not an ops one
+- [ ] Whether reversal confirmation needs two-person approval above some amount
 
 ## ⚠️ Blockers — external, start now
 
@@ -27,6 +122,15 @@ build.
       and put it in the provider terms.
 - [ ] **Where is data hosted?** The Data Protection Act 2024 requires a copy of
       personal data to remain in Botswana. Constrains infrastructure choice.
+      **Now much narrower than it was** — local Tier III capacity is confirmed
+      to exist (Digital Delta DC1, BoFiNet-operated, Block 8; also Atal and
+      C-Nest), and a self-managed VPS is the recommended shape because it gives
+      the superuser the ledger's privilege model needs. What remains is a
+      **price**. Get a quote; if it lands near P60/month, start local, stay
+      local, and this blocker closes with no migration ever needed. See
+      [architecture](architecture.md#two-viable-routes-both-giving-root).
+      Note that several providers branded "Botswana VPS" are physically in
+      Johannesburg — good latency, wrong jurisdiction.
 - [ ] **Is a DPIA required for GPS tracking, and who conducts it?**
 - [ ] **KYC document retention schedule** per document type.
 

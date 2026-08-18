@@ -3,41 +3,71 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-16T14:23:00+02:00",
+    "saved": "2026-08-18T03:21:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "5aea5f2",
-      "subject": "Add Ipelegeng specification documents"
+      "hash": "dcc4735",
+      "subject": "Rename app to Ipelege throughout docs; save session handoff"
     },
-    "summary": "Bootstrapped the repository: read all 21 specification documents, initialised git and pushed the spec set to github.com/elmo365/ipelegeng, stood up Serena and CodeGraph indexes, and corrected the app name from Ipelegeng to Ipelege throughout the docs.",
-    "state": "pre-build; specification documents only, no application code",
+    "summary": "Imported the Claude Design system into the repo, then closed the specification gaps the import exposed. Eight new documents (design-system, design-deltas, database, admin, cancellation, safety, components, test-strategy) and eleven revised. Backend, admin, routing and hosting decided. Coding deferred to next session by user direction.",
+    "state": "pre-build; 29 specification documents plus a parked Flutter scaffold",
+    "decisions": [
+      "Backend: Django 5 + DRF + GeoDjango on PostgreSQL 16 + PostGIS",
+      "Admin: Django admin in the same project, built alongside each feature it unblocks - not a separate app, not Flutter Web",
+      "Routing: Valhalla, not OSRM - ghcr.io/gis-ops/docker-valhalla publishes linux/arm64; osrm/osrm-backend Docker Hub images are amd64-only and last published July 2021",
+      "Nine launch categories, not six - small trades split into plumbing, electrical, tiling; catering separated from hire",
+      "Hosting: self-managed VPS for root access the append-only ledger requires; Oracle Always Free ARM for phase 0, Botswana-resident for production",
+      "Auth phased: email+password+phone+names via django-allauth now, SMS OTP when an aggregator is affordable; phone unique from day one",
+      "Safety model is traceability not prevention - record who/where/when and make reporting fast"
+    ],
     "working": [
-      "git repo on main, initial commit 5aea5f2, pushed and verified in sync with origin",
-      "push auth via Windows Credential Manager (user elmo365)",
-      "Serena project activated with six memories written",
-      "CodeGraph initialised at .codegraph/"
+      "Design imported: tokens, type scale, motion, navigation, screen inventory in docs/design-system.md",
+      "OKLCH to sRGB conversion done accurately; app/lib/theme/tokens.dart holds the full palette as an AppPalette ThemeExtension",
+      "Flutter 3.41.6 / Dart 3.11.4 verified; project bw.co.ipelege created with go_router, flutter_riverpod, intl, decimal",
+      "Documentation set internally consistent and cross-linked"
     ],
     "notWorking": [
-      "CodeGraph indexes zero symbols - no source code exists yet",
-      "Serena symbolic tools inert - no language server, markdown-only repo",
-      "claude-context index_codebase fails: Error validating collection creation (Zilliz account side)",
-      "gh CLI installed but not authenticated"
+      "No application code - app/lib/main.dart is the generated stub",
+      "Design HTML archive truncated at 256 KiB - eight specification tables lost including backRules, navState, haptics, loadingStates, savedStates, motionSpecs",
+      "18 brand PNGs not in repo - live only in the design project",
+      "Hosting not provisioned - user creating Oracle account, will supply SSH"
+    ],
+    "doNotRepeat": [
+      "DesignSync get_file has a hard 256 KiB cap with no offset parameter - retrying returns the same truncation",
+      "Pulling binary assets via get_file costs ~35k tokens per PNG - download from the design project in a browser instead",
+      "Blog posts and GitHub issue pages gave contradictory answers on OSRM ARM support - query the Docker Hub and GHCR registry manifests directly",
+      "git add --dry-run output is filtered to nothing by the rtk hook - use git ls-files --others --exclude-standard or stage then inspect git diff --staged --stat",
+      "bc is not installed in this Git Bash environment"
     ],
     "nextSteps": [
-      "Decide whether the Ipelege rename extends to the GitHub repo, local folder and Ipelegeng.code-workspace - docs are done, those three are not",
-      "Commission scoped legal opinion on EPS Regulations 2019 and the commission-credit balance",
-      "Decide data hosting to satisfy Data Protection Act 2024 residency requirement",
-      "Write the account-closure balance policy into provider terms",
-      "Close the booking-completion definition gap in docs/booking.md",
-      "Choose the backend stack",
-      "Write the test strategy document"
+      "Build the Flutter shell: motion.dart, typography.dart, app_theme.dart, Money formatter (Pula, explicit, never device locale)",
+      "Navigation: go_router with two bottom-nav shells, per-tab stacks, push/lateral/replace rules",
+      "Wire main.dart to the theme with Light/Dark/System, replacing the stub",
+      "Take SSH from user and provision Oracle box - Docker Compose with Postgres 16 + PostGIS, Redis, MinIO, Caddy, all arm64-native",
+      "Recover the eight truncated design tables from Claude Design, backRules especially",
+      "Get a hosting quote from Digital Delta DC1 (BoFiNet, Block 8)",
+      "Remaining specs: offline and connectivity, API contract shape, environments and CI, observability, refresh CONTRIBUTING.md"
     ],
     "blockers": [
-      "EPS licensing position - external, can invalidate the commission-credit design and the project plan",
-      "Data residency / hosting decision - external, constrains all infrastructure",
-      "Lead-gen vs full-service - compliance and market evidence point opposite ways",
-      "Six categories at launch - reopened by comparable-platforms research"
+      "What the verified badge stands behind - admin saw a trade certificate, customers read safe to let into my home. Raise the check or lower the claim. Biggest open item.",
+      "LEDGER_ACCOUNT: one per provider or one per provider per category - blocks the ledger schema",
+      "Dispute window and full-trail retention are one decision, not two - the window must be shorter",
+      "The wallet naming contradicts a binding constraint in compliance.md - goes to counsel with the EPS question",
+      "What happens to already-accepted bookings when a category is revoked - blocks the revocation screen and safety suspension",
+      "EPS licensing position - external, unchanged",
+      "Data residency - external, now narrower: local Tier III capacity confirmed, only the price is missing"
     ]
   },
-  "archives": []
+  "archive": [
+    {
+      "file": "handoffs/2026-08-18-0321.md",
+      "saved": "2026-08-16T14:23:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "5aea5f2",
+        "subject": "Add Ipelegeng specification documents"
+      },
+      "summary": "Bootstrapped the repository: read all 21 specification documents, initialised git and pushed to github.com/elmo365/ipelegeng, stood up Serena and CodeGraph indexes, corrected the app name from Ipelegeng to Ipelege throughout the docs."
+    }
+  ]
 }

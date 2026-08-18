@@ -13,8 +13,13 @@ entirely:
 2. **Team size.** The durations assume a small team working steadily. One person
    part-time should roughly double them.
 
-Six launch categories is a lot of surface area. The single biggest schedule risk
-after licensing is trying to build all six to the same depth at once.
+**Nine** launch categories is a lot of surface area — the design split the old
+"Small trades" grouping into Plumbing, Electrical and Tiling, each with its own
+KYC requirements, and separated Catering from Hire
+([design-deltas](design-deltas.md#1-nine-categories-not-six)). The single
+biggest schedule risk after licensing is trying to build all nine to the same
+depth at once. Categories are data, not code — build the model once, seed two or
+three deeply.
 
 ## Phases
 
@@ -28,25 +33,32 @@ gantt
     Legal opinion - EPS licensing      :crit, b1, 2026-09-01, 45d
     Hosting & residency decision       :crit, b2, 2026-09-01, 30d
     Payment gateway selection          :b3, 2026-09-15, 30d
+    Cancellation policy decision       :crit, b4, 2026-09-01, 21d
 
     section 1 Foundation
-    Backend stack decision             :f1, 2026-09-01, 14d
-    Project setup, CI, environments    :f2, after f1, 14d
+    Backend stack decision - DONE      :done, f1, 2026-08-17, 1d
+    Project setup, CI, environments    :f2, 2026-09-01, 14d
+    Flutter shell, theme, navigation   :f2b, 2026-09-01, 21d
     Identity & accounts                :f3, after f2, 21d
     Ledger core + idempotency          :crit, f4, after f2, 28d
-    Admin panel skeleton               :f5, after f3, 21d
+    Domain event outbox + relay        :f4b, after f3, 14d
+    Staff auth, 2FA, audit plumbing    :f5, after f3, 10d
 
     section 2 Provider side
     Category & verification model      :p1, after f3, 21d
-    KYC upload & admin review          :p2, after p1, 21d
+    KYC upload                         :p2, after p1, 21d
+    Admin - verification queue         :p2b, after p2, 10d
     Listings & service direction       :p3, after p1, 28d
     Top-up - Orange Money              :crit, p4, after f4, 21d
     Top-up - EFT & reconciliation      :p5, after p4, 21d
+    Admin - unmatched deposit queue    :p5b, after p5, 7d
 
     section 3 Customer side
     Search & browse                    :c1, after p3, 21d
     Booking lifecycle                  :c2, after c1, 28d
+    Arrival attestation & evidence     :c2b, after c2, 14d
     Commission on completion           :c3, after c2, 14d
+    Reversal rules & admin evidence    :crit, c3b, after c3, 21d
     Ratings & reviews                  :c4, after c2, 14d
 
     section 4 Rides
@@ -54,6 +66,7 @@ gantt
     Dispatch & matching                :r2, after c2, 28d
     Live tracking                      :crit, r3, after r2, 28d
     Trip lifecycle & safety            :r4, after r3, 21d
+    Trip extension to movers           :r5, after r3, 14d
 
     section 5 Rentals
     Rental listing model               :n1, after p3, 14d
@@ -68,7 +81,8 @@ gantt
     WhatsApp API & templates           :x6, after c2, 21d
 
     section 6 Hardening
-    Dispute handling                   :h1, after c3, 21d
+    Dispute handling                   :h1, after c3b, 21d
+    Legal hold & tiered retention      :crit, h1b, after c2b, 14d
     DPIA & data subject rights         :crit, h2, after c3, 21d
     Security review                    :h3, after r4, 14d
     Load & failure testing             :h4, after h3, 14d
@@ -122,6 +136,22 @@ early as there is something to show.
 **Build the ledger first, before any feature that touches it.** It is the piece
 where mistakes are least recoverable — a booking bug loses a booking, a ledger
 bug loses trust and cannot be cleanly undone.
+
+**The admin side is not a phase-two panel.** Five mobile journeys cannot
+complete without a human on the other side — KYC approval, EFT matching,
+reversal adjudication, dispute resolution, revocation. Admin capability
+therefore lands *with* the feature it unblocks rather than in a lump at the end,
+which is why it now appears in three sections of the Gantt instead of as a
+single "admin panel skeleton" bar. Because the back office is Django admin
+inside the same project, each of those bars is short. See [admin](admin.md).
+
+**Instrument evidence before you need to adjudicate on it.** Arrival
+attestation is scheduled immediately after the booking lifecycle and before
+reversal rules, deliberately: seven of the nine categories currently produce no
+evidence that a service happened, and a reversal queue with nothing to weigh is
+a queue that decides by coin toss. Retrofitting attestation after bookings are
+live means every historical dispute is unadjudicable. See
+[cancellation](cancellation.md).
 
 **Consider narrowing the launch.** Six categories at launch is the stated
 decision, and the ecosystem argument for it is sound. But a defensible middle
