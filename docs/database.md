@@ -652,8 +652,14 @@ that passes there proves nothing about the invariants that matter.
 Carried from [data-model](data-model.md) and [compliance](compliance.md), listed
 here because each one is a schema decision:
 
-- `LEDGER_ACCOUNT` — one per provider, or one per provider per category? Affects
-  the primary key and every balance query. **Blocking the ledger schema.**
+- ~~`LEDGER_ACCOUNT` — one per provider, or one per provider per category?~~
+  **Resolved 2026-08-19: one per provider.** A provider holds a single wallet
+  across every category — `owner_type = provider`, `owner_ref = provider_id`,
+  no category component in the key. Corroborated by [data-model](data-model.md)
+  (`USER ||--|| LEDGER_ACCOUNT`, a 1:1) and the design canvas ("one wallet",
+  its stated load-bearing decision). Per-category *reporting*, if ever wanted,
+  rides on `JOURNAL_TRANSACTION`, not on splitting the account. Full flow in
+  [wallet](wallet.md).
 - Are negative balances permitted, and in which states?
 - Retention period for `TRIP_LOCATION` — sets the partition drop window.
 - Retention schedule per KYC document type.

@@ -20,6 +20,10 @@ build.
 - **Service direction.** Set per listing by the provider, chosen by the customer
   at booking. See [booking](booking.md).
 - **Launch payment rails.** EFT + Orange Money. See [payments](payments.md).
+- **Ledger account granularity.** **One wallet per provider**, spanning every
+  category — not one per category. Decided 2026-08-19; corroborated by the data
+  model (`USER ||--|| LEDGER_ACCOUNT`, 1:1) and the design canvas, which calls
+  "one wallet" its load-bearing decision. Consolidated flow in [wallet](wallet.md).
 
 ## ⚠️ Newly opened — 2026-08-17
 
@@ -28,8 +32,9 @@ recorded where it belongs; collected here so none is lost.
 
 **Blocking a schema decision** — see [database](database.md#open):
 
-- [ ] **`LEDGER_ACCOUNT`: one per provider, or one per provider per category?**
-      Affects the primary key and every balance query. Blocks the ledger schema.
+- [x] **`LEDGER_ACCOUNT`: one per provider, or one per provider per category?**
+      **Resolved 2026-08-19 — one per provider** (single wallet, all categories).
+      See [wallet](wallet.md) and the Resolved list at the top of this file.
 - [ ] Are negative balances permitted, and in which states?
 - [ ] Retention period for `TRIP_LOCATION`, which sets the partition drop window
 - [ ] Statutory retention for journal entries — confirm the assumed 7 years
@@ -200,7 +205,8 @@ your call.
 - [ ] Whether commission varies by category.
 - [ ] Per-listing price for rentals.
 - [ ] Minimum wallet top-up.
-- [ ] Wallet balance — one per provider, or per category?
+- [x] Wallet balance — one per provider, or per category? **Resolved: one per
+      provider.** See [wallet](wallet.md).
 
 ## Technical
 
@@ -215,8 +221,8 @@ your call.
 - [ ] **Who performs KYC** — manual admin review or a third-party service.
       Botswana's national ID system already supports basic KYC verification;
       worth investigating before contracting a vendor.
-- [ ] **Ledger account granularity** — one per provider, or one per provider per
-      category.
+- [x] **Ledger account granularity** — **Resolved: one per provider** (single
+      wallet across all categories). See [wallet](wallet.md).
 - [ ] **Test strategy** — not yet written. Ledger and booking state transitions
       need concurrency and property-based tests, not just unit tests.
 

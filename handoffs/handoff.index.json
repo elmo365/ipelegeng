@@ -3,67 +3,72 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-18T06:15:00+02:00",
+    "saved": "2026-08-20T06:12:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "e06616c",
-      "subject": "Import design system; close specification gaps; decide stack"
+      "hash": "16c56cb",
+      "subject": "Build the Flutter shell: theme, navigation, components"
     },
-    "summary": "Built the Flutter shell: theme, navigation, shared components, money formatting, 47 passing tests. Governing rule, given by the user mid-session: central theme-driven UI, nothing hardcoded per screen. Then swept README, CONTRIBUTING, sdlc-overview and design-system so no document still describes the repo as pre-build.",
-    "state": "29 specification documents plus a running Flutter shell; no product screens, no backend",
+    "summary": "Provisioned the production VPS and resolved the schema-blocking open questions. Got into the Azure arm64 box, switched it to SSH-key auth, discovered its big NVMe is ephemeral and attached a 64GB Premium SSD at /data instead, then stood up Postgres 16.4+PostGIS 3.4.3, Redis, MinIO and Caddy in Docker Compose - all arm64-native, localhost-bound, reboot-surviving. Then, via the interview skill, settled ledger-account grain as one wallet per provider (corroborated by data-model 1:1 and the design canvas), reframed the other blockers as admin/policy, and wrote docs/wallet.md consolidating the wallet flow end to end.",
+    "state": "Running arm64 data stack on the VM (no schema yet) + 30 spec docs including new wallet.md; still no product screens, no Django app",
     "decisions": [
-      "Central theme-driven UI is the governing rule of lib/ - screens use plain Material widgets and app_theme.dart decides how they look",
-      "Bundle IBM Plex TTFs in app/assets/fonts rather than google_fonts - it fetches at runtime and the app must start on a bad connection",
-      "Two sibling StatefulShellRoutes, not one nested set - that is what makes a mode switch discard the other side's stack rather than suspend it",
-      "Push, lateral and replace get named methods in routing/navigation.dart rather than raw go/push calls at screens",
-      "Money is formatted only through Money / MoneyText - never at a call site, never from device locale; U+202F separator, U+2212 minus",
-      "Category hues reconverted from oklch(0.55 0.12 h) rather than eyeballed; two clip a channel at the gamut edge and that is recorded in the token comment",
-      "Placeholder screens take everything from the theme, so replacing one changes behaviour without changing the look"
+      "One wallet per provider, not per category - sets the ledger PK; per-category reporting rides on JOURNAL_TRANSACTION. Corroborated by data-model USER||--||LEDGER_ACCOUNT and the design canvas load-bearing decision",
+      "Most 'blockers' are admin/policy not code (user framing): verified-badge meaning is ops, code stores a status flag; dispute window/retention are config; wallet naming is label+legal, not schema",
+      "SSH key auth set up before any provisioning because the password is in the transcript",
+      "Persistent data goes on a managed Premium SSD (/data), never the 110GB NVMe which is an Azure Direct Disk = ephemeral, wiped on deallocate",
+      "Docker Compose stack, data-root and volumes on /data, everything bound to 127.0.0.1",
+      "imresamu/postgis over official postgis/postgis - the official image has no arm64 build and silently pulls amd64"
     ],
     "working": [
-      "flutter analyze clean, flutter test green - 47 tests across money, both themes, navigation and components",
-      "App boots into the consumer shell; per-tab stacks survive switches, mode switch replaces the bar, wallet reachable only by push from the dashboard",
-      "Theme is genuinely central - no screen carries a colour or a size",
-      "Fonts bundled, so type is correct offline and on first run",
-      "CodeGraph current - its watcher indexed every file as it was written"
+      "ssh ipelege logs in by key (no password); host key pinned; secrets+.env hold creds, key path, Azure context, stack passwords",
+      "VM: Standard_D2pds_v6, Ubuntu 24.04, aarch64, 2vCPU/7.7GB, SouthAfricaNorth zone 3, passwordless sudo, 40.127.10.234",
+      "64GB Premium SSD mounted at /data by UUID (fstab, reboot-safe); docker data-root at /data/docker",
+      "Stack all healthy, arm64-native, restart:unless-stopped, docker enabled: Postgres 16.4+PostGIS 3.4.3, Redis 7 (auth), MinIO, Caddy",
+      "docs/wallet.md consolidates the wallet system; ledger-grain decision resolved and cross-linked across 6 docs + README"
     ],
     "notWorking": [
-      "No product screens - every route renders PlaceholderScreen",
-      "Never run on a device or emulator; everything so far is flutter test",
-      "ThemeMode does not persist - resets to system each launch, needs the settings store",
-      "Serena cannot read Dart here until VS Code is relaunched - project.yml now says languages: [dart] but the MCP server caches config at startup; .serena/ and .codegraph/ are gitignored so the fix is local only",
-      "Eight design tables still lost to import truncation; 18 brand PNGs still only in the design project; hosting still unprovisioned"
+      "No product screens, no Django backend - every Flutter route still renders PlaceholderScreen",
+      "Stack has no schema - Postgres running with PostGIS but no app tables (deliberate; waits on the booking-state blocker)",
+      "Nothing public - Postgres/Redis/MinIO localhost-only by design; Caddy has no domain and no NSG rule for 80/443",
+      "Not a durable host - 'Azure for Students' sub (~$100 cap), auto-deallocated once mid-session; real hosting quote still outstanding",
+      "47-passing-tests claim carried from prior handoff, not re-verified this session",
+      "VM has no swap yet"
     ],
     "doNotRepeat": [
-      "Bash heredocs for large Dart files - a ~350 line cat > file <<'EOF' failed to open the heredoc and bash choked on the first apostrophe; use the Write tool",
-      "Google Fonts CSS API for font files - it serves woff2 only, which Flutter cannot use; take TTFs from the IBM/plex GitHub releases (fonts/complete/ttf/)",
-      "Re-activating a Serena project to pick up a config change - returns success, keeps the cached config; needs a full VS Code relaunch",
-      "findsOneWidget on a pushed screen title - PlaceholderScreen renders its title twice (app bar and body); use findsWidgets",
-      "Decimal.signum is deprecated in decimal 3.x - use .sign, still an int",
-      "DesignSync get_file has a hard 256 KiB cap with no offset parameter",
-      "git add --dry-run output is filtered to nothing by the rtk hook - use git ls-files --others --exclude-standard",
-      "bc is not installed in this Git Bash environment"
+      "postgis/postgis:16-3.4 on arm64 - no arm64 manifest, pulls amd64, exec format error; use imresamu/postgis",
+      "curl | sudo bash installers - blocked by auto-mode classifier; use stepwise apt-repository installs",
+      "Backgrounding az login over a one-shot SSH command (setsid/nohup &) - SSH hangs on the held channel, timeout kills it, output lost; use systemd-run --unit --collect then read the file in a separate SSH call",
+      "az login --use-device-code --only-show-errors - the flag suppresses the device-code prompt itself; drop it",
+      "Bash heredocs for large local files - use the Write tool and scp (still true from last session)"
     ],
     "nextSteps": [
-      "Relaunch VS Code so Serena picks up languages: [dart]",
-      "Run the app on a real handset - check type scale, nav bar, and that no motion loops",
-      "Build the first real screens: consumer Home, category browse, listing detail",
-      "Recover the eight truncated design tables, backRules especially, before building back behaviour",
-      "Take SSH from the user and provision the Oracle box - Postgres 16 + PostGIS, Redis, MinIO, Caddy, all arm64-native",
-      "Get a hosting quote from Digital Delta DC1 (BoFiNet, Block 8)",
-      "Remaining specs: offline and connectivity, API contract shape, environments and CI, observability"
+      "Run the Flutter shell on a handset/emulator (still never done)",
+      "Decide what happens to already-accepted bookings when a category is revoked - the last genuinely-code blocker; admin.md says Revoke cannot ship without it",
+      "Start the Django backend against the running Postgres (127.0.0.1:5432, creds in secrets, PostGIS enabled); model LEDGER_ACCOUNT/JOURNAL_* now that grain is settled",
+      "Build first real screens: consumer Home, category browse, listing detail",
+      "Add swap on the VM; decide student-sub vs local Tier III (Digital Delta DC1) quote",
+      "When a domain exists: point Caddy at it, open NSG 80/443, front MinIO/API (Caddyfile stub already at /data/stack)"
     ],
     "blockers": [
-      "What the verified badge stands behind - StatusChip.verified renders the claim; what it means is undecided. Biggest single item.",
-      "LEDGER_ACCOUNT: one per provider or one per provider per category - blocks the ledger schema",
-      "Dispute window and full-trail retention are one decision, not two",
-      "The wallet naming contradicts a binding constraint in compliance.md - goes to counsel with the EPS question",
-      "What happens to already-accepted bookings when a category is revoked",
-      "EPS licensing position - external, unchanged",
-      "Data residency - external, narrower: local Tier III capacity confirmed, only the price is missing"
+      "Already-accepted bookings on category revoke - the last code/behaviour blocker; blocks the admin Revoke action shipping",
+      "Verified badge meaning - admin/policy not code; ops decides raise-vs-lower, schema stores a status",
+      "Wallet naming vs compliance.md - goes to counsel with EPS; does not change schema",
+      "Reversal policy (who/when/partial/no-show fee), negative-balance rule, min top-up, per-category commission rates - all open in their home docs and wallet.md#open",
+      "Hosting - student sub not durable; local Tier III price still unquoted",
+      "External/legal unchanged: EPS licensing, data residency (DPA 2024), KYC retention, GPS DPIA"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-20-0612.md",
+      "saved": "2026-08-18T06:15:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "e06616c",
+        "subject": "Import design system; close specification gaps; decide stack"
+      },
+      "summary": "Built the Flutter shell: theme, navigation, shared components, money formatting, 47 passing tests. Governing rule: central theme-driven UI, nothing hardcoded per screen. Then swept README, CONTRIBUTING, sdlc-overview and design-system so no document still describes the repo as pre-build."
+    },
     {
       "file": "handoffs/2026-08-18-0615.md",
       "saved": "2026-08-18T03:21:00+02:00",

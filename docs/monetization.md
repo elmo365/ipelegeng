@@ -19,7 +19,9 @@ Used for rides, movers, hairdressers, trades, catering, hire, laundry, water
 delivery.
 
 Providers load a wallet balance. A commission percentage is deducted per
-**completed** booking.
+**completed** booking. **One wallet per provider spans every category** — the
+end-to-end flow, including refunds and admin integration, is in
+[wallet](wallet.md).
 
 Why this rather than a flat monthly subscription: a provider with no bookings
 pays nothing, and can see that their money is only ever spent on real customers.

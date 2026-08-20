@@ -209,7 +209,9 @@ outage must never prevent a listing going live.
 
 **Note on 6.0.** Only process 6.0 writes to D5, and it only appends. No other
 process may write journal entries directly. This single rule is what keeps the
-ledger trustworthy.
+ledger trustworthy. For the wallet end to end — one account per provider, the
+three category fee shapes, refunds, and how admin actions move the balance — see
+[wallet](wallet.md).
 
 **8.0 no longer writes to D5.** It previously did, which contradicted the rule
 above. A confirmed reversal is an *instruction* from Administration to Ledger &

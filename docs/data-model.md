@@ -194,7 +194,9 @@ defect with legal consequences and is the default behaviour of a naive one.
 **LEDGER_ACCOUNT** — `id`, `owner_type` (provider | platform_revenue |
 suspense), `owner_ref`, `currency`
 Chart of accounts. Includes platform-side accounts, not just providers —
-a transaction needs two sides.
+a transaction needs two sides. **One account per provider** — a single wallet
+spanning every category (`owner_type = provider`, `owner_ref = provider_id`),
+not one per category. Resolved 2026-08-19; see [wallet](wallet.md).
 
 **JOURNAL_TRANSACTION** — `id`, `idempotency_key`, `type` (topup | commission |
 listing_fee | reversal | adjustment), `source_ref`, `created_at`
@@ -305,5 +307,7 @@ choice explained in [compliance](compliance.md).
   (slow, certain) or queued (fast, needs monitoring)
 - Retention period for `OUTBOUND_MESSAGE` delivery records
 - Retention period for `TRIP_LOCATION`
-- Whether `LEDGER_ACCOUNT` is one per provider or one per provider per category
+- ~~Whether `LEDGER_ACCOUNT` is one per provider or one per provider per
+  category~~ — **Resolved 2026-08-19: one per provider** (a single wallet across
+  all categories). See [wallet](wallet.md).
 - Whether negative balances are permitted (currently: yes, on completion only)

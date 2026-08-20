@@ -42,6 +42,7 @@ Start with the [SDLC overview](docs/sdlc-overview.md) for reading order.
 | [Solution](docs/solution.md) | The four pillars the platform rests on |
 | [Categories](docs/categories.md) | Full category list and the ecosystem principle |
 | [Monetization](docs/monetization.md) | Wallet model, pay-per-post, per-category variation |
+| [Wallet system](docs/wallet.md) | **End-to-end wallet flow** — one wallet per provider, all category shapes, refunds, admin integration |
 | [Payments](docs/payments.md) | Mobile money, card gateways, integration sequencing |
 | [User model](docs/user-model.md) | Account structure, roles, per-category verification |
 | [Booking model](docs/booking.md) | Service direction, discovery, commission timing |
