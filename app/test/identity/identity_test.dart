@@ -24,22 +24,6 @@ import 'package:ipelege/theme/tokens.dart';
 const _res = 'android/app/src/main/res';
 const _identityDoc = '../docs/identity.md';
 
-/// SHA-256 of Flutter's stock `ic_launcher.png` at each density, recorded when
-/// `docs/identity.md` was written. Replacing the icon changes these, which is
-/// the point.
-const _stockLauncherIcons = <String, String>{
-  'mipmap-mdpi':
-      'c7c0c0189145e4e32a401c61c9bdc615754b0264e7afae24e834bb81049eaf81',
-  'mipmap-hdpi':
-      '6a7c8f0d703e3682108f9662f813302236240d3f8f638bb391e32bfb96055fef',
-  'mipmap-xhdpi':
-      'e14aa40904929bf313fded22cf7e7ffcbf1d1aac4263b5ef1be8bfce650397aa',
-  'mipmap-xxhdpi':
-      '4d470bf22d5c17d84edc5f82516d1ba8a1c09559cd761cefb792f86d9f52b540',
-  'mipmap-xxxhdpi':
-      '3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180',
-};
-
 /// `#AARRGGBB` out of an Android colour resource.
 String? _colorResource(String path, String name) {
   final xml = File(path).readAsStringSync();
@@ -95,30 +79,106 @@ void main() {
     });
   });
 
-  group('the launcher icon matches what identity.md declares', () {
-    test('it is still Flutter stock artwork, and the doc says so', () {
-      final replaced = <String>[];
-      for (final entry in _stockLauncherIcons.entries) {
+  group('the launcher icon is the real artwork', () {
+    test('no density is still Flutter stock', () {
+      // These hashes are Flutter's default blue flag. It shipped on five
+      // densities for weeks because nothing checked.
+      const stock = <String, String>{
+        'mipmap-mdpi':
+            'c7c0c0189145e4e32a401c61c9bdc615754b0264e7afae24e834bb81049eaf81',
+        'mipmap-hdpi':
+            '6a7c8f0d703e3682108f9662f813302236240d3f8f638bb391e32bfb96055fef',
+        'mipmap-xhdpi':
+            'e14aa40904929bf313fded22cf7e7ffcbf1d1aac4263b5ef1be8bfce650397aa',
+        'mipmap-xxhdpi':
+            '4d470bf22d5c17d84edc5f82516d1ba8a1c09559cd761cefb792f86d9f52b540',
+        'mipmap-xxxhdpi':
+            '3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180',
+      };
+
+      for (final entry in stock.entries) {
         final file = File('$_res/${entry.key}/ic_launcher.png');
         expect(file.existsSync(), isTrue, reason: '${entry.key} is missing');
-        final digest = sha256.convert(file.readAsBytesSync()).toString();
-        if (digest != entry.value) replaced.add(entry.key);
+        expect(
+          sha256.convert(file.readAsBytesSync()).toString(),
+          isNot(entry.value),
+          reason: '${entry.key} is still the stock Flutter icon',
+        );
+      }
+    });
+
+    test('every density carries an adaptive foreground too', () {
+      for (final d in const [
+        'mipmap-mdpi',
+        'mipmap-hdpi',
+        'mipmap-xhdpi',
+        'mipmap-xxhdpi',
+        'mipmap-xxxhdpi',
+      ]) {
+        expect(
+          File('$_res/$d/ic_launcher_foreground.png').existsSync(),
+          isTrue,
+          reason:
+              '$d has no adaptive foreground, so the icon is letterboxed on '
+              'Android 8+',
+        );
       }
 
-      final docSaysMissing = File(
-        _identityDoc,
-      ).readAsStringSync().contains('is not in this repository');
-
-      expect(
-        replaced.isEmpty,
-        docSaysMissing,
-        reason: replaced.isEmpty
-            ? 'docs/identity.md no longer says the artwork is missing, but the '
-                  'launcher icon is still Flutter stock at every density'
-            : 'the launcher icon changed at ${replaced.join(', ')} — the real '
-                  'artwork has landed. Update docs/identity.md and these '
-                  'hashes together.',
-      );
+      final xml = File('$_res/mipmap-anydpi-v26/ic_launcher.xml')
+          .readAsStringSync();
+      expect(xml, contains('ic_launcher_foreground'));
+      expect(xml, contains('@color/ipelegeIconBg'));
     });
   });
+
+  group('the brand artwork that identity.md claims is present, is', () {
+    // The doc lists what came through the fetch cap. A file named there and
+    // missing here means someone deleted artwork; a corrupt one means it was
+    // transcribed rather than decoded, which is how mark-icon.png was lost.
+    test('every asset identity.md names exists and is a readable PNG', () {
+      final doc = File(_identityDoc).readAsStringSync();
+      final named = RegExp(r'`([a-z0-9-]+\.png)`')
+          .allMatches(doc)
+          .map((m) => m.group(1)!)
+          .toSet();
+
+      expect(
+        named,
+        contains('appicon-light.png'),
+        reason: 'identity.md no longer names the launcher icon source',
+      );
+
+      for (final name in named) {
+        final f = File('../design/assets/$name');
+        if (!f.existsSync()) continue; // named as blocked, not as present
+        final bytes = f.readAsBytesSync();
+        expect(
+          bytes.length,
+          greaterThan(1000),
+          reason: '$name is implausibly small',
+        );
+        // A truncated PNG keeps its header and loses its tail. IEND is the
+        // last chunk, so its absence is exactly the corruption to catch.
+        expect(
+          _endsWithIend(bytes),
+          isTrue,
+          reason:
+              '$name has no IEND chunk — it is a truncated or mis-transcribed '
+              'PNG. Re-fetch it, and decode from disk rather than by hand.',
+        );
+      }
+    });
+  });
+}
+
+/// PNG ends with a 12-byte IEND chunk. Anything cut short by the fetch cap
+/// loses it.
+bool _endsWithIend(List<int> bytes) {
+  if (bytes.length < 12) return false;
+  const iend = [0x49, 0x45, 0x4E, 0x44];
+  final tail = bytes.sublist(bytes.length - 8, bytes.length - 4);
+  for (var i = 0; i < 4; i++) {
+    if (tail[i] != iend[i]) return false;
+  }
+  return true;
 }

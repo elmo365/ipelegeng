@@ -1,36 +1,93 @@
 # Brand identity in the app
 
-**Status: the artwork is designed and is not in this repository.** The app ships
-Flutter's stock blue-flag launcher icon, and no screen renders the mark.
+**Status: partially imported.** Four brand assets are now in `design/assets/`
+and are the source for the launcher icon, the adaptive icon and the in-app
+mark. The larger cuts — the full lockups, the big mark and the wordmarks —
+**cannot be fetched whole**, for a reason that is a hard constraint rather than
+a cost.
 
-This file exists because "add the logo" was drifting as a note. It is the
-declared state of identity in the build, and
+Brand is the **first** thing the design's Foundations section defines, before
+colour, type and components. It is sequenced accordingly in
+[`build-order.md`](build-order.md), not treated as a finishing task.
+
 [`app/test/identity/identity_test.dart`](../app/test/identity/identity_test.dart)
-checks the declaration against what is actually on disk. When the artwork
-lands, that suite fails until this file is updated with it.
+checks this file's claims against what is actually on disk, so the two cannot
+drift apart.
 
 ---
 
-## What the design defines
+## What is in the repo
 
-`design/ipelege-ds-1-foundations.dc.html` carries a complete identity section —
-five presentations of one lockup, with size rules:
+| File | Size | Used for |
+|---|---|---|
+| `appicon-light.png` | 512 × 512 | Launcher icon at every density |
+| `appicon-dark.png` | 512 × 512 | The dark cut, held for the themed icon |
+| `adaptive-foreground.png` | 432 × 432 | Adaptive-icon foreground, **and** the in-app mark |
+| `notification-icon.png` | 96 × 96 | Status-bar icon |
 
-| Presentation | Files the foundations canvas renders |
-|---|---|
-| Mark | `mark-light.png` · `mark-dark.png` · `mark-icon.png` |
-| App icon | `appicon-light.png` · `appicon-dark.png` |
-| Wordmark | `wordmark-light-new.png` · `wordmark-dark-new.png` · `wordmark-dark.png` |
-| Horizontal lockup | `lockup-h-light.png` · `lockup-h-dark.png` |
-| Full lockup, with tagline | `lockup-dark.png` · `logo-light-transparent.png` |
+432 × 432 is exactly the Android adaptive-icon foreground size and 512 × 512 is
+the Play Store icon size — the design exported for the platform deliberately.
 
-Those are the twelve the canvas itself displays. The full export set is larger —
-it also carries `adaptive-foreground.png`, `notification-icon.png`,
-`app-icon-light-512.png`, `app-icon-dark-512.png`, `lockup-horizontal.png`,
-`wordmark-light.png` — and is listed in full under **Not imported** in
-[`design-deltas.md`](design-deltas.md). Treat that list as canonical.
+`mark-icon.png` (130 × 165) is **not** here and is not needed:
+`adaptive-foreground.png` is the same mark, transparent, at 432 px, so the app
+takes its mark from that instead.
 
-The canvas states the rules in its own words:
+## What cannot be fetched, and why
+
+`DesignSync.get_file` is **capped at 256 KiB**, and it truncates rather than
+failing. These came back with `truncated: true` and decoded to a partial PNG —
+a valid header with missing image data:
+
+| File | Header size | Result |
+|---|---|---|
+| `mark-dark.png` | 540 × 706 | truncated |
+| `wordmark-dark-new.png` | 1108 × 364 | truncated |
+| `lockup-dark.png` | 1480 × 1160 | truncated |
+| `logo-light-transparent.png` | 1536 × 1200 | truncated |
+
+Every one decoded to exactly 196 608 bytes — the payload cut at the cap, not a
+coincidence of file size.
+
+They were decoded, inspected, and **deleted**. A corrupt PNG sitting in
+`design/assets/` would eventually be shipped by someone who trusted the folder.
+
+This is the *same 256 KiB server-side cap* that forced the mobile canvas to be
+split into four parts, hitting a different file type. It cannot be worked around
+from this repo — there is no range request and no pagination. **To get them:
+export them from the design project directly, or re-save them smaller there.**
+
+### A second way to lose a file, and the guard against it
+
+`mark-icon.png` came back **complete and inline**, and was still corrupt on
+disk: it was small enough that I copied the base64 out of the tool result by
+hand instead of decoding a file, and the copy was imperfect. `Image.open()`
+read its header fine and reported 130 × 165 — the corruption only surfaced on a
+full `load()`.
+
+So the rule is not "watch the size", it is **never transcribe a binary**:
+decode from the file the tool wrote. Where a result is small enough to arrive
+inline and there is no file, `scratchpad/decode_verify.py` writes to a temp
+path, checks the PNG signature and the trailing `IEND` chunk, fully decodes it,
+and only then moves it into place. A bad copy cannot land.
+
+`identity_test.dart` re-checks the `IEND` chunk on every asset this file names,
+so a truncated or mis-copied PNG fails the suite rather than shipping.
+
+> **Corrected 2026-08-20.** This file, `design/README.md` and `design-deltas.md`
+> all said the brand assets "live only in the design project" and that the
+> import path was "prohibitively expensive" because binaries come back
+> base64-encoded through the model's context. Both halves were wrong — and being
+> wrong, they stopped anyone from trying for weeks. The assets are reachable via
+> `DesignSync` against project `012e55a7-8d3d-4aed-abf7-f1ab95fadf63` (that id
+> was sitting in `design/README.md` the whole time), and a large result is
+> written to a **file on disk**, so it decodes without passing through context at
+> all. The real constraint is the size cap above, which is a different thing and
+> only affects three files.
+
+## What the design specifies
+
+`design/ipelege-ds-1-foundations.dc.html`, the Brand section, gives five
+presentations of one lockup and the rule for choosing between them:
 
 > Every asset above is cut from the one supplied lockup, so the mark keeps its
 > ripple rings at every size and the wordmark keeps the blue i — the earlier set
@@ -40,47 +97,22 @@ The canvas states the rules in its own words:
 > horizontal lockup between 90 and 180, and the mark alone below that**, where
 > the tagline stops being legible.
 
-## What is missing, and why it cannot be fixed here
+The splash artboard draws the mark at **88 px** and the wordmark at **176 px**,
+so the app never needs the full lockup at all. It needs the mark (have it) and
+the wordmark (blocked by the cap).
 
-All twelve files live in the Claude Design project. `design/` in this repo holds
-the five `.dc.html` canvases and nothing else — **the HTML came across, the
-images never did**, so every `<img src="assets/…">` in the canvases points at
-files this repository has never contained.
+## Still stock, and what unblocks it
 
-They cannot be reconstructed from the repo. They are cuts of supplied artwork,
-and the canvas is explicit that a previous set assembled from mixed exports lost
-the ripple rings and the blue *i*. Drawing a substitute would reintroduce exactly
-that failure, so nothing here fakes one.
-
-**To unblock: export the asset set from the design project into
-`design/assets/`.** Everything below then becomes mechanical.
-
-## What is already done, without the artwork
-
-- **The cold-start flash is gone.** `launch_background.xml` used
-  `?android:colorBackground`, which resolves to plain white under `Theme.Light`
-  and plain black under `Theme.Black` — so every launch flashed a colour the app
-  never uses. It now paints `@color/ipelegeLaunchBg`, defined as the palette's
-  `screenBg2` in `values/colors.xml` and `values-night/colors.xml`. The test
-  asserts both against `AppPalette`.
-- **The app label is right**: `android:label="ipelege"`, lowercase, as the
-  wordmark sets it.
-
-## What is still stock, and waiting
-
-- **Launcher icon** — `mipmap-*/ic_launcher.png` are Flutter's defaults. Needs
-  `appicon-light.png` / `appicon-dark.png`, plus an adaptive icon
-  (`mipmap-anydpi-v26/ic_launcher.xml` with foreground and background layers)
-  so it is not letterboxed on Android 8+.
-- **Splash artwork** — the launch drawable is a flat ground. The mark belongs on
-  it once `mark-icon.png` exists. On Android 12+ this should move to the
-  platform splash API (`windowSplashScreenBackground` +
-  `windowSplashScreenAnimatedIcon`) rather than the legacy window background.
-- **The mark in-app** — the design's splash, register and sign-in artboards all
-  render the lockup. Phase 1 builds those screens, so it needs at minimum
-  `lockup-dark.png` and `mark-icon.png`. See
-  [`build-order.md`](build-order.md).
-- **iOS** — `ios/` is stock throughout: `AppIcon.appiconset` and the
-  `LaunchScreen` storyboard are Flutter's defaults. Untouched and unverified,
-  because this project has only ever been built on Windows; there is no way to
-  compile or look at an iOS build here.
+- **Launcher icon** — **done.** Five densities plus an adaptive icon
+  (`mipmap-anydpi-v26/ic_launcher.xml`, white background per `ipelegeIconBg`,
+  the design's foreground, and the same layer declared `<monochrome>` for
+  Android 13 themed icons). Generated from the 512 px source, so no density is
+  upscaled.
+- **The mark in-app** — **done.** `app/assets/brand/mark.png`, rendered by
+  `BrandMark`.
+- **Splash wordmark** — blocked. The mark beside it is real; the wordmark is
+  still set in type and labelled as a placeholder in `BrandLockup`.
+- **Notification icon** — artwork pulled; not yet declared in the manifest.
+- **iOS** — `ios/` is stock throughout and unverified: this project has only ever
+  been built on Windows, so there is no way to compile or look at an iOS build
+  here.

@@ -46,6 +46,33 @@ enum ConsentChannel {
   final String label;
 }
 
+/// What happened when a code was submitted.
+///
+/// The design names these among the OTP states: *code sent · wrong code ·
+/// resend cooling down · locked after N attempts*. Only the first two are drawn
+/// on the artboard; the rest are named in the journey map and have to be built
+/// from the rule rather than from a mockup.
+enum OtpOutcome { accepted, wrongCode, locked }
+
+/// Checks a code. Until the Django backend exists there is nothing to check
+/// against, so [DemoOtpVerifier] accepts any complete code — but the wrong-code
+/// and locked paths are real, and this is the seam the API call lands in rather
+/// than a hook that exists only for tests.
+abstract interface class OtpVerifier {
+  bool isCorrect(String code);
+}
+
+class DemoOtpVerifier implements OtpVerifier {
+  const DemoOtpVerifier();
+
+  @override
+  bool isCorrect(String code) => code.length == Session.codeLength;
+}
+
+final otpVerifierProvider = Provider<OtpVerifier>(
+  (ref) => const DemoOtpVerifier(),
+);
+
 enum SessionStage {
   /// No account on this device. Browsing is allowed; booking is not.
   none,
@@ -66,6 +93,14 @@ enum SessionStage {
 }
 
 class Session {
+  /// Four boxes on the artboard.
+  static const codeLength = 4;
+
+  /// The N in "locked after N attempts". The design names the state but not
+  /// the number, so this is the repo's, recorded in design-deltas.md as an
+  /// assumption rather than presented as the design's.
+  static const maxCodeAttempts = 5;
+
   const Session({
     this.stage = SessionStage.none,
     this.name,
@@ -75,6 +110,7 @@ class Session {
     this.locationGranted = false,
     this.biometricOffered = false,
     this.biometricUnlock = false,
+    this.codeAttemptsLeft = maxCodeAttempts,
   });
 
   final SessionStage stage;
@@ -101,6 +137,17 @@ class Session {
   /// the Security screen tells the user in those words.
   final bool biometricUnlock;
 
+  /// Counts down on a wrong code. At zero the code entry is locked and the only
+  /// way on is a fresh number — a resend would send a code into a form that
+  /// cannot accept it.
+  final int codeAttemptsLeft;
+
+  /// Locked out of code entry. Not a [SessionStage] because it is a property of
+  /// this verification round, not of the account: starting again from sign in
+  /// clears it.
+  bool get codeLocked =>
+      stage == SessionStage.confirmingNumber && codeAttemptsLeft <= 0;
+
   /// The one question the rest of the app asks. Deliberately not
   /// `stage != none`: a signed-in session on a superseded consent version
   /// cannot act either.
@@ -126,6 +173,7 @@ class Session {
     bool? locationGranted,
     bool? biometricOffered,
     bool? biometricUnlock,
+    int? codeAttemptsLeft,
   }) {
     return Session(
       stage: stage ?? this.stage,
@@ -136,6 +184,7 @@ class Session {
       locationGranted: locationGranted ?? this.locationGranted,
       biometricOffered: biometricOffered ?? this.biometricOffered,
       biometricUnlock: biometricUnlock ?? this.biometricUnlock,
+      codeAttemptsLeft: codeAttemptsLeft ?? this.codeAttemptsLeft,
     );
   }
 }
@@ -149,12 +198,33 @@ class SessionController extends Notifier<Session> {
   Session build() => const Session();
 
   /// Register or sign in: both end at the same place, because both send a code.
+  ///
+  /// Resets the attempt count — a new number is a new round, and carrying a
+  /// lockout across it would punish the wrong thing.
   void requestCode({String? name, required String phone}) {
     state = state.copyWith(
       stage: SessionStage.confirmingNumber,
       name: name ?? state.name,
       phone: phone,
+      codeAttemptsLeft: Session.maxCodeAttempts,
     );
+  }
+
+  /// Submit a code. The three OTP outcomes the design names, in one place.
+  ///
+  /// A resend does **not** restore attempts: the limit is on guessing, and
+  /// letting a resend reset it would make it decorative.
+  OtpOutcome submitCode(String code, OtpVerifier verifier) {
+    if (state.codeLocked) return OtpOutcome.locked;
+
+    if (verifier.isCorrect(code)) {
+      confirmCode();
+      return OtpOutcome.accepted;
+    }
+
+    final left = state.codeAttemptsLeft - 1;
+    state = state.copyWith(codeAttemptsLeft: left < 0 ? 0 : left);
+    return left <= 0 ? OtpOutcome.locked : OtpOutcome.wrongCode;
   }
 
   /// The code was accepted. Where this lands depends on consent, not on which

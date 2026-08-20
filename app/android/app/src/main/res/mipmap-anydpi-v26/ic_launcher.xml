@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The adaptive icon, API 26+.
+
+  Two layers, each 108dp, of which only the inner 66dp is guaranteed visible —
+  the launcher masks the rest to whatever shape the device uses. The foreground
+  is the design's `adaptive-foreground.png`, authored at 432px (exactly xxxhdpi)
+  with the mark already inside the safe zone, so nothing here re-crops it.
+
+  The background is flat white rather than an image: the supplied mark is dark
+  ink, and `appicon-light.png` sets it on white. See docs/identity.md.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ipelegeIconBg" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

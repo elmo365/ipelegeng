@@ -58,11 +58,20 @@ the repo.
 
 ## What is missing from the archive
 
-- **All brand assets.** Eighteen PNGs (marks, wordmarks, lockups, app icons,
-  adaptive and notification icons) live only in the design project. The import
-  path returns binary files base64-encoded through the model's context, which is
-  prohibitively expensive for images. Download them directly when wiring the
-  launcher icon and splash.
+- **Most brand assets.** Four are now in [`assets/`](assets/) — `appicon-light`,
+  `appicon-dark`, `adaptive-foreground` and `mark-icon` — which is enough for the
+  launcher icon, the adaptive icon and the in-app mark. The rest are still in the
+  design project.
+
+  **Correction, 2026-08-20:** this previously said all eighteen "live only in the
+  design project" because the import path was "prohibitively expensive". That was
+  wrong twice over, and being wrong it stopped anyone trying. They are reachable
+  through `DesignSync` against the project id recorded above, and a large result
+  is written to a file on disk rather than into context, so cost is not the
+  issue. The **real** constraint is the same 256 KiB cap that split this canvas:
+  `mark-dark`, `lockup-dark` and `logo-light-transparent` come back
+  `truncated: true` and must be exported from the design side instead. See
+  [`docs/identity.md`](../docs/identity.md).
 - **`support.js`.** Generated Claude Design runtime, no bearing on the build.
 
 Treat the archived `.dc.html` files as a **text source of truth**, not runnable

@@ -29,6 +29,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    # The brand mark, cut from the design's adaptive-icon foreground — the
+    # highest-resolution complete cut that fits through the 256 KiB fetch cap.
+    # See docs/identity.md.
+    - assets/brand/
+
   # Bundled, not fetched at runtime: the app has to start on a bad connection.
   # OFL licence in assets/fonts/LICENSE.txt.
   fonts:

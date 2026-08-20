@@ -521,11 +521,21 @@ is 171 KB — under the cap, so it is **whole**. See
 
 ### Not imported
 
-The brand PNGs under the design project's `assets/` are not mirrored into this
-repo. The import tool returns binary files base64-encoded through the model's
-context, which is prohibitively expensive for images. Download them from the
-design project directly when the app icon, splash and adaptive icon are wired
-up:
+**Superseded 2026-08-20 — this section was wrong, and it blocked work.**
+
+Four brand PNGs are now in `design/assets/`: `appicon-light` (512²),
+`appicon-dark` (512²), `adaptive-foreground` (432²) and `mark-icon` (130×165).
+They came through `DesignSync.get_file`, and a large result lands in a file on
+disk rather than in context — so "prohibitively expensive" was simply not true,
+and the claim stopped anyone from testing it.
+
+The real constraint is narrower and harder: `get_file` is **capped at 256 KiB**
+and truncates silently. `mark-dark`, `lockup-dark` and `logo-light-transparent`
+all return `truncated: true`; they were decoded, confirmed corrupt, and deleted.
+Those three must be exported from the design side. Full detail in
+[`identity.md`](identity.md).
+
+The original list of everything the design project holds, kept for reference:
 
 ```
 adaptive-foreground.png    app-icon-dark-512.png    app-icon-light-512.png

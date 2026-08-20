@@ -96,7 +96,30 @@ flash on every cold start, no mark anywhere. See Phase 0.5.
 
 ---
 
-## Phase 0.5 · Identity — **partly blocked, does not gate the flows**
+## Phase 1 · Brand — **the design's own first foundation**
+
+The canvas orders Foundations as **Brand → Colour → Type → Components**, and
+only then screens. This phase is numbered accordingly rather than bolted on:
+brand is the first thing the design defines, and the app shipped five screens
+with a stock Flutter icon because the build order here did not mirror that.
+
+**Done:** launcher icon at five densities, adaptive icon with a `<monochrome>`
+layer for Android 13 themed icons, the mark in-app, the notification artwork,
+and the cold-start window painting the palette's `screenBg2` instead of the
+stock white/black flash.
+
+**Blocked, and not by cost:** the wordmark and both lockups exceed the 256 KiB
+`get_file` cap and come back truncated. Full detail, including the two distinct
+ways an asset gets corrupted and the guard against each, in
+[`identity.md`](identity.md).
+
+Nothing here fabricates a substitute mark — the canvas is explicit that a
+previous set assembled from mixed exports lost the ripple rings and the blue
+*i*, and inventing one would repeat exactly that.
+
+---
+
+## Phase 1b · Identity leftovers — **does not gate the flows**
 
 The brand artwork is fully designed and has never been in this repository. The
 canvases render twelve PNGs from an `assets/` folder that only exists in the

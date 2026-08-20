@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/haptics.dart';
 import '../../../core/session.dart';
 import '../../../routing/navigation.dart';
 import '../../../routing/routes.dart';
@@ -55,7 +56,11 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
   @override
   void initState() {
     super.initState();
-    _code.addListener(() => setState(() {}));
+    _code.addListener(() {
+      // Typing clears the error. It described the previous code.
+      if (_wrongCode && _code.text.isNotEmpty) _wrongCode = false;
+      setState(() {});
+    });
     _startCountdown();
   }
 
@@ -78,8 +83,33 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
     super.dispose();
   }
 
+  /// Set when a code comes back wrong. Cleared as soon as the person types
+  /// again — an error that outlives the thing it describes is noise.
+  bool _wrongCode = false;
+
   bool get _complete => _code.text.length == VerifyScreen.codeLength;
-  bool get _ready => _complete && _agreed;
+  bool get _ready =>
+      _complete && _agreed && !ref.read(sessionProvider).codeLocked;
+
+  void _submit() {
+    final outcome = ref
+        .read(sessionProvider.notifier)
+        .submitCode(_code.text, ref.read(otpVerifierProvider));
+
+    switch (outcome) {
+      case OtpOutcome.accepted:
+        _verify();
+      case OtpOutcome.wrongCode:
+      case OtpOutcome.locked:
+        // "Error. A wrong OTP or a failed top-up, **paired with the
+        // message**." The buzz never fires without the text.
+        Haptics.error();
+        setState(() {
+          _wrongCode = true;
+          _code.clear();
+        });
+    }
+  }
 
   void _verify() {
     ref.read(sessionProvider.notifier)
@@ -200,7 +230,7 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
                       ),
                     PrimaryAction(
                       label: 'Verify & continue',
-                      onPressed: _ready ? _verify : null,
+                      onPressed: _ready ? _submit : null,
                     ),
                   ],
                 ),
