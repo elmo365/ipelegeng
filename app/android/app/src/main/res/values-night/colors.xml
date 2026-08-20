@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The dark cold-start window colour: AppPalette.dark.screenBg2.
+
+  Android resolves this variant on its own when the system is in dark mode, so
+  the launch drawable itself stays a single file.
+-->
+<resources>
+    <color name="ipelegeLaunchBg">#FF050B0F</color>
+</resources>

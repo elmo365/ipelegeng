@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The cold-start window colour, before Flutter draws its first frame.
+
+  It is the palette's `screenBg2` — the tinted page — not white, because a
+  white window followed by a tinted page is a visible flash on every launch.
+  Keep this in step with AppPalette.light.screenBg2 in lib/theme/tokens.dart.
+-->
+<resources>
+    <color name="ipelegeLaunchBg">#FFEDF3F8</color>
+</resources>

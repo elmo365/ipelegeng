@@ -13,7 +13,8 @@ map in [`design/ipelege-ds-1-foundations.dc.html`](../design/ipelege-ds-1-founda
 
 Two things are layered on top of that: a verification gate before any more
 screens are built, and the admin pairings, so a flow and the back-office surface
-that resolves it get built and tested together.
+that resolves it get built and tested together. A third was added once the
+verification gate ran and found the app had no identity at all — see Phase 0.5.
 
 **Enforcement.** `app/test/routing/build_order_test.dart` asserts that the
 routes claimed built below actually render real screens, and that everything not
@@ -23,24 +24,56 @@ recording it. Update the doc and the test together.
 
 ---
 
-## Phase 0 · Look at what exists — **current gate**
+## Phase 0 · Look at what exists — **done 2026-08-20**
 
-Nothing else starts until this is done.
+All five built screens were run on a Pixel 9a emulator in both modes and
+compared against the canvas: consumer home, category browse, listing detail,
+provider dashboard, wallet.
 
-- Run the app on a handset or emulator.
-- Check the surface treatment renders as designed in **both modes**: tinted
-  page, shadows in place of borders, 13/18/22/26 radii, category icon plates,
-  the raised nav sheet.
+**The tokens hold.** Sampled pixels match `AppPalette` exactly — dark page
+`#050B0F`, card `#171F25`, nav `#11171C`; light card and nav pure white on the
+`#EDF3F8` page. The `PAL` recovery was right, and the dark mode that had never
+been displayed renders as specified. Surface treatment, radii, icon plates and
+the raised nav sheet all read as designed.
 
-**Why it gates everything:** five screens and six components were built against
-tokens that have only ever been seen by the widget tester. Dark mode in
-particular was rewritten wholesale when `PAL` was recovered and has never been
-displayed. Building ten more screens before looking is how a token error gets
-copied ten times.
+Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
-**Done when:** a screenshot of home and wallet in both modes has been compared
-against the canvas, and any drift is either fixed or recorded in
-[`design-deltas.md`](design-deltas.md).
+- **Fixed:** the supply count was ellipsised on every thin category
+  (*"New in Gaborone · 6 plum…"*), hiding the number the tile exists to state.
+- **Fixed:** the category tile carried `shRow` where the canvas gives it
+  `shCard`, so tiles read flatter than the design.
+- **Recorded:** the tile's off-grid literals (20 px radius, 14 px padding,
+  38 px plate) against our token scale. ≤ 2 dp, deliberately not tokenised.
+
+**And one thing the screenshots made obvious that no screen review would have:**
+the app has no identity at all. Stock Flutter launcher icon, a white window
+flash on every cold start, no mark anywhere. See Phase 0.5.
+
+---
+
+## Phase 0.5 · Identity — **partly blocked, does not gate the flows**
+
+The brand artwork is fully designed and has never been in this repository. The
+canvases render twelve PNGs from an `assets/` folder that only exists in the
+design project, so every `<img>` in `design/*.dc.html` points at nothing.
+
+Done already, because it needed no artwork: the cold-start flash is gone — the
+launch window now paints the palette's `screenBg2` per mode instead of
+`?android:colorBackground`, which resolved to plain white and plain black.
+
+Still waiting on the export: launcher icon, adaptive icon, splash artwork, the
+notification icon, and the lockup that Phase 1's splash / register / sign-in
+screens render.
+
+**Full detail, and the test that keeps it honest, in
+[`identity.md`](identity.md).** Nothing here fabricates a substitute mark — the
+canvas is explicit that a previous set assembled from mixed exports lost the
+ripple rings and the blue *i*, and inventing one would repeat that.
+
+**Why it does not gate Phase 1:** the account flows are structure, validation
+and state, none of which need the logo. Build them with the mark's slot left
+empty and drop the artwork in when it arrives. What it *does* gate is any claim
+that Phase 1 is finished.
 
 ---
 
@@ -67,6 +100,10 @@ Design: `ipelege-ds-2-customer.dc.html`.
 logout. Biometry *unlocks*, it never authenticates — a new device or reinstall
 goes back through phone + OTP. Passcode is a full card of equal weight, not fine
 print, because broken or absent sensors are common on the target hardware.
+
+**Blocked within this phase:** splash, register and sign in all render the
+lockup, and the artwork does not exist here yet (Phase 0.5). Build the flows
+with the mark's slot empty; the phase is not *done* until it is filled.
 
 **Done when:** a cold install can register, verify, consent, and reach Home; a
 returning user can sign in; a visitor can still browse without an account and is
@@ -204,9 +241,11 @@ management at scale, and empty/offline states across the journey.
 ## Where things stand
 
 Built: consumer home · category browse · listing detail · provider dashboard ·
-wallet. Six shared components. 97 tests.
+wallet. Six shared components. **114 tests**, `flutter analyze` clean, and all
+five screens seen rendered on a device in both modes.
 
 Everything else renders `PlaceholderScreen`, which is deliberate — the
 navigation graph stays complete and testable while screens land one at a time.
 
-**Next action: Phase 0.**
+**Next action: Phase 1**, the account gap. Phase 0 is closed; Phase 0.5 is
+blocked on an artwork export and runs alongside rather than in front.

@@ -313,6 +313,44 @@ behaviour rather than appearance:
 
 ---
 
+## 13. What the handset showed that the widget tester could not
+
+Phase 0 of [`build-order.md`](build-order.md) put the five built screens on a
+Pixel 9a in both modes, next to the canvas. The palette itself came back clean —
+sampled pixels match `AppPalette` exactly, `#050B0F` page, `#171F25` card,
+`#11171C` nav in dark — so the `PAL` recovery holds. Three things did not.
+
+**Fixed — the supply count was being ellipsised.** Every thin category rendered
+as *"New in Gaborone · 6 plum…"*. The count is the one thing the supply copy
+exists to state, and an ellipsis put it back to being vague — the exact failure
+§1 and the `SupplyStanding` copy were written against. The canvas sets no clamp
+on that text at all; ours had `maxLines: 1`. Now two lines, with the grid's
+`mainAxisExtent` raised 124 → 136 to hold them, and a test that measures in the
+real IBM Plex face rather than the test font, which draws every glyph a full em
+wide and would have passed a string twice its true width.
+
+**Fixed — the category tile carried the wrong shadow depth.** The canvas gives
+it `shCard`; we had `shRow`. Tiles read flatter than the design, which is
+precisely the complaint that caused the restyle in §8.
+
+**Recorded, not fixed — the tile's off-grid literals.** The canvas draws it at
+`border-radius:20px`, `padding:14px`, a `38×38` icon plate with a `10px` gap,
+in a grid of `gap:11px` inside `padding:0 18px`. Ours is radius 18 (`Radii.row`),
+padding 13, a 36×36 plate with a 9 px gap, `Space.x3` gaps and a 16 px gutter.
+None of the design's numbers are tokens — they are inline literals in one
+artboard, and 20 sits between `Radii.row` (18) and `Radii.card` (22). Adding a
+token per literal is the thing this repo already declined to do for `navPillBg`.
+The deviation is ≤ 2 dp everywhere and invisible at a glance; it becomes worth
+revisiting only if a later pull promotes those numbers into `PAL`.
+
+**Also noted:** browse derives its header count from the listings it holds, so
+plumbing reads *"Gaborone · 3 providers"* under a home tile saying *"6
+plumbers"*. That is `demo_data.dart` disagreeing with itself, not a layout
+fault, and it dies with the scaffolding when the API lands.
+
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more
@@ -417,11 +455,11 @@ is 171 KB — under the cap, so it is **whole**. See
 
 ### Not imported
 
-The fourteen brand PNGs under the design project's `assets/` are not mirrored
-into this repo. The import tool returns binary files base64-encoded through the
-model's context, which is prohibitively expensive for images. Download them from
-the design project directly when the app icon, splash and adaptive icon are
-wired up:
+The brand PNGs under the design project's `assets/` are not mirrored into this
+repo. The import tool returns binary files base64-encoded through the model's
+context, which is prohibitively expensive for images. Download them from the
+design project directly when the app icon, splash and adaptive icon are wired
+up:
 
 ```
 adaptive-foreground.png    app-icon-dark-512.png    app-icon-light-512.png
@@ -431,6 +469,14 @@ logo-light-transparent.png mark-dark.png            mark-icon.png
 mark-light.png             notification-icon.png    wordmark-dark-new.png
 wordmark-dark.png          wordmark-light-new.png   wordmark-light.png
 ```
+
+**This note was not enough.** Recorded here as an import caveat, it sat
+unactioned long enough that the app reached five built screens still shipping
+Flutter's stock blue-flag launcher icon and flashing a white window on every
+cold start. Phase 0 found it on the handset. The gap is now an artifact with a
+test behind it — see [`identity.md`](identity.md) and
+`app/test/identity/identity_test.dart` — rather than a line in a fidelity
+appendix.
 
 `support.js` (the Claude Design runtime shim) was also not imported — it is
 generated tooling with no bearing on the Flutter build, and without the assets

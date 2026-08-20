@@ -85,7 +85,10 @@ class CategoryTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: palette.cardBg,
           borderRadius: Radii.rowAll,
-          boxShadow: palette.shadowRow,
+          // The canvas gives this tile `shCard`, not `shRow` — it is a card
+          // that holds a group, not a row inside one. Corrected 2026-08-20
+          // after Phase 0 put it next to the design on a handset.
+          boxShadow: palette.shadowCard,
         ),
         child: Material(
           type: MaterialType.transparency,
@@ -145,7 +148,12 @@ class CategoryTile extends StatelessWidget {
                         Flexible(
                           child: Text(
                             supplyLabel!,
-                            maxLines: 1,
+                            // Two lines, because one truncates. "New in
+                            // Gaborone · 6 plumbers" does not fit a 132 dp
+                            // column, and an ellipsis there hides exactly the
+                            // number the tile exists to state. The canvas lets
+                            // this text wrap and sets no clamp at all.
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: text.labelSmall?.copyWith(
                               fontSize: 10.5,
@@ -201,10 +209,10 @@ class CategoryGrid extends StatelessWidget {
             crossAxisCount: columns,
             mainAxisSpacing: Space.x3,
             crossAxisSpacing: Space.x3,
-            // Tall enough for a two-line label plus the supply count at the
-            // largest text scale the design supports without the tile
-            // clipping.
-            mainAxisExtent: 124,
+            // Tall enough for a two-line label plus a two-line supply count
+            // at the largest text scale the design supports without the tile
+            // clipping. Raised from 124 when the count was allowed to wrap.
+            mainAxisExtent: 136,
           ),
           itemCount: categories.length,
           itemBuilder: (context, i) => CategoryTile(

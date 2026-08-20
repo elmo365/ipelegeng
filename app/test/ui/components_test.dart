@@ -1,5 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart' show FontLoader, rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ipelege/theme/app_theme.dart';
 import 'package:ipelege/theme/tokens.dart';
@@ -153,6 +155,52 @@ void main() {
         );
         expect(find.text('4 nearby'), findsOneWidget);
       });
+    });
+
+    testWidgets('the supply count is never truncated on a 360 dp phone', (
+      tester,
+    ) async {
+      // Found in Phase 0, on a handset: every thin category was rendering as
+      // "New in Gaborone · 6 plum…". An ellipsis here hides the exact number
+      // the tile exists to state, which turns an honest young category back
+      // into a vague one — the failure the supply copy was written against.
+      const longest = 'New in Gaborone · 6 plumbers';
+
+      // Measure in the real face. The default test font draws every glyph a
+      // full em wide, which makes this string about twice its true width and
+      // would fail the check on a screen where it actually fits.
+      final plex = FontLoader('IBMPlexSans')
+        ..addFont(rootBundle.load('assets/fonts/IBMPlexSans-Regular.ttf'))
+        ..addFont(rootBundle.load('assets/fonts/IBMPlexSans-Medium.ttf'));
+      await plex.load();
+
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: CategoryGrid(
+              supplyLabels: {'plumbing': longest},
+              standings: {'plumbing': SupplyStanding.thin},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.text(longest),
+      );
+      expect(
+        paragraph.didExceedMaxLines,
+        isFalse,
+        reason:
+            'the supply count is being ellipsised, so the count is hidden — '
+            'give it the lines it needs or shorten the copy, never both',
+      );
     });
 
     testWidgets('the grid goes two columns on a phone, three when wider', (

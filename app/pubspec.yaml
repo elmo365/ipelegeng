@@ -15,6 +15,9 @@ dependencies:
   intl: ^0.20.3
 
 dev_dependencies:
+  # Test-only. identity_test hashes the launcher icons so a replaced icon
+  # cannot slip past docs/identity.md.
+  crypto: ^3.0.6
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
