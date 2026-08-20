@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0;background:oklch(0.985 0.004 250);}
+a{color:#145A8D;}
+a:hover{color:#0e4570;}
+*{box-sizing:border-box;}
+.msym{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+.msym-fill{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;}
+@keyframes ipEnter{0%{opacity:0;transform:translateY(12px)}14%{opacity:1;transform:translateY(0)}86%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(12px)}}
+@keyframes ipOutA{0%,42%{opacity:1;transform:translateY(0)}56%,100%{opacity:0;transform:translateY(-10px)}}
+@keyframes ipInB{0%,42%{opacity:0;transform:translateY(10px)}56%,100%{opacity:1;transform:translateY(0)}}
+@keyframes ipFill{0%,34%{width:34%}58%,100%{width:67%}}
+@keyframes ipStepA{0%,40%{opacity:1}54%,100%{opacity:0}}
+@keyframes ipStepB{0%,40%{opacity:0}54%,100%{opacity:1}}
+</style>
+</helmet>
+
+<div style="font-family:'IBM Plex Sans',system-ui,sans-serif;color:#111111;background:oklch(0.985 0.004 250);min-height:100vh;">
+
+  <div style="background:#061326;padding:40px 48px 34px;display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:6px;"><img src="assets/mark-icon.png" alt="Ipelege mark" style="width:100%;height:100%;object-fit:contain;" /></div>
+      <img src="assets/wordmark-dark.png" alt="ipelege" style="height:28px;object-fit:contain;" />
+      <div style="width:1px;height:26px;background:rgba(255,255,255,0.22);"></div>
+      <div style="font-size:19px;font-weight:700;color:#ffffff;letter-spacing:-0.2px;">4 · Account, settings &amp; specs</div>
+    </div>
+    <div style="max-width:700px;font-size:14px;line-height:1.65;color:oklch(0.88 0.012 240);">Account, settings and security screens, cancellation and arrival attestation, light and dark pairs, the nine-category grid, and the navigation, motion and feedback tables.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <a href="Ipelege%20Design%20System%20-%201%20Foundations.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">01</span>&nbsp;&nbsp;Foundations</a>
+      <a href="Ipelege%20Design%20System%20-%202%20Customer.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">02</span>&nbsp;&nbsp;Customer journey</a>
+      <a href="Ipelege%20Design%20System%20-%203%20Provider.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">03</span>&nbsp;&nbsp;Provider journey</a>
+      <span style="font-size:12.5px;font-weight:700;color:#061326;background:#ffffff;padding:7px 14px;border-radius:100px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">04</span>&nbsp;&nbsp;Account, settings &amp; specs</span>
+      <a href="Ipelege%20Admin%20Back%20Office.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.6);padding:7px 6px;text-decoration:none;">Back office &rarr;</a>
+    </div>
+  </div>
+  <div style="padding:0 48px 64px;">
+    <div style="display:inline-flex;gap:2px;background:oklch(0.94 0.006 250);border-radius:14px;padding:3px;margin-bottom:32px;">
+      <sc-for list="{{ appearance }}" as="mode" hint-placeholder-count="2">
+        <div onClick="{{ mode.onClick }}" style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:{{ mode.bg }};color:{{ mode.color }};">{{ mode.label }}</div>
+      </sc-for>
+    </div>
+
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Account, settings &amp; security</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Account" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(130% 110% at 80% -10%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);padding:22px 20px 26px;border-radius:0 0 28px 28px;">
+              <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px;">
+                <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;">KM</div>
+                <div style="flex:1;">
+                  <div style="font-size:17px;font-weight:700;color:#fff;">Kagiso Mothibi</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,0.78);margin-top:2px;">+267 71 234 567</div>
+                </div>
+                <div style="width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:18px;color:#fff;">edit</span></div>
+              </div>
+              <div style="display:flex;gap:9px;">
+                <div style="flex:1;background:#fff;border-radius:14px;padding:11px 13px;">
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.6px;color:#5F7387;">MODE</div>
+                  <div style="font-size:13px;font-weight:700;color:#0D3D62;margin-top:2px;">Consumer</div>
+                </div>
+                <div style="flex:1;background:rgba(255,255,255,0.16);border-radius:14px;padding:11px 13px;">
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.6px;color:rgba(255,255,255,0.7);">PROVIDER IN</div>
+                  <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px;">2 categories</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">YOUR ACTIVITY</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">receipt_long</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Bookings</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">4 completed, 1 active</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">work</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Provider dashboard</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Movers, Property rentals</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">account_balance_wallet</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Wallet</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">P340.00</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">SETTINGS</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">settings</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Preferences</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Appearance, notifications</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">shield</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Security</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Biometric unlock is on</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">help</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Help &amp; support</div>
+                    
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+            </div>
+            <div style="padding:16px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:{{ pal.dangerBg }};color:{{ pal.dangerText }};border-radius:15px;padding:14px 0;font-size:14px;font-weight:700;"><span class="msym" style="font-size:19px;">logout</span>Sign out</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">17 · ACCOUNT</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Mode and provider standing are cards in the header, so the two-role state is legible before scrolling</div>
+      </div>
+      <div data-screen-label="Settings" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Preferences</div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">APPEARANCE</div>
+            <div style="padding:0 18px;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="display:flex;flex-direction:column;gap:9px;">
+                  <sc-for list="{{ appearance }}" as="a" hint-placeholder-count="3">
+                    <div onClick="{{ a.onClick }}" style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ a.borderColor }};background:{{ a.rowBg }};border-radius:14px;padding:12px 13px;cursor:pointer;">
+                      <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ a.dotBorder }};background:{{ a.dotBg }};flex-shrink:0;"></div>
+                      <div style="flex:1;font-size:13.5px;font-weight:700;color:{{ a.textColor }};">{{ a.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="font-size:11px;line-height:1.5;color:{{ pal.textMuted }};margin-top:11px;">System follows your phone. This control drives every screen in this document too.</div>
+              </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">NOTIFICATIONS</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">sms</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Booking updates by SMS</div>
+                    
+                  </div>
+                  <div style="width:44px;height:26px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">chat</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">WhatsApp updates</div>
+                    
+                  </div>
+                  <div style="width:44px;height:26px;border-radius:100px;background:{{ pal.chipNeutralBg }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">notifications</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Push notifications</div>
+                    
+                  </div>
+                  <div style="width:44px;height:26px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+                </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">DATA</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">location_on</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Location</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">While using the app</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">download</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Download my data</div>
+                    
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">delete</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Delete account</div>
+                    
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+            </div>
+            <div style="flex:1;min-height:18px;"></div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">18 · PREFERENCES</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Appearance lives here — Light, Dark, System — and drives every screen in this document. English only, so no language control</div>
+      </div>
+      <div data-screen-label="Security" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Security</div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;gap:13px;">
+                  <div style="width:44px;height:44px;border-radius:15px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:23px;color:{{ pal.verifiedText }};">fingerprint</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">Biometric unlock</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:1px;">On · fingerprint enrolled</div>
+                  </div>
+                  <div style="width:44px;height:26px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+                </div>
+                <div style="font-size:11.5px;line-height:1.55;color:{{ pal.textMuted }};margin-top:14px;padding-top:14px;border-top:1px solid {{ pal.divider }};">Turning this off means an OTP every time you open the app. Your session still stays signed in until you sign out.</div>
+              </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">SESSION</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">phone_iphone</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">This device</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Samsung A14 · signed in now</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">devices</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Other devices</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">None</div>
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">history</span>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Sign-in history</div>
+                    
+                  </div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+            </div>
+            <div style="padding:18px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">lock</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">There is no password on an Ipelege account. Access is your phone number plus this device.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:18px;"></div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">19 · SECURITY</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">States what turning biometrics off actually costs, and that no password exists to steal</div>
+      </div>
+      <div data-screen-label="Biometric enrolment" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;align-items:center;padding:34px 24px 24px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+              <div style="width:104px;height:104px;border-radius:34px;background:{{ pal.cardBg }};box-shadow:{{ pal.shRaise }};display:flex;align-items:center;justify-content:center;margin-bottom:22px;">
+                <span class="msym" style="font-size:50px;color:{{ pal.accentText }};">fingerprint</span>
+              </div>
+              <div style="font-size:20px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:8px;">Skip the code next time?</div>
+              <div style="font-size:13.5px;line-height:1.55;color:{{ pal.textMuted }};max-width:262px;margin-bottom:20px;">Use your fingerprint to open Ipelege instead of waiting for an SMS.</div>
+              <div style="width:100%;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:19px;color:{{ pal.verifiedText }};">check_circle</span>
+                  <div style="flex:1;font-size:12.5px;text-align:left;color:{{ pal.textPrimary }};">Stays on this device only</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:19px;color:{{ pal.verifiedText }};">check_circle</span>
+                  <div style="flex:1;font-size:12.5px;text-align:left;color:{{ pal.textPrimary }};">Ipelege never sees your fingerprint</div>
+                </div>
+              </div>
+            </div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">
+                <span class="msym" style="font-size:20px;">fingerprint</span>Turn on biometric unlock
+              </div>
+              <div style="text-align:center;font-size:14px;font-weight:700;color:{{ pal.textMuted }};padding:12px 0;">Not now</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">20 · BIOMETRIC ENROLMENT</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Offered once after first OTP, declinable without penalty. The two reassurances are cards because that is the actual objection</div>
+      </div>
+
+      <div data-screen-label="Notifications" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Notifications</div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.infoBg }};border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+                <span class="msym" style="font-size:20px;color:{{ pal.infoTitle }};">sms</span>
+                <div style="flex:1;font-size:12px;line-height:1.55;color:{{ pal.infoTitle }};"><b>Booking messages cannot be turned off.</b> A request, an acceptance and a decline always reach you by push and SMS — the other side is waiting on your answer.</div>
+              </div>
+            </div>
+
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">AS A CUSTOMER</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Booking updates</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Accepted, declined, on the way, completed</div>
+                </div>
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:0.6px;color:{{ pal.chipNeutralText }};background:{{ pal.chipNeutralBg }};padding:5px 9px;border-radius:100px;">ALWAYS ON</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Payment reminders</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">One reminder when a job is marked finished</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">New providers near you</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Weekly at most, in categories you have booked</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.chipNeutralBg }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+            </div>
+
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">AS A PROVIDER</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Incoming requests</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Rides ring until answered or the timer runs out</div>
+                </div>
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:0.6px;color:{{ pal.chipNeutralText }};background:{{ pal.chipNeutralBg }};padding:5px 9px;border-radius:100px;">ALWAYS ON</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Low wallet balance</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Below P100 — you stop receiving work at zero</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Verification progress</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">A category is approved, rejected, or needs a document</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+            </div>
+
+            <div style="padding:18px;">
+              <div style="background:{{ pal.cardBg }};border:1px dashed {{ pal.inputBorder }};border-radius:16px;padding:14px;display:flex;gap:11px;align-items:flex-start;">
+                <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">phone_iphone</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.textMuted }};">System notifications are off for Ipelege. Nothing below will appear until you turn them on in Android settings.<div style="font-size:12px;font-weight:700;color:{{ pal.accentText }};margin-top:7px;">Open Android settings</div></div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">21 · NOTIFICATIONS</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Transactional messages are marked always-on rather than shown as a toggle nobody may switch off. Customer and provider channels are separate groups because one person holds both roles</div>
+      </div>
+
+      <div data-screen-label="Data and storage" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Data &amp; storage</div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:10px;">ON THIS PHONE</div>
+                <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:14px;">
+                  <div style="font-size:30px;font-weight:700;color:{{ pal.textPrimary }};line-height:1;">48.2</div>
+                  <div style="font-size:14px;font-weight:600;color:{{ pal.textMuted }};padding-bottom:2px;">MB</div>
+                </div>
+                <div style="display:flex;height:9px;border-radius:100px;overflow:hidden;gap:2px;margin-bottom:12px;">
+                  <div style="flex:52;background:oklch(0.55 0.13 235);"></div>
+                  <div style="flex:28;background:oklch(0.68 0.11 205);"></div>
+                  <div style="flex:20;background:{{ pal.divider }};"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;align-items:center;gap:9px;">
+                    <div style="width:9px;height:9px;border-radius:3px;background:oklch(0.55 0.13 235);"></div>
+                    <div style="flex:1;font-size:12px;color:{{ pal.textPrimary }};">Listing photos, cached</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:{{ pal.textMuted }};">25.1 MB</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:9px;">
+                    <div style="width:9px;height:9px;border-radius:3px;background:oklch(0.68 0.11 205);"></div>
+                    <div style="flex:1;font-size:12px;color:{{ pal.textPrimary }};">Your uploaded documents</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:{{ pal.textMuted }};">13.4 MB</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:9px;">
+                    <div style="width:9px;height:9px;border-radius:3px;background:{{ pal.divider }};"></div>
+                    <div style="flex:1;font-size:12px;color:{{ pal.textPrimary }};">App and booking history</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:{{ pal.textMuted }};">9.7 MB</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">DATA USE</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Photos on mobile data</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Off means listing photos load on Wi-Fi only</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.accentText }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Upload documents over Wi-Fi only</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Verification uploads wait for a Wi-Fi connection</div>
+                </div>
+                <div style="width:42px;height:24px;border-radius:100px;background:{{ pal.chipNeutralBg }};position:relative;flex:none;"><div style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+              </div>
+            </div>
+
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">CLEAR</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">image</span>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Clear cached photos</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Frees 25.1 MB. Photos reload when you browse.</div>
+                </div>
+                <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span class="msym" style="font-size:20px;color:{{ pal.dangerText }};">delete_forever</span>
+                  <div style="flex:1;font-size:13px;font-weight:600;color:{{ pal.dangerText }};">Delete my account</div>
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="font-size:11px;line-height:1.5;color:{{ pal.textMuted }};margin-top:8px;padding-left:32px;">Your verification documents are kept for the period the law requires, then destroyed. Completed bookings stay on the other party's record.</div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">22 · DATA &amp; STORAGE</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Data cost is a real constraint here, so the metered controls are settings rather than defaults. Deletion states what is kept and why on the row itself</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">Cancellation &amp; arrival attestation</div>
+    <div style="font-size:13px;line-height:1.6;color:oklch(0.42 0.014 250);max-width:640px;margin:0 0 20px;">Browse categories have no GPS trace, so arrival cannot be proven the way a ride can. Both sides attest, and only a conflict goes to adjudication.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Arrival attestation - provider" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:16px;font-weight:700;color:{{ pal.textPrimary }};">Job #1264</div>
+              <div style="font-size:10.5px;font-weight:700;color:#fff;background:oklch(0.5 0.13 205);padding:5px 11px;border-radius:100px;">Movers</div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};border-left:4px solid oklch(0.62 0.14 80);">
+                <div style="display:inline-flex;align-items:center;gap:7px;background:{{ pal.pendingBg }};color:{{ pal.pendingText }};padding:7px 13px;border-radius:100px;font-size:12px;font-weight:700;margin-bottom:14px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:oklch(0.72 0.15 80);"></div>Customer cancelled
+                </div>
+                <div style="font-size:18px;font-weight:700;line-height:1.3;color:{{ pal.textPrimary }};margin-bottom:7px;">Were you already there?</div>
+                <div style="font-size:13px;line-height:1.55;color:{{ pal.textMuted }};">Tebogo cancelled at 09:14, fourteen minutes after the 09:00 slot. Whether a fee applies depends on whether you had arrived.</div>
+              </div>
+            </div>
+            <div style="padding:14px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:12px;">YOUR ANSWER</div>
+                <div style="display:flex;flex-direction:column;gap:9px;">
+                  <div style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ pal.accentText }};background:{{ pal.selectedBg }};border-radius:15px;padding:13px 14px;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ pal.accentText }};background:{{ pal.accentText }};flex-shrink:0;"></div>
+                    <div style="flex:1;">
+                      <div style="font-size:13.5px;font-weight:700;color:{{ pal.accentText }};">Yes, I had arrived</div>
+                      <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">A late-cancellation fee applies to Tebogo</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ pal.inputBorder }};background:{{ pal.cardBg }};border-radius:15px;padding:13px 14px;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ pal.inputBorder }};flex-shrink:0;"></div>
+                    <div style="flex:1;">
+                      <div style="font-size:13.5px;font-weight:600;color:{{ pal.textPrimary }};">No, I was still travelling</div>
+                      <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">No fee either way</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:14px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:10px;">OPTIONAL PROOF</div>
+                <div style="display:flex;gap:9px;">
+                  <div style="width:66px;height:66px;border-radius:15px;border:1.5px dashed {{ pal.inputBorder }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;"><span class="msym" style="font-size:21px;color:{{ pal.textFaint }};">add_a_photo</span><div style="font-size:9px;font-weight:600;color:{{ pal.textFaint }};">Photo</div></div>
+                  <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.textMuted }};">A photo at the address settles a disagreement quickly. Not required.</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:14px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.sectionAlt }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.textFaint }};">balance</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.textMuted }};">Tebogo answers the same question. Matching answers settle it automatically — only a conflict reaches Ipelege.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Submit answer</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">21 · ARRIVAL ATTESTATION</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Both sides answer one question. Agreement resolves silently; only a conflict costs anyone attention</div>
+      </div>
+      <div style="width:640px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:14px;">How a cancellation resolves</div>
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:26px;height:26px;border-radius:9px;background:oklch(0.95 0.03 152);color:oklch(0.38 0.11 152);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">1</div>
+              <div style="flex:1;font-size:13px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Before the slot, no fee.</b> A customer who cancels before the agreed time owes nothing, and the provider's commission is never taken.</div>
+            </div>
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:26px;height:26px;border-radius:9px;background:oklch(0.96 0.045 80);color:oklch(0.45 0.13 80);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">2</div>
+              <div style="flex:1;font-size:13px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>After the slot, both attest.</b> Each side answers whether the provider had arrived. Matching answers apply the outcome with no review.</div>
+            </div>
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:26px;height:26px;border-radius:9px;background:oklch(0.96 0.04 25);color:oklch(0.48 0.17 25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">3</div>
+              <div style="flex:1;font-size:13px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Conflicting answers go to adjudication.</b> Ipelege reads both statements and any photo. The wallet shows a pending reversal with no amount until it is decided.</div>
+            </div>
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:26px;height:26px;border-radius:9px;background:oklch(0.96 0.02 235);color:#145A8D;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">4</div>
+              <div style="flex:1;font-size:13px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Rides are the exception.</b> Dispatch has a GPS trace, so arrival is known and no attestation is asked for.</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:oklch(0.96 0.02 235);border:1px solid oklch(0.88 0.03 235);border-radius:20px;padding:20px 22px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.9px;color:#145A8D;margin-bottom:9px;">STILL OPEN</div>
+          <div style="font-size:13px;line-height:1.65;color:#145A8D;">The fee amount is not set. A percentage of the job, a flat pula figure, and a fee waived on the provider's first occurrence are all defensible — this needs a business decision, not a design one. Screens are written so the number can drop in without changing the flow.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">Light &amp; dark</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+      <div style="width:640px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:12px;">One control, every screen</div>
+          <div style="font-size:13px;line-height:1.65;color:oklch(0.32 0.012 250);margin-bottom:16px;">The Light / Dark / System control on the Preferences screen above drives every phone in this document. Switch it and scroll back — the whole journey follows, because each screen reads its colours from one palette object rather than hardcoding them.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span>
+              <div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Surfaces lift, they do not just darken.</b> Dark cards sit lighter than the page behind them, keeping the same raised-card reading as light mode.</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span>
+              <div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Brand blue lightens.</b> #145A8D fails contrast on a dark surface, so text and icons switch to a lighter tint while the gradient hero keeps the deep brand blue.</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span>
+              <div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Status colours desaturate the fill, brighten the text.</b> A green verified chip on dark uses a muted green ground with a bright green label, never the light-mode pair inverted.</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span>
+              <div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Shadows go black, not blue.</b> The blue-tinted light-mode shadow disappears on dark surfaces, so opacity carries the elevation instead.</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:oklch(0.96 0.02 235);border:1px solid oklch(0.88 0.03 235);border-radius:20px;padding:20px 22px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.9px;color:#145A8D;margin-bottom:9px;">FOR FLUTTER</div>
+          <div style="font-size:13px;line-height:1.65;color:#145A8D;">Both palettes map to a single <b>ThemeData</b> pair. Category hues are computed from one hue value per category, so a tenth category needs one number, not a new colour set. System mode reads <b>MediaQuery.platformBrightness</b>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">Nine categories, both roles</div>
+    <div style="font-size:13px;line-height:1.6;color:oklch(0.42 0.014 250);max-width:720px;margin:0 0 20px;">Rides is the only category that dispatches automatically. Every other category is browse, request, and wait for a person to accept — which is why one set of screens carries all eight.</div>
+    <div style="margin-bottom:56px;background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;overflow:hidden;max-width:1000px;">
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;gap:0;background:oklch(0.97 0.006 250);border-bottom:1px solid oklch(0.91 0.008 250);">
+        <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">CATEGORY</div>
+        <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">AS A CUSTOMER</div>
+        <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">AS A PROVIDER</div>
+        <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">MATCHING</div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Rides</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Set pickup and drop-off, confirm the fare estimate, wait for a driver. No listings to browse.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Licence, vehicle registration, PSV permit and a medical test. Goes online to receive requests.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:#fff;background:#145A8D;padding:4px 10px;border-radius:100px;">DISPATCH</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Movers &amp; hauling</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse movers, pick by vehicle size and price, request a date and both addresses.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Licence and vehicle registration. Lists each vehicle as its own listing with a load capacity.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Property rentals</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse rooms and units with photos and monthly rent, request a viewing rather than a booking.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Proof of ownership or a lease copy per property, plus an inspection before the listing goes live.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">VIEWING</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Hairdressing &amp; beauty</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse by service and price, choose at-salon or at-home, request a time slot.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">ID and photographs of previous work. One listing per service, priced fixed or from.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Plumbing</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse plumbers covering the block, describe the problem, request a call-out.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Trade certificate, ID and proof of address. Prices per job or per hour.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Electrical</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Same browse and request path as plumbing, with the licence shown on the provider card.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Electrician licence with an expiry date, ID and proof of address. Expiry blocks the listing.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Tiling</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse by past work, give the room and rough area, request a quote visit.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">ID and photographs of previous work. Prices per square metre or per job.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;border-bottom:1px solid oklch(0.94 0.008 250);">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Catering</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse menus with a per-head price, give the date and headcount, request the booking.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Health certificate, ID and proof of address. One listing per menu, priced per head.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:170px 1fr 1fr 116px;align-items:start;">
+        <div style="padding:14px 16px;font-size:12.5px;font-weight:700;color:#0D2436;">Hire</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Browse equipment with a daily rate, give the hire dates, request collection or delivery.</div>
+        <div style="padding:14px 16px;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Proof of ownership per item, ID and proof of address. Rates are per day.</div>
+        <div style="padding:14px 16px;"><span style="font-size:10.5px;font-weight:700;color:oklch(0.42 0.014 250);background:oklch(0.94 0.008 250);padding:4px 10px;border-radius:100px;">REQUEST</span></div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">Navigation, back &amp; returning</div>
+    <div style="font-size:13px;line-height:1.6;color:oklch(0.42 0.014 250);max-width:720px;margin:0 0 20px;">Android has a system back gesture that users trust more than anything on screen. These rules say what it does on every screen in this document, and what the app remembers when it is killed and reopened.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:56px;">
+      <div style="width:640px;background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+        <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:14px;">What system back does</div>
+        <div style="display:flex;flex-direction:column;gap:11px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:#145A8D;">arrow_back</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Tab roots return to Home, then exit.</b> Back from Bookings, Wallet or Account lands on Home. Back from Home exits the app — it does not cycle through previously visited tabs.</div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:#145A8D;">arrow_back</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Sheets and dialogs close, they do not navigate.</b> One back gesture dismisses the top layer only. A sheet over a screen takes two gestures to leave the screen.</div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:#145A8D;">arrow_back</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Multi-step flows step back one field group.</b> Verification, create listing and booking hold their entered values while stepping backwards — nothing is cleared until the flow is abandoned deliberately.</div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.45 0.13 80);">report</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Back out of unsaved work asks first.</b> Only where real typing or an upload would be lost: create listing, verification, a written review. Never on a screen the person only read.</div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.5 0.19 25);">block</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Back is blocked in two places.</b> During an OTP verification round trip, and while a payment or top-up is in flight. Both show progress instead, because the result is already server-side.</div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:#145A8D;">swap_horiz</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Mode switching resets the stack.</b> Entering provider mode starts a fresh stack at provider home; back from there returns to customer home, not into the provider history.</div></div>
+        </div>
+      </div>
+      <div style="width:400px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:6px;">What survives being killed</div>
+          <div style="font-size:12px;line-height:1.55;color:oklch(0.5 0.014 250);margin-bottom:14px;">Cheap phones kill backgrounded apps often. Reopening should not feel like starting over.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Half-finished verification uploads, stored locally until submitted.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">A listing draft, including photos already picked.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">The tab you were on, and the scroll position in a long list.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Provider online state, and the ride you were on.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.55 0.014 250);">cancel</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);">Not kept: search text, filter selections, and any OTP already sent.</div></div>
+          </div>
+        </div>
+        <div style="background:oklch(0.96 0.02 235);border:1px solid oklch(0.88 0.03 235);border-radius:20px;padding:20px 22px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.9px;color:#145A8D;margin-bottom:9px;">FOR FLUTTER</div>
+          <div style="font-size:13px;line-height:1.65;color:#145A8D;">Tab roots use nested <b>Navigator</b>s with a <b>PopScope</b> at each root. Drafts persist to local storage on every field change, not on a save action.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">Motion &amp; feedback</div>
+    <div style="font-size:13px;line-height:1.6;color:oklch(0.42 0.014 250);max-width:720px;margin:0 0 20px;">Four durations, three curves, and one rule: motion tells you where something came from. Anything that is not doing that job is cut, because it costs frames on the phones this app is built for.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:56px;">
+      <div style="width:640px;background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;background:oklch(0.97 0.006 250);border-bottom:1px solid oklch(0.91 0.008 250);">
+          <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">TRANSITION</div>
+          <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">DURATION</div>
+          <div style="padding:12px 16px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:oklch(0.45 0.014 250);">CURVE &amp; MOVEMENT</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Tab change</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">120ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Cross-fade only, no slide. Tabs are siblings, not a journey.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Push to a detail screen</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">220ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Ease-out, slide in from the right, 16px parallax on the outgoing screen.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Bottom sheet in and out</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">260 / 180ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Ease-out on entry, ease-in on dismissal. Scrim fades over the same interval.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Booking state change</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">300ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Chip colour and step bar animate together so the change reads as one event.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Incoming ride request</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">180ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Sheet rises fast and the timer starts immediately. The countdown is the only looping animation in the app.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;border-bottom:1px solid oklch(0.94 0.008 250);">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Wallet balance update</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">400ms</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Figure counts to the new amount. Money changing deserves to be noticed.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 96px 1fr;">
+          <div style="padding:13px 16px;font-size:12.5px;color:oklch(0.32 0.012 250);">Verification status change</div>
+          <div style="padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#145A8D;">none</div>
+          <div style="padding:13px 16px;font-size:12px;line-height:1.5;color:oklch(0.42 0.014 250);">Arrives by notification, so the screen is simply correct when opened.</div>
+        </div>
+      </div>
+      <div style="width:400px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:6px;">Haptics</div>
+          <div style="font-size:12px;line-height:1.55;color:oklch(0.5 0.014 250);margin-bottom:14px;">Three uses only. A phone that buzzes at everything gets muted.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:#145A8D;">vibration</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Light.</b> Accepting or declining a request, confirming a booking is done.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:#145A8D;">vibration</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Heavy.</b> An incoming ride request, alongside the ringtone.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.5 0.19 25);">vibration</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Error.</b> A wrong OTP or a failed top-up, paired with the message.</div></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:14px;">Waiting and saving</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.55 0.014 250);">view_agenda</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Lists load as skeleton cards</b> in the shape they will take, never a centred spinner on an empty page.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.55 0.014 250);">hourglass_top</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Buttons spin in place</b> and keep their label width, so nothing reflows under the thumb.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.38 0.11 152);">cloud_done</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Settings save on change</b> with no confirm button. A failure reverts the control and says why.</div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span class="msym" style="font-size:18px;color:oklch(0.45 0.13 80);">wifi_off</span><div style="flex:1;font-size:12px;line-height:1.55;color:oklch(0.32 0.012 250);"><b>Offline shows the last known data</b> under a banner, rather than an empty screen. Actions queue and retry.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Where this stands</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+      <div style="width:640px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:14px;">Settled</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Nine categories with per-category verification, each with its own document set and its own approval state.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Every user is a consumer; provider is applied for per category. Mode switching is navigation, never re-authentication.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Customers pay providers directly, in person. The wallet holds provider funds for Ipelege fees only, is non-redeemable, and shows VAT nested under each fee.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Eleven booking states, each with its own copy, colour tone and single primary action.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.38 0.11 152);">check_circle</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">OTP on fresh login, biometric unlock on return with a passcode fallback of equal weight.</div></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:6px;">Needs a business decision</div>
+          <div style="font-size:12px;line-height:1.55;color:oklch(0.5 0.014 250);margin-bottom:14px;">Design is not blocked on these — the screens hold the shape, and a number or rule drops in.</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.45 0.13 80);">help</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Late-cancellation fee amount.</b> Percentage, flat figure, or first-occurrence waiver.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.45 0.13 80);">help</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>No-show consequence for providers.</b> Repeat no-shows currently only say verification is reviewed. What actually happens, and after how many.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.45 0.13 80);">help</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Commission rate per category.</b> Rides shows 8%. Whether trades and rentals differ is unresolved.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.45 0.13 80);">help</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);"><b>Dispute turnaround.</b> Screens promise Ipelege will make contact but name no timeframe.</div></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid oklch(0.91 0.008 250);border-radius:20px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;color:#0D2436;margin-bottom:6px;">Not yet designed</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.55 0.014 250);">radio_button_unchecked</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Messaging between customer and provider — referenced from several screens, no thread UI exists.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.55 0.014 250);">radio_button_unchecked</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Provider-side listing management at scale — editing, pausing, and archiving many listings.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.55 0.014 250);">radio_button_unchecked</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Ipelege-side admin: KYC review queue, inspection scheduling, dispute adjudication.</div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start;"><span class="msym" style="font-size:19px;color:oklch(0.55 0.014 250);">radio_button_unchecked</span><div style="flex:1;font-size:12.5px;line-height:1.6;color:oklch(0.32 0.012 250);">Empty and offline states across the journey — a category with no providers, a request with no network.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const REQUIREMENTS = {
+  rides: ['Driving licence', 'Vehicle registration'],
+  movers: ['Driving licence', 'Vehicle registration'],
+  rentals: ['Proof of ownership', 'Property inspection'],
+  beauty: ['Identity verification'],
+  plumbing: ['Plumbing certification', 'Identity verification'],
+  electrical: ['Electrical licence', 'Identity verification'],
+  tiling: ['Proof of past work', 'Identity verification'],
+  catering: ['Food handling permit', 'Identity verification'],
+  hire: ['Proof of equipment ownership', 'Identity verification'],
+};
+
+const CATS = [
+  { key: 'rides', mono: 'RI', glyph: 'directions_car', hue: 230, label: 'Rides', supply: 'ok', supplyText: '62 drivers nearby' },
+  { key: 'movers', mono: 'MV', glyph: 'local_shipping', hue: 205, label: 'Movers & hauling', supply: 'ok', supplyText: '21 trucks in Gaborone' },
+  { key: 'rentals', mono: 'PR', glyph: 'meeting_room', hue: 255, label: 'Property rentals', supply: 'ok', supplyText: '140 rooms listed' },
+  { key: 'beauty', mono: 'HB', glyph: 'content_cut', hue: 330, label: 'Hairdressing & beauty', supply: 'thin', supplyText: 'New in Gaborone · 4 providers' },
+  { key: 'plumbing', mono: 'PL', glyph: 'plumbing', hue: 180, label: 'Plumbing', supply: 'thin', supplyText: 'New in Gaborone · 6 plumbers' },
+  { key: 'electrical', mono: 'EL', glyph: 'electrical_services', hue: 85, label: 'Electrical', supply: 'thin', supplyText: 'New in Gaborone · 4 electricians' },
+  { key: 'tiling', mono: 'TL', glyph: 'grid_view', hue: 40, label: 'Tiling', supply: 'thin', supplyText: 'New in Gaborone · 3 tilers' },
+  { key: 'catering', mono: 'CA', glyph: 'restaurant', hue: 25, label: 'Catering', supply: 'thin', supplyText: 'New in Gaborone · 3 home cooks' },
+  { key: 'hire', mono: 'HR', glyph: 'chair', hue: 300, label: 'Hire', supply: 'thin', supplyText: 'New in Gaborone · 2 providers' },
+];
+
+const DEEP = '#145A8D';
+
+const PAL = {
+  light: {
+    screenBg: '#ffffff', screenBg2: '#EDF3F8', cardBg: '#ffffff', cardBorder: 'oklch(0.91 0.008 250)',
+    textPrimary: '#0D2436', textSecondary: 'oklch(0.32 0.012 250)', textMuted: '#5F7387', textFaint: '#9CAFBF',
+    inputBorder: '#DCE7EF', inputBg: '#ffffff', divider: '#E9F0F5', navBg: '#ffffff', navMuted: '#9CAFBF',
+    shCard: '0 4px 14px rgba(20,90,141,0.06)', shRaise: '0 6px 20px rgba(20,90,141,0.07)', shNav: '0 -6px 24px rgba(20,90,141,0.08)',
+    stripe1: 'oklch(0.93 0.008 250)', stripe2: 'oklch(0.97 0.004 250)', chipNeutralBg: '#E1EDF5', chipNeutralText: '#5F7387',
+    verifiedBg: 'oklch(0.95 0.03 152)', verifiedText: 'oklch(0.38 0.11 152)', pendingBg: 'oklch(0.96 0.045 80)', pendingText: 'oklch(0.45 0.13 80)',
+    notUploadedBg: '#E1EDF5', notUploadedText: '#5F7387', selectedBg: 'oklch(0.96 0.02 235)', sectionAlt: 'oklch(0.97 0.004 250)',
+    infoBg: 'oklch(0.96 0.02 235)', infoBorder: 'oklch(0.88 0.03 235)', infoTitle: '#061326', infoText: '#145A8D',
+    accentText: '#145A8D', creditColor: 'oklch(0.5 0.13 152)', subtleBg: 'oklch(0.965 0.006 250)',
+    dangerBg: 'oklch(0.96 0.04 25)', dangerText: 'oklch(0.48 0.17 25)',
+  },
+  dark: {
+    screenBg: 'oklch(0.18 0.015 235)', screenBg2: 'oklch(0.145 0.014 235)', cardBg: 'oklch(0.235 0.016 235)', cardBorder: 'oklch(0.33 0.016 235)',
+    textPrimary: 'oklch(0.96 0.004 250)', textSecondary: 'oklch(0.82 0.01 250)', textMuted: 'oklch(0.68 0.012 250)', textFaint: 'oklch(0.6 0.012 250)',
+    inputBorder: 'oklch(0.4 0.014 250)', inputBg: 'oklch(0.23 0.014 250)', divider: 'oklch(0.33 0.014 250)', navBg: 'oklch(0.2 0.014 250)', navMuted: 'oklch(0.55 0.012 250)',
+    shCard: '0 4px 14px rgba(0,0,0,0.30)', shRaise: '0 6px 20px rgba(0,0,0,0.34)', shNav: '0 -6px 24px rgba(0,0,0,0.36)',
+    stripe1: 'oklch(0.28 0.012 250)', stripe2: 'oklch(0.24 0.01 250)', chipNeutralBg: 'oklch(0.3 0.014 250)', chipNeutralText: 'oklch(0.8 0.01 250)',
+    verifiedBg: 'oklch(0.3 0.06 152)', verifiedText: 'oklch(0.85 0.09 152)', pendingBg: 'oklch(0.32 0.07 80)', pendingText: 'oklch(0.88 0.1 80)',
+    notUploadedBg: 'oklch(0.3 0.014 250)', notUploadedText: 'oklch(0.75 0.012 250)', selectedBg: 'oklch(0.28 0.05 235)', sectionAlt: 'oklch(0.2 0.012 250)',
+    infoBg: 'oklch(0.26 0.05 235)', infoBorder: 'oklch(0.36 0.06 235)', infoTitle: '#bcdcf5', infoText: '#9dcdf0',
+    accentText: '#75BDEB', creditColor: 'oklch(0.68 0.13 152)', subtleBg: 'oklch(0.21 0.012 250)',
+    dangerBg: 'oklch(0.32 0.07 25)', dangerText: 'oklch(0.88 0.1 25)',
+  },
+};
+
+class Component extends DCLogic {
+  state = {
+    darkMode: false, appearanceMode: 'light',
+    otp: ['', '', '', ''], consent1: false, consent2: false,
+    bookingTab: 'request', bookingDirection: 'provider_comes',
+    providerCategory: 'movers', topupAmount: 200, topupMethod: 'orange',
+    rating: 4, bookingState: 'REQUESTED', browseDirection: 'any',
+    listingPriceMode: 'from', listingActive: true,
+  };
+
+  setAppearance = (mode) => this.setState({ appearanceMode: mode, darkMode: mode === 'dark' });
+  setRating = (n) => this.setState({ rating: n });
+  setBookingState = (k) => this.setState({ bookingState: k });
+  setBrowseDirection = (k) => this.setState({ browseDirection: k });
+  setPriceMode = (k) => this.setState({ listingPriceMode: k });
+  toggleListingActive = () => this.setState((s) => ({ listingActive: !s.listingActive }));
+  toggleConsent1 = () => this.setState((s) => ({ consent1: !s.consent1 }));
+  toggleConsent2 = () => this.setState((s) => ({ consent2: !s.consent2 }));
+
+  onOtpChange = (e) => {
+    const i = parseInt(e.target.dataset.idx, 10);
+    const v = e.target.value.replace(/[^0-9]/g, '').slice(-1);
+    this.setState((s) => { const otp = [...s.otp]; otp[i] = v; return { otp }; });
+    if (v && e.target.nextElementSibling) e.target.nextElementSibling.focus();
+  };
+
+  renderVals() {
+    const s = this.state;
+    const pal = s.darkMode ? PAL.dark : PAL.light;
+
+    const appearance = [
+      { key: 'light', label: 'Light', active: s.appearanceMode === 'light', onClick: () => this.setAppearance('light') },
+      { key: 'dark', label: 'Dark', active: s.appearanceMode === 'dark', onClick: () => this.setAppearance('dark') },
+      { key: 'system', label: 'System', active: s.appearanceMode === 'system', onClick: () => this.setAppearance('system') },
+    ].map((a) => ({
+      ...a,
+      bg: a.active ? pal.accentText : 'transparent',
+      color: a.active ? '#fff' : pal.textMuted,
+      rowBg: a.active ? pal.selectedBg : pal.cardBg,
+      borderColor: a.active ? pal.accentText : pal.cardBorder,
+      textColor: a.active ? pal.accentText : pal.textPrimary,
+      dotBorder: a.active ? pal.accentText : pal.inputBorder,
+      dotBg: a.active ? pal.accentText : 'transparent',
+    }));
+
+    const categories = CATS.map((c) => ({
+      ...c,
+      tint: `oklch(0.95 0.035 ${c.hue})`,
+      ink: `oklch(0.5 0.13 ${c.hue})`,
+      supplyDotColor: c.supply === 'ok' ? 'oklch(0.6 0.13 152)' : pal.navMuted,
+    }));
+
+    const selectedCat = CATS.find((c) => c.key === s.providerCategory) || CATS[0];
+    const otpBoxes = s.otp.map((value, index) => ({ value, index }));
+
+    const isRequestTab = s.bookingTab === 'request';
+    const isStatusTab = s.bookingTab === 'status';
+    const bookingTabs = [
+      { key: 'request', label: 'Request', color: isRequestTab ? '#fff' : pal.textMuted, bg: isRequestTab ? pal.accentText : pal.cardBg, shadow: isRequestTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'request' }) },
+      { key: 'status', label: 'Status', color: isStatusTab ? '#fff' : pal.textMuted, bg: isStatusTab ? pal.accentText : pal.cardBg, shadow: isStatusTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'status' }) },
+    ];
+
+    const dirDefs = [
+      { key: 'provider_comes', label: 'Comes to you', sub: 'Provider travels to your location' },
+      { key: 'customer_goes', label: 'You go to them', sub: 'Service is at their premises' },
+    ];
+    const directionOptions = dirDefs.map((d) => {
+      const selected = d.key === s.bookingDirection;
+      return { ...d,
+        borderColor: selected ? pal.accentText : pal.inputBorder,
+        bg: selected ? pal.selectedBg : pal.cardBg,
+        textColor: selected ? pal.accentText : pal.textPrimary,
+        dotBorder: selected ? pal.accentText : pal.inputBorder,
+        dotBg: selected ? pal.accentText : 'transparent',
+        onClick: () => this.setState({ bookingDirection: d.key }) };
+    });
+    const needsLocation = s.bookingDirection === 'provider_comes';
+
+    const browseDirDefs = [
+      { key: 'any', label: 'Any direction' },
+      { key: 'to_you', label: 'Comes to you' },
+      { key: 'to_me', label: 'You go to them' },
+    ];
+    const browseDirections = browseDirDefs.map((d) => {
+      const selected = d.key === s.browseDirection;
+      return { ...d, bg: selected ? pal.accentText : pal.cardBg, color: selected ? '#fff' : pal.textPrimary, borderColor: selected ? pal.accentText : pal.cardBorder, onClick: () => this.setBrowseDirection(d.key) };
+    });
+    const browseListings = [
+      { name: "Kabelo's Plumbing & Repairs", tag: 'Comes to you · Block 8', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P150' },
+      { name: 'Mpho Pipes & Drains', tag: 'Comes to you · Extension 12', badge: 'New on Ipelege', badgeGlyph: 'schedule', badgeBg: pal.chipNeutralBg, badgeText: pal.chipNeutralText, price: 'P120' },
+      { name: 'Tshepo Plumbing Works', tag: 'Comes to you · Broadhurst', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P200' },
+    ];
+
+    const BSTATES = [
+      { key: 'REQUESTED', chip: 'Waiting on Kabelo', tone: 'pend', step: 1, head: 'Request sent', body: 'Kabelo has until 14:00 today to accept. We will text you either way.', action: 'Cancel request', actionKind: 'ghost', note: '' },
+      { key: 'ACCEPTED', chip: 'Accepted', tone: 'ok', step: 2, head: 'Kabelo accepted', body: 'Today at 14:00, at Plot 4521, Block 8. Kabelo has your number.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'IN_PROGRESS', chip: 'In progress', tone: 'ok', step: 3, head: 'Job under way', body: 'Started 14:05. Kabelo will mark it done when the work is finished.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'AWAITING_PAYMENT', chip: 'Pay Kabelo now', tone: 'pay', step: 4, head: 'Work finished — pay Kabelo', body: '', action: 'I have paid Kabelo', actionKind: 'primary', note: '' },
+      { key: 'PENDING_CONFIRMATION', chip: 'Confirm it is done', tone: 'pend', step: 5, head: 'Kabelo marked this complete', body: 'Confirm the work was done so this booking can close. If something is wrong, say so instead.', action: 'Yes, it is done', actionKind: 'primary', note: 'Something is wrong' },
+      { key: 'COMPLETED', chip: 'Completed', tone: 'ok', step: 6, head: 'Booking closed', body: 'Paid P250.00 directly to Kabelo. Rate the job so the next customer knows what to expect.', action: 'Rate this booking', actionKind: 'outline', note: '' },
+      { key: 'DECLINED', chip: 'Declined', tone: 'bad', step: 0, head: 'Kabelo declined', body: 'No reason given, and none is required. Five other plumbers cover Block 8.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'EXPIRED', chip: 'Expired', tone: 'off', step: 0, head: 'No answer from Kabelo', body: 'The request timed out at 14:00. Nothing was charged to anyone.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'CANCELLED', chip: 'Cancelled', tone: 'off', step: 0, head: 'You cancelled this', body: 'Cancelled at 11:20, before Kabelo started. Kabelo has been told.', action: 'Book again', actionKind: 'outline', note: 'Cancellation rules are not settled — this copy is provisional' },
+      { key: 'NO_SHOW', chip: 'No-show', tone: 'bad', step: 0, head: 'Kabelo did not arrive', body: 'Reported at 15:00. Ipelege reviews repeat no-shows against a provider\'s verification.', action: 'See other plumbers', actionKind: 'primary', note: 'No fee rule exists yet — provisional copy' },
+      { key: 'DISPUTED', chip: 'Under review', tone: 'bad', step: 0, head: 'You raised a problem', body: 'Ipelege has both sides and will contact you. Payment stays between you and Kabelo.', action: 'Add more detail', actionKind: 'outline', note: 'Dispute handling is undesigned in the spec — provisional' },
+    ];
+    const TONES = {
+      ok: { bg: pal.verifiedBg, fg: pal.verifiedText, dot: 'oklch(0.6 0.13 152)' },
+      pend: { bg: pal.pendingBg, fg: pal.pendingText, dot: 'oklch(0.72 0.15 80)' },
+      bad: { bg: pal.dangerBg, fg: pal.dangerText, dot: 'oklch(0.58 0.19 25)' },
+      off: { bg: pal.chipNeutralBg, fg: pal.chipNeutralText, dot: pal.navMuted },
+      pay: { bg: pal.infoBg, fg: pal.infoTitle, dot: '#145A8D' },
+    };
+    const bs = BSTATES.find((b) => b.key === s.bookingState) || BSTATES[0];
+    const bsTone = TONES[bs.tone];
+    const bookingStateTabs = BSTATES.map((b) => {
+      const active = b.key === s.bookingState;
+      return { key: b.key, label: b.key.replace(/_/g, ' '), onClick: () => this.setBookingState(b.key),
+        bg: active ? '#145A8D' : 'transparent', color: active ? '#fff' : '#5F7387', border: active ? '#145A8D' : '#DCE7EF' };
+    });
+    const bsSteps = [1, 2, 3, 4, 5, 6].map((n) => ({ n,
+      color: bs.step === 0 ? pal.divider : (n <= bs.step ? 'oklch(0.6 0.13 152)' : pal.divider),
+      w: n === bs.step ? 22 : 8 }));
+    const bsPrimary = bs.actionKind === 'primary';
+    const bsBtnBg = bsPrimary ? '#145A8D' : 'transparent';
+    const bsBtnColor = bsPrimary ? '#fff' : (bs.actionKind === 'outline' ? '#145A8D' : pal.textMuted);
+    const bsBtnBorder = bsPrimary ? '#145A8D' : (bs.actionKind === 'outline' ? '#145A8D' : pal.inputBorder);
+
+    const ratingStars = [1, 2, 3, 4, 5].map((n) => ({ n, onClick: () => this.setRating(n), color: n <= s.rating ? '#145A8D' : pal.divider }));
+
+    const kycDocCounts = { rides: '4 documents', movers: '3 documents', rentals: '3 documents', beauty: '2 documents', plumbing: '3 documents', electrical: '3 documents', tiling: '2 documents', catering: '3 documents', hire: '3 documents' };
+    const kycPickCats = CATS.map((c) => {
+      const sel = c.key === s.providerCategory;
+      return { ...c,
+        tint: `oklch(0.95 0.035 ${c.hue})`, ink: `oklch(0.5 0.13 ${c.hue})`,
+        bg: sel ? pal.selectedBg : pal.cardBg,
+        border: sel ? pal.accentText : pal.cardBorder,
+        labelColor: sel ? pal.accentText : pal.textPrimary,
+        docCount: kycDocCounts[c.key],
+        onClick: () => this.setState({ providerCategory: c.key }) };
+    });
+
+    const pmDefs = [
+      { key: 'from', label: 'From', unit: 'starting price', hint: 'Customers see “from P400”. You quote the real amount on each request.' },
+      { key: 'fixed', label: 'Fixed', unit: 'per job', hint: 'One price, no quoting. Best where the work does not vary.' },
+      { key: 'hour', label: 'Per hour', unit: 'per hour', hint: 'Customers see the rate. The total depends on time on site.' },
+    ];
+    const activePm = pmDefs.find((m) => m.key === s.listingPriceMode) || pmDefs[0];
+    const priceModes = pmDefs.map((m) => {
+      const sel = m.key === s.listingPriceMode;
+      return { ...m, bg: sel ? pal.accentText : pal.cardBg, border: sel ? pal.accentText : pal.inputBorder, color: sel ? '#fff' : pal.textPrimary, onClick: () => this.setPriceMode(m.key) };
+    });
+
+    const hole = [{ bsChip: bs.chip, bsHead: bs.head, bsAction: bs.action, catLabel: selectedCat.label }];
+
+    return {
+      hole, pal, appearance, categories, otpBoxes,
+      onOtpChange: this.onOtpChange,
+      toggleConsent1: this.toggleConsent1, toggleConsent2: this.toggleConsent2,
+      consent1BorderColor: s.consent1 ? pal.accentText : pal.inputBorder,
+      consent1BgColor: s.consent1 ? pal.accentText : pal.inputBg,
+      consent2BorderColor: s.consent2 ? pal.accentText : pal.inputBorder,
+      consent2BgColor: s.consent2 ? pal.accentText : pal.inputBg,
+      bookingTabs, isRequestTab, isStatusTab, directionOptions, needsLocation,
+      browseDirections, browseListings,
+      bs, bsTone, bookingStateTabs, bsSteps, bsBtnBg, bsBtnColor, bsBtnBorder,
+      bsShowPay: bs.key === 'AWAITING_PAYMENT',
+      bsShowSteps: bs.step > 0,
+      bsShowNote: !!bs.note,
+      bsShowBody: !!bs.body,
+      ratingStars,
+      kycPickCats, priceModes, priceUnit: activePm.unit, priceHint: activePm.hint,
+      toggleListingActive: this.toggleListingActive,
+      listingToggleBg: s.listingActive ? pal.accentText : pal.chipNeutralBg,
+      listingToggleX: s.listingActive ? 21 : 3,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

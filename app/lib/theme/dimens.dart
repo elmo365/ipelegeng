@@ -22,21 +22,53 @@ abstract final class Space {
   static const gutter = x4;
 }
 
-/// Corner radii, per the component table.
+/// Corner radii.
+///
+/// Resynced 2026-08-20 to the design's surface treatment. The old scale was a
+/// flat 10–14 px, which the design named as reason 3 of five for why the
+/// screens read flat: "10–14px corners and zero shadow. The 2026 idiom is
+/// 20–26px corners with a soft blue-tinted shadow, which is what makes a card
+/// feel like an object rather than a table row."
+///
+/// The four surface steps are a hierarchy — hero above card above row above
+/// icon tile — and are always paired with the matching [Elevation] shadow.
 abstract final class Radii {
-  static const button = Radius.circular(12);
-  static const input = Radius.circular(10);
-  static const card = Radius.circular(14);
-  static const monogram = Radius.circular(11);
-  static const sheet = Radius.circular(20);
+  /// The blue gradient hero: provider dashboard header, balance card.
+  static const hero = Radius.circular(26);
+
+  /// A card that holds a group: a ledger entry, a listing, a form section.
+  static const card = Radius.circular(22);
+
+  /// A row inside a card, and the component containers: category tile,
+  /// money row, input group.
+  static const row = Radius.circular(18);
+
+  /// The tinted category/status icon plate. 36 dp square in the tile.
+  static const iconTile = Radius.circular(13);
+
+  /// Buttons — all of them, including the accept/decline pair.
+  static const button = Radius.circular(15);
+
+  /// The input field itself, inside its 18 px container.
+  static const input = Radius.circular(13);
+
+  /// The nav sheet's top corners. It is a raised sheet now, not a hairline
+  /// strip, so it carries the hero radius.
+  static const sheet = Radius.circular(26);
+
+  /// The pill behind the active nav icon: 42 x 30, not a circle.
+  static const navPill = Radius.circular(11);
 
   /// Chips and pills. Large enough to always read as a capsule.
   static const pill = Radius.circular(100);
 
+  static const heroAll = BorderRadius.all(hero);
+  static const cardAll = BorderRadius.all(card);
+  static const rowAll = BorderRadius.all(row);
+  static const iconTileAll = BorderRadius.all(iconTile);
   static const buttonAll = BorderRadius.all(button);
   static const inputAll = BorderRadius.all(input);
-  static const cardAll = BorderRadius.all(card);
-  static const monogramAll = BorderRadius.all(monogram);
+  static const navPillAll = BorderRadius.all(navPill);
   static const pillAll = BorderRadius.all(pill);
   static const sheetTop = BorderRadius.vertical(top: sheet);
 }
@@ -46,6 +78,23 @@ abstract final class Touch {
   /// 48 dp minimum, everywhere. A tap target smaller than this is a bug.
   static const min = 48.0;
   static const minSize = Size(min, min);
+}
+
+/// Shadow geometry, in blur radius. The colour comes from the palette —
+/// shadows are blue-tinted, never grey, and they replace borders entirely.
+///
+/// Three depths, per the design: 28 on the hero, 20 on cards, 14 on rows.
+abstract final class Elevation {
+  static const row = 14.0;
+  static const card = 20.0;
+  static const hero = 28.0;
+
+  /// The nav sheet casts upward, so its offset is negative.
+  static const nav = 30.0;
+
+  /// A filled button carries a shadow in its own hue at a much higher alpha
+  /// than a surface does — it is an action, not a plane.
+  static const button = 20.0;
 }
 
 /// Material 3 window size classes. The category grid is the main consumer.

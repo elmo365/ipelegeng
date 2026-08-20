@@ -11,7 +11,15 @@ The underlying spec documents have not been rewritten — the deltas are recorde
 here rather than silently applied, because several of them touch compliance and
 the ledger and need a real sign-off, not an edit.
 
-Imported 2026-08-17 from Claude Design project `012e55a7-8d3d-4aed-abf7-f1ab95fadf63`.
+**Fully re-pulled 2026-08-20** from Claude Design project
+`012e55a7-8d3d-4aed-abf7-f1ab95fadf63`. The previous local snapshot was
+**discarded rather than merged**, so `design/` contains only what the project
+returns today and nothing in it is a blend of two vintages. The project had
+moved three times since the first import (2026-08-18 ×2, 2026-08-19).
+
+§§1–7 are from the original import and still hold. §§8–12 are what the re-pull
+found — and it was more than a retint: the surface, the component set, the
+category hues and three journey rules all moved.
 
 ## 1. Nine categories, not six
 
@@ -179,35 +187,233 @@ undefined in the spec** — so that state has no honest copy yet.
 
 ---
 
+## 8. Surface treatment — the design restyled itself
+
+Added in the 2026-08-20 resync. Between 2026-08-18 and 2026-08-19 the design
+audited its own screens against current app work, concluded they read "correct
+and joyless — a form, not a product", and committed to a new surface. Twenty
+existing screens were migrated to it; both modes moved together.
+
+This is **not** a flow, copy or rule change. Identical content, identical wallet
+rules — only the surface moved. But it invalidated most of the geometry and
+several colour tokens the Flutter shell was built on, so it is recorded here.
+
+| | Before | After |
+|---|---|---|
+| Page | `#ffffff` | `#EDF3F8`, tinted, so white cards float |
+| Card separation | 1 px grey border | blue-tinted shadow, **no border** |
+| Radii | flat 10–14 | 26 hero / 22 card / 18 row / 13 icon plate / 15 button |
+| Blue | link text and one navy card | full gradient hero carrying its own actions |
+| Category identity | 3 px bar + grey monogram | Material Symbol on a tinted plate of the category hue |
+| Numbers | `"4 jobs"`, `"P48.94"` | seven-bar week chart with a delta pill |
+| Nav | hairline strip | raised sheet, 26 px top radius, tinted active pill |
+| Ledger | flat rows | one card per entry, VAT on a dashed tie-line to its parent fee |
+| Text ink | `#111111` | `#0D2436` |
+
+Full token table in
+[`design-system.md#surface-treatment`](design-system.md#surface-treatment).
+
+**Action: done.** `app/lib/theme/tokens.dart`, `dimens.dart`, `app_theme.dart`
+and `ui/components/category_tile.dart` were resynced on 2026-08-20.
+
+## 9. Category hues respread across the wheel
+
+The nine hue angles changed, and this one is easy to miss because the category
+*list* did not. The old set was clustered in the blue-teal band (155–265), so
+nine categories rendered as nine near-identical blues. The design respread them
+across the full wheel:
+
+| Key | Old hue | New hue | Icon |
+|---|---|---|---|
+| `rides` | 230 | 230 | `directions_car` |
+| `movers` | 205 | 205 | `local_shipping` |
+| `rentals` | 255 | 255 | `meeting_room` |
+| `beauty` | 215 | **330** | `content_cut` |
+| `plumbing` | 245 | **180** | `plumbing` |
+| `electrical` | 265 | **85** | `electrical_services` |
+| `tiling` | 185 | **40** | `grid_view` |
+| `catering` | 195 | **25** | `restaurant` |
+| `hire` | 155 | **300** | `chair` |
+
+Construction also changed: the tile plate is `oklch(0.95 0.035 <hue>)` with the
+icon in `oklch(0.5 0.13 <hue>)`, rather than one solid `oklch(0.55 0.12 <hue>)`
+square. **Action: done** in the same resync.
+
+## 10. The wallet-naming reversal has reversed again — on paper only
+
+[§3](#3-wallet-balance-not-commission-credit) records the design overriding the
+brief's "commission credit, never wallet".
+
+The design project's own standing instructions (`CLAUDE.md` in the project, not
+in this repo) now say the opposite again: *"Commission credit", never "wallet"
+(regulatory)*. But **no screen follows it.** The current canvas says "wallet
+balance" throughout — in the five-decisions preamble ("The wallet balance is a
+meter, not an account. It is called the wallet balance, plainly, because that is
+what a provider calls it"), on the balance card, and in the header strip. The
+back-office canvas uses neither term.
+
+So the rendered design and this repo agree, and the standing instruction is the
+outlier. Treat "wallet balance" as current, keep
+[`wallet.md`](wallet.md) as written, and note that the contradiction is a
+restatement of the same unresolved compliance question — not a new decision.
+**Action: unchanged — still the delta most worth a compliance opinion.**
+
+## 11. The component set was rebuilt, not just retinted
+
+Easy to miss behind the surface change, and worth its own entry: the components
+sheet went from **four groups to seven**, and three of the seven did not exist
+before.
+
+| Group | Then | Now |
+|---|---|---|
+| Buttons | 4 — primary, secondary, text, disabled | 6 — **Accept and Decline added** as a pair |
+| Input | phone field only | phone field **plus a priced field with an error state** |
+| Status signals | 2 chips, tone only | 4 chips, **each pairing a hue with a glyph** |
+| Money row | — | **new** |
+| Category tile | one tile, grey monogram | all nine, Material Symbols on tinted plates |
+| Nav active pill | — | **new** |
+| Toggle & stepper | — | **new** |
+
+The rules that came with them:
+
+- **Never two blue buttons side by side.** Accept is success green, decline is a
+  danger-toned outline; the pair has to be readable at a glance. Shipped as one
+  component (`DecisionPair`) so the rule cannot be half-applied.
+- **Status never depends on colour alone** — `verified_user`, `hourglass_top`,
+  `error`. The "New" chip is the one tone with no glyph, and it moved off the
+  grey neutral onto the tinted blue plate so it reads as information rather than
+  as a disabled state.
+- **VAT nests under its parent fee** on a dashed rule with a stub, in the
+  compact money row as well as in the full ledger card.
+
+**Action: done.** `status_chip.dart`, `money_row.dart`, `stepper_bar.dart`,
+`decision_pair.dart` and the raised nav sheet in `app_shell.dart`.
+
+## 12. Three journey rules the screens have to enforce
+
+Stated in the journey map rather than in a component, and each one changes
+behaviour rather than appearance:
+
+1. **Property rentals never offers a booking.** Pay-per-listing: no booking, no
+   commission, no completion — the tenant enquires and leaves the app. A
+   "Request booking" button on a rental promises a flow that does not exist.
+   Modelled as `JourneyShape` on `CategoryToken`.
+2. **New providers need a real boost, not just honest copy.** The repo's own
+   recommendation is to build ratings *with* an explicit new-provider boost,
+   or you manufacture provider churn. Labelling someone "New on Ipelege" is
+   half the fix; placement in browse is the other half.
+3. **Payment precedes "mark complete."** Activity diagram A-2 orders it:
+   service delivered → customer pays the provider directly → provider marks
+   complete → customer confirms → commission posts. The design has moved the
+   pay-directly moment to step 4 of the booking status set. Not yet built —
+   the booking status screen is outstanding.
+
+**Action: 1 and 2 done. 3 lands with the booking status screen.**
+
+
+---
+
 ## Import fidelity
 
-### Truncated in import
+### The canvas was split — nothing is truncated any more
 
-The design MCP caps file reads at 256 KiB and the source page is larger, so
-[`design/ipelege-design-system.dc.html`](../design/ipelege-design-system.dc.html)
-is cut mid-way through the `stateMotion` data array. Everything up to that point
-is intact — all markup, all screens, the palette, the categories and the
-requirements map.
+**Resolved 2026-08-20.** The mobile page was split in Claude Design into four
+files, each comfortably under the 256 KiB read cap:
 
-Lost from the tail, all of them specification tables rendered from data arrays
-declared after `stateMotion`:
+| File in `design/` | Size | Contents |
+|---|---:|---|
+| `ipelege-ds-1-foundations.dc.html` | 144 KB | Five decisions, journey map, brand / colour / type / components, visual direction |
+| `ipelege-ds-2-customer.dc.html` | 93 KB | Entry & account, onboarding, home, browse, listing detail, booking, tracking, rate & review |
+| `ipelege-ds-3-provider.dc.html` | 136 KB | Mode switcher, provider home, my categories, inbox, wallet, top up, become a provider, KYC |
+| `ipelege-ds-4-specs.dc.html` | 101 KB | Account / preferences / security / notifications / data, cancellation & attestation, light & dark, the nine-category matrix, navigation, motion, feedback, **and `PAL`** |
 
-| Table | Rows | Where it renders |
+485 KB total, against the 262 KB the single-file read returned — **85% more
+content**, and every part came back `truncated: false`.
+
+What that recovered, all of which the previous entry listed as lost:
+
+- **`PAL`, post-restyle, both modes.** See below — it corrected real errors.
+- **The navigation / back-button rules**, the state-restoration list, the motion
+  table, haptics and the loading/saving rules. They no longer exist as the named
+  data arrays (`backRules`, `motionSpecs`, `haptics`…) the earlier import
+  recorded — the design rebuilt them as prose sections, which is why searching
+  for the array names finds nothing. Recorded in
+  [`design-system.md`](design-system.md).
+- **Six more screens** — Account, Preferences, Security, Biometric enrolment,
+  Notifications, Data & storage — plus arrival attestation and the
+  nine-category customer/provider matrix.
+- **The `CATS` array**, which corrected the supply model (below).
+
+### `PAL` corrected four things that had been inferred
+
+The palette had been reconstructed from the mockups. Reading the real object
+showed where that went wrong:
+
+| | Inferred | Actual |
 |---|---|---|
-| `stateMotion` (remainder) | 2 of 11 | Motion → booking states |
-| `motionTokens` | 7 | Motion → token table (**recoverable** — the same seven are in the `class Motion` code block, which survived) |
-| `motionSpecs` | 12 | Motion → every motion in the build |
-| `backRules` | 11 | Navigation → what the system back button does, everywhere |
-| `navState` | 6 | Navigation → what survives going back |
-| `haptics` | 6 | Feedback → haptics |
-| `loadingStates` | 6 | Feedback → loading bands |
-| `savedStates` | 6 | Feedback → what gets kept |
-| `palRows` | 12 | Light & dark → token comparison (**recoverable** — the full `PAL` object survived) |
+| The page | `screenBg` = `#EDF3F8` | **`screenBg2`** = `#EDF3F8`; `screenBg` stayed white |
+| `divider` | `#DDE2E6` | `#E9F0F5` |
+| `inputBorder` | `#BFC5CA` | `#DCE7EF` |
+| `chipNeutralBg` | `#DDE2E6` grey | `#E1EDF5` tinted blue |
+| Dark surfaces | hue 250, carried from pre-restyle | **hue 235**, cooler and bluer |
+| Dark shadows | blue-tinted, low alpha | **black**, higher alpha |
 
-To recover them, open the page in Claude Design and copy the tables, or export
-the file from the project directly. They are worth recovering before the
-navigation and feedback layers are built — `backRules` in particular is written
-as a specification, not guidance.
+The token names now match the design's own, so a future sync diffs directly.
+`navPillBg` is the only remaining derived value — it is an inline literal in the
+canvas rather than a token, so it has no published dark form.
+
+### Supply is two states, not three
+
+The `CATS` array carries `supply: 'ok' | 'thin'`. The three-level
+`HEALTHY / THIN / CRITICAL` scale belongs to the **back office**, where an
+operator needs to know where to go recruiting. The app collapses it, because the
+customer-facing job is different: a category with two providers and one with
+four are the same thing to someone deciding whether to tap.
+
+And the copy is the decision, not the number. Thin categories read
+**"New in Gaborone · 2 providers"**, never "2 nearby" — young rather than
+failing. Six of the nine are thin at launch, which the design calls the design
+condition rather than an edge case: seeding goes deep rather than wide, so most
+categories look new for months.
+
+### Superseded: the single-file pull
+
+The notes below described the state before the split, when the monolithic
+canvas cut mid-`KYC Movers & hauling`. Kept only so the constraint is on record:
+**the 256 KiB cap is server-side on `get_file`, with no range or pagination**, so
+splitting had to happen in Claude Design — the repo could not initiate it,
+because reading the tail was the very thing being blocked.
+
+Each screen label still renders in **both light and dark**, so ~25 labels is
+roughly fifty mockups.
+
+### The token contract, as the fresh canvas binds it
+
+Thirty tokens, extracted from the fresh pull rather than assumed:
+
+```
+accentText cardBg cardBorder chipNeutralBg chipNeutralText creditColor
+dangerBg dangerText divider inputBg inputBorder navBg navMuted
+notUploadedBg notUploadedText pendingBg pendingText screenBg screenBg2
+sectionAlt selectedBg shCard shNav shRaise subtleBg textFaint textMuted
+textPrimary textSecondary verifiedBg verifiedText
+```
+
+Two things this settles:
+
+- The design names **three** shadow tokens — `shCard`, `shRaise`, `shNav` —
+  matching the three depths its own prose describes (20 on cards, 28 on the
+  hero, and the upward nav cast). The 14 px row shadow and the coloured button
+  shadows are inline literals, not tokens.
+- `stripe1`, `stripe2` and the `info*` set are **no longer bound anywhere**.
+  They remain in `AppPalette` unused; retire them when something confirms they
+  are gone for good rather than merely unused on the 25 screens we can see.
+
+### The back office came through complete
+
+[`design/ipelege-admin-back-office.dc.html`](../design/ipelege-admin-back-office.dc.html)
+is 171 KB — under the cap, so it is **whole**. See
+[`admin-design.md`](admin-design.md).
 
 ### Not imported
 

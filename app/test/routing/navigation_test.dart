@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ipelege/main.dart';
 import 'package:ipelege/routing/routes.dart';
+import 'package:ipelege/ui/screens/consumer/listing_detail_screen.dart';
 import 'package:ipelege/ui/shell/app_shell.dart';
 
 /// Navigation is the part of the design most easily broken by a later change,
@@ -53,16 +54,16 @@ void main() {
     // Go deep inside the Home tab.
     router.push(Routes.listingOf('abc'));
     await tester.pumpAndSettle();
-    expect(find.text('Listing'), findsWidgets);
+    expect(find.byType(ListingDetailScreen), findsWidgets);
 
     // Leave and come back. The pushed screen is still there.
     await tester.tap(find.byIcon(Icons.chat_bubble_outline));
     await tester.pumpAndSettle();
-    expect(find.text('Listing'), findsNothing);
+    expect(find.byType(ListingDetailScreen), findsNothing);
 
     await tester.tap(find.byIcon(Icons.home_outlined));
     await tester.pumpAndSettle();
-    expect(find.text('Listing'), findsWidgets);
+    expect(find.byType(ListingDetailScreen), findsWidgets);
   });
 
   testWidgets('tapping the tab you are on returns it to its root', (
@@ -71,12 +72,12 @@ void main() {
     final container = await pumpApp(tester);
     container.read(routerProvider).push(Routes.listingOf('abc'));
     await tester.pumpAndSettle();
-    expect(find.text('Listing'), findsWidgets);
+    expect(find.byType(ListingDetailScreen), findsWidgets);
 
     await tester.tap(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
 
-    expect(find.text('Listing'), findsNothing);
+    expect(find.byType(ListingDetailScreen), findsNothing);
   });
 
   testWidgets('switching mode replaces the bar rather than adding to it', (

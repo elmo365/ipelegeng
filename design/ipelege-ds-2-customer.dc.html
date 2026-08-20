@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0;background:oklch(0.985 0.004 250);}
+a{color:#145A8D;}
+a:hover{color:#0e4570;}
+*{box-sizing:border-box;}
+.msym{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+.msym-fill{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;}
+@keyframes ipEnter{0%{opacity:0;transform:translateY(12px)}14%{opacity:1;transform:translateY(0)}86%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(12px)}}
+@keyframes ipOutA{0%,42%{opacity:1;transform:translateY(0)}56%,100%{opacity:0;transform:translateY(-10px)}}
+@keyframes ipInB{0%,42%{opacity:0;transform:translateY(10px)}56%,100%{opacity:1;transform:translateY(0)}}
+@keyframes ipFill{0%,34%{width:34%}58%,100%{width:67%}}
+@keyframes ipStepA{0%,40%{opacity:1}54%,100%{opacity:0}}
+@keyframes ipStepB{0%,40%{opacity:0}54%,100%{opacity:1}}
+</style>
+</helmet>
+
+<div style="font-family:'IBM Plex Sans',system-ui,sans-serif;color:#111111;background:oklch(0.985 0.004 250);min-height:100vh;">
+
+  <div style="background:#061326;padding:40px 48px 34px;display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:6px;"><img src="assets/mark-icon.png" alt="Ipelege mark" style="width:100%;height:100%;object-fit:contain;" /></div>
+      <img src="assets/wordmark-dark.png" alt="ipelege" style="height:28px;object-fit:contain;" />
+      <div style="width:1px;height:26px;background:rgba(255,255,255,0.22);"></div>
+      <div style="font-size:19px;font-weight:700;color:#ffffff;letter-spacing:-0.2px;">2 · Customer journey</div>
+    </div>
+    <div style="max-width:700px;font-size:14px;line-height:1.65;color:oklch(0.88 0.012 240);">Entry and account through rate and review: splash, onboarding, OTP, consent, location, home, browse, listing detail, request, status, ride tracking, review.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <a href="Ipelege%20Design%20System%20-%201%20Foundations.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">01</span>&nbsp;&nbsp;Foundations</a>
+      <span style="font-size:12.5px;font-weight:700;color:#061326;background:#ffffff;padding:7px 14px;border-radius:100px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">02</span>&nbsp;&nbsp;Customer journey</span>
+      <a href="Ipelege%20Design%20System%20-%203%20Provider.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">03</span>&nbsp;&nbsp;Provider journey</a>
+      <a href="Ipelege%20Design%20System%20-%204%20Specs.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">04</span>&nbsp;&nbsp;Account, settings &amp; specs</a>
+      <a href="Ipelege%20Admin%20Back%20Office.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.6);padding:7px 6px;text-decoration:none;">Back office &rarr;</a>
+    </div>
+  </div>
+  <div style="padding:0 48px 64px;">
+    <div style="display:inline-flex;gap:2px;background:oklch(0.94 0.006 250);border-radius:14px;padding:3px;margin-bottom:32px;">
+      <sc-for list="{{ appearance }}" as="mode" hint-placeholder-count="2">
+        <div onClick="{{ mode.onClick }}" style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:{{ mode.bg }};color:{{ mode.color }};">{{ mode.label }}</div>
+      </sc-for>
+    </div>
+
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Stage 0–1 · Entry &amp; account</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Splash" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:radial-gradient(130% 100% at 78% -8%, #1E7BB5 0%, #0F4874 42%, #061326 100%);display:flex;flex-direction:column;padding:40px 32px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+              <img src="assets/mark-dark.png" alt="Ipelege" style="width:88px;object-fit:contain;" />
+              <img src="assets/wordmark-dark-new.png" alt="ipelege" style="width:176px;object-fit:contain;" />
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:26px;">
+              <div style="display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.10);border-radius:16px;padding:13px 15px;">
+                <span class="msym" style="font-size:20px;color:#9FD4F5;">directions_car</span>
+                <div style="flex:1;font-size:13px;font-weight:600;color:#fff;">Rides, when you need one</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.10);border-radius:16px;padding:13px 15px;">
+                <span class="msym" style="font-size:20px;color:#9FD4F5;">handyman</span>
+                <div style="flex:1;font-size:13px;font-weight:600;color:#fff;">Movers, plumbers, tilers, caterers</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.10);border-radius:16px;padding:13px 15px;">
+                <span class="msym" style="font-size:20px;color:#9FD4F5;">verified_user</span>
+                <div style="flex:1;font-size:13px;font-weight:600;color:#fff;">Every provider verified before listing</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:7px;background:#fff;color:#0D3D62;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;margin-bottom:12px;">Get started</div>
+            <div style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);">Already have an account? <span style="color:#9FD4F5;font-weight:600;">Sign in</span></div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">SPLASH / FIRST OPEN</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Three cards say what the app is for instead of one line of prose, and the sign-in route is visible immediately</div>
+      </div>
+      <div data-screen-label="Register" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(130% 110% at 80% -10%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);padding:26px 24px 30px;border-radius:0 0 28px 28px;">
+              <div style="font-size:23px;font-weight:700;color:#fff;margin-bottom:7px;">Create your account</div>
+              <div style="font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.82);">You'll start as a customer. You can apply to offer services later.</div>
+            </div>
+            <div style="padding:18px 20px;display:flex;flex-direction:column;gap:12px;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:11.5px;font-weight:700;letter-spacing:0.5px;color:{{ pal.textSecondary }};margin-bottom:8px;">FULL NAME</div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:13px 14px;">
+                  <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">person</span>
+                  <div style="flex:1;font-size:15px;color:{{ pal.textPrimary }};">Kabo Mothibi</div>
+                </div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:11.5px;font-weight:700;letter-spacing:0.5px;color:{{ pal.textSecondary }};margin-bottom:8px;">PHONE NUMBER</div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid #145A8D;border-radius:14px;padding:13px 14px;">
+                  <span class="msym" style="font-size:19px;color:#145A8D;">phone</span>
+                  <div style="flex:1;font-size:15px;font-family:'IBM Plex Mono',monospace;color:{{ pal.textPrimary }};">+267 71 234 567</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:9px;">
+                  <span class="msym" style="font-size:15px;color:{{ pal.textFaint }};">sms</span>
+                  <div style="font-size:11.5px;color:{{ pal.textMuted }};">We'll text a code to confirm this number</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:#145A8D;">lock</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:#145A8D;">No password to create, forget or have phished. A code confirms it is you.</div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:0 20px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-bottom:14px;">Continue</div>
+              <div style="text-align:center;font-size:13px;color:{{ pal.textMuted }};">Already have an account? <a href="#">Sign in</a></div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">REGISTER · UC-1</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Each field is its own card, and the reason there is no password is stated where the decision lands</div>
+      </div>
+      <div data-screen-label="Sign in" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(130% 110% at 80% -10%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);padding:26px 24px 30px;border-radius:0 0 28px 28px;">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.18);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;">KM</div>
+                <div style="flex:1;">
+                  <div style="font-size:21px;font-weight:700;color:#fff;">Welcome back</div>
+                  <div style="font-size:12.5px;color:rgba(255,255,255,0.78);">Kabo Mothibi</div>
+                </div>
+              </div>
+              <div style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);">Enter your number and we'll text you a code.</div>
+            </div>
+            <div style="padding:18px 20px;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:11.5px;font-weight:700;letter-spacing:0.5px;color:{{ pal.textSecondary }};margin-bottom:8px;">PHONE NUMBER</div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid #145A8D;border-radius:14px;padding:13px 14px;">
+                  <span class="msym" style="font-size:19px;color:#145A8D;">phone</span>
+                  <div style="flex:1;font-size:15px;font-family:'IBM Plex Mono',monospace;color:{{ pal.textPrimary }};">+267 71 234 567</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:0 20px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-bottom:14px;">
+                <span class="msym" style="font-size:19px;">sms</span>Send code
+              </div>
+              <div style="text-align:center;font-size:13px;color:{{ pal.textMuted }};">New here? <a href="#">Create an account</a></div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">SIGN IN</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Every fresh login goes through OTP — the returning name is shown so the person knows which account they are entering</div>
+      </div>
+      <div data-screen-label="Biometric unlock" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;align-items:center;padding:40px 24px 24px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+              <div style="width:104px;height:104px;border-radius:34px;background:{{ pal.cardBg }};box-shadow:{{ pal.shRaise }};display:flex;align-items:center;justify-content:center;margin-bottom:22px;">
+                <span class="msym" style="font-size:50px;color:#145A8D;">fingerprint</span>
+              </div>
+              <div style="font-size:20px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:8px;">Unlock Ipelege</div>
+              <div style="font-size:13.5px;line-height:1.55;color:{{ pal.textMuted }};max-width:250px;">You're still signed in as Kabo. Use your fingerprint to continue.</div>
+            </div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">
+                <span class="msym" style="font-size:20px;">fingerprint</span>Use fingerprint
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:{{ pal.cardBg }};color:#145A8D;border-radius:15px;padding:15px 0;font-size:14.5px;font-weight:700;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:19px;">dialpad</span>Enter device passcode
+              </div>
+              <div style="text-align:center;font-size:13px;color:{{ pal.textMuted }};padding-top:8px;"><a href="#">Sign in as someone else</a></div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">BIOMETRIC UNLOCK + PASSCODE FALLBACK</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Passcode is a full card of equal weight, not fine print — broken or absent sensors are common on the target hardware</div>
+      </div>
+      <div data-screen-label="Consent" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:26px 24px 8px;">
+              <div style="font-size:21px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:7px;">Before you continue</div>
+              <div style="display:flex;gap:7px;">
+                <div style="font-size:10.5px;font-weight:700;color:{{ pal.chipNeutralText }};background:{{ pal.chipNeutralBg }};padding:4px 10px;border-radius:100px;">Terms v2.1</div>
+                <div style="font-size:10.5px;font-weight:700;color:{{ pal.chipNeutralText }};background:{{ pal.chipNeutralBg }};padding:4px 10px;border-radius:100px;">Privacy v2.1</div>
+              </div>
+            </div>
+            <div style="padding:16px 20px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};border-left:4px solid #145A8D;">
+                <div style="display:flex;gap:12px;align-items:flex-start;">
+                  <div style="width:22px;height:22px;border-radius:7px;background:#145A8D;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:15px;color:#fff;">check</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;line-height:1.5;color:{{ pal.textPrimary }};font-weight:600;">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+                    <div style="font-size:11.5px;color:#145A8D;font-weight:700;margin-top:4px;">REQUIRED</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 20px 0;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">OPTIONAL · CHANGE ANY TIME</div>
+              <div style="display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">sms</span>
+                  <div style="flex:1;font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Booking updates by SMS</div>
+                  <div style="width:40px;height:24px;border-radius:100px;background:{{ pal.chipNeutralBg }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">chat</span>
+                  <div style="flex:1;font-size:13px;font-weight:600;color:{{ pal.textPrimary }};">Booking updates on WhatsApp</div>
+                  <div style="width:40px;height:24px;border-radius:100px;background:{{ pal.chipNeutralBg }};position:relative;flex-shrink:0;"><div style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:0 20px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Agree &amp; continue</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">CONSENT CAPTURE · FR-1.10</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Required consent is a bordered card; optional channels are toggle rows in their own group, each recorded separately</div>
+      </div>
+      <div data-screen-label="Auth gate" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 20px;opacity:0.35;">
+              <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+                <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                  <div style="font-size:11.5px;color:{{ pal.textMuted }};">Plumbing · Block 8</div>
+                </div>
+              </div>
+              <div style="height:110px;border-radius:20px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};"></div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="background:{{ pal.cardBg }};border-radius:28px 28px 0 0;padding:24px 22px 26px;box-shadow:0 -10px 30px rgba(13,36,54,0.18);">
+              <div style="width:40px;height:4px;border-radius:2px;background:{{ pal.divider }};margin:0 auto 20px;"></div>
+              <div style="width:48px;height:48px;border-radius:16px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><span class="msym" style="font-size:24px;color:#145A8D;">lock_open</span></div>
+              <div style="font-size:19px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:8px;">Sign in to book</div>
+              <div style="font-size:13.5px;line-height:1.55;color:{{ pal.textMuted }};margin-bottom:18px;">Browsing is free. We only need your number so Kabelo can reach you about this job.</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-bottom:10px;">
+                <span class="msym" style="font-size:19px;">phone</span>Continue with phone number
+              </div>
+              <div style="text-align:center;font-size:14px;font-weight:700;color:{{ pal.textMuted }};padding:12px 0;">Keep looking around</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">AUTH GATE · UC-4</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">The wall sits at the booking action, not at launch, and names the provider who needs the number</div>
+      </div>
+      <div data-screen-label="Location permission" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;padding:28px 22px 22px;">
+            <div style="width:60px;height:60px;border-radius:20px;background:{{ pal.cardBg }};box-shadow:{{ pal.shRaise }};display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+              <span class="msym" style="font-size:30px;color:#145A8D;">location_on</span>
+            </div>
+            <div style="font-size:21px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:8px;">Show providers near you?</div>
+            <div style="font-size:13.5px;line-height:1.6;color:{{ pal.textMuted }};margin-bottom:18px;">Ipelege uses your location to sort providers by distance and to share pickup points with a driver on a ride.</div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:19px;color:oklch(0.5 0.13 152);">check_circle</span>
+                <div style="flex:1;font-size:12.5px;color:{{ pal.textPrimary }};">Only while the app is open</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:19px;color:oklch(0.5 0.13 152);">check_circle</span>
+                <div style="flex:1;font-size:12.5px;color:{{ pal.textPrimary }};">Nothing tracked in the background</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:19px;color:oklch(0.5 0.13 152);">check_circle</span>
+                <div style="flex:1;font-size:12.5px;color:{{ pal.textPrimary }};">You can pick your area from a list instead</div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-bottom:10px;">Allow while using the app</div>
+            <div style="display:flex;align-items:center;justify-content:center;background:{{ pal.cardBg }};color:#145A8D;border-radius:15px;padding:15px 0;font-size:14.5px;font-weight:700;box-shadow:{{ pal.shCard }};">Choose my area instead</div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">LOCATION PERMISSION</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">The three promises are cards rather than a paragraph, and the manual fallback carries equal visual weight</div>
+      </div>
+
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Customer journey</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Onboarding" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(130% 110% at 80% -10%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);padding:26px 24px 28px;border-radius:0 0 28px 28px;">
+              <div style="width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><span class="msym" style="font-size:24px;color:#fff;">sms</span></div>
+              <div style="font-size:21px;font-weight:700;color:#fff;margin-bottom:6px;">Confirm your number</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.82);">Code sent to <b style="color:#fff;font-family:'IBM Plex Mono',monospace;">+267 71 234 567</b></div>
+            </div>
+            <div style="padding:20px 22px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;gap:9px;margin-bottom:14px;">
+                  <sc-for list="{{ otpBoxes }}" as="box" hint-placeholder-count="4">
+                    <input value="{{ box.value }}" data-idx="{{ box.index }}" onChange="{{ onOtpChange }}" maxlength="1" inputmode="numeric" style="width:100%;height:58px;text-align:center;font-size:23px;font-weight:600;font-family:'IBM Plex Mono',monospace;border:1.5px solid {{ pal.inputBorder }};border-radius:15px;color:{{ pal.textPrimary }};background:{{ pal.inputBg }};" />
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <span class="msym" style="font-size:16px;color:{{ pal.textFaint }};">timer</span>
+                  <div style="font-size:12.5px;font-weight:600;color:{{ pal.textMuted }};">Resend code in 0:42</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:14px 22px 0;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">CONSENT · V2.1</div>
+              <div style="display:flex;flex-direction:column;gap:9px;">
+                <div onClick="{{ toggleConsent1 }}" style="display:flex;gap:11px;align-items:flex-start;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};cursor:pointer;border-left:4px solid #145A8D;">
+                  <div style="width:21px;height:21px;border-radius:6px;border:1.5px solid {{ consent1BorderColor }};background:{{ consent1BgColor }};flex-shrink:0;margin-top:1px;"></div>
+                  <div style="flex:1;font-size:12.5px;line-height:1.5;color:{{ pal.textPrimary }};">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a><div style="font-size:11px;font-weight:700;color:#145A8D;margin-top:3px;">REQUIRED</div></div>
+                </div>
+                <div onClick="{{ toggleConsent2 }}" style="display:flex;gap:11px;align-items:flex-start;background:{{ pal.cardBg }};border-radius:16px;padding:14px;box-shadow:{{ pal.shCard }};cursor:pointer;">
+                  <div style="width:21px;height:21px;border-radius:6px;border:1.5px solid {{ consent2BorderColor }};background:{{ consent2BgColor }};flex-shrink:0;margin-top:1px;"></div>
+                  <div style="flex:1;font-size:12.5px;line-height:1.5;color:{{ pal.textPrimary }};">Booking updates by SMS<div style="font-size:11px;color:{{ pal.textMuted }};margin-top:3px;">Optional</div></div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:0 22px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Verify &amp; continue</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">1 · ONBOARDING &amp; OTP</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Code entry is its own card with the resend timer attached; required consent is bordered and separable from the optional channel</div>
+      </div>
+      <div data-screen-label="Home" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="flex:1;">
+                <div style="font-size:12px;color:{{ pal.textMuted }};">Dumela, Kabo</div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <span class="msym" style="font-size:15px;color:{{ pal.accentText }};">location_on</span>
+                  <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">Gaborone</div>
+                  <span class="msym" style="font-size:16px;color:{{ pal.textFaint }};">expand_more</span>
+                </div>
+              </div>
+              <div style="width:38px;height:38px;border-radius:14px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;position:relative;">
+                <span class="msym" style="font-size:20px;color:{{ pal.accentText }};">notifications</span>
+                <div style="position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:oklch(0.55 0.19 25);border:1.5px solid {{ pal.cardBg }};"></div>
+              </div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:radial-gradient(130% 115% at 82% -12%, #1E7BB5 0%, #145A8D 46%, #0D3D62 100%);border-radius:26px;padding:20px;color:#fff;box-shadow:0 12px 28px rgba(13,61,98,0.30);">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+                  <span class="msym" style="font-size:25px;">directions_car</span>
+                  <div style="flex:1;">
+                    <div style="font-size:16px;font-weight:700;">Need a ride?</div>
+                    <div style="font-size:11.5px;color:rgba(255,255,255,0.76);">62 drivers nearby right now</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:13px 14px;">
+                  <span class="msym" style="font-size:20px;color:#9CAFBF;">search</span>
+                  <div style="flex:1;font-size:13.5px;color:#9CAFBF;">Where to?</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:18px 18px 8px;display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">SERVICES</div>
+              <div style="font-size:11.5px;font-weight:700;color:{{ pal.accentText }};">See all</div>
+            </div>
+            <div style="padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+              <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="6">
+                <div style="background:{{ pal.cardBg }};border-radius:20px;box-shadow:{{ pal.shCard }};padding:14px;">
+                  <div style="width:38px;height:38px;border-radius:13px;background:{{ cat.tint }};display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+                    <span class="msym" style="font-size:20px;color:{{ cat.ink }};">{{ cat.glyph }}</span>
+                  </div>
+                  <div style="font-size:13px;font-weight:700;line-height:1.25;color:{{ pal.textPrimary }};">{{ cat.label }}</div>
+                  <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
+                    <div style="width:5px;height:5px;border-radius:50%;background:{{ cat.supplyDotColor }};flex-shrink:0;"></div>
+                    <div style="font-size:10.5px;color:{{ pal.textMuted }};">{{ cat.supplyText }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="padding:18px 18px 10px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">NEAR YOU IN GABORONE</div>
+            <div style="padding:0 18px 18px;display:flex;gap:11px;overflow:hidden;">
+              <div style="min-width:150px;background:{{ pal.cardBg }};border-radius:20px;box-shadow:{{ pal.shCard }};overflow:hidden;">
+                <div style="height:74px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:26px;color:oklch(0.5 0.13 255);">meeting_room</span></div>
+                <div style="padding:11px 12px;">
+                  <div style="font-size:12.5px;font-weight:700;color:{{ pal.textPrimary }};">Room · Block 8</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:{{ pal.textMuted }};margin-top:2px;">P1,200/mo</div>
+                </div>
+              </div>
+              <div style="min-width:150px;background:{{ pal.cardBg }};border-radius:20px;box-shadow:{{ pal.shCard }};overflow:hidden;">
+                <div style="height:74px;background:oklch(0.95 0.035 330);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:26px;color:oklch(0.5 0.13 330);">content_cut</span></div>
+                <div style="padding:11px 12px;">
+                  <div style="font-size:12.5px;font-weight:700;color:{{ pal.textPrimary }};">Braids · Mobile</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:{{ pal.textMuted }};margin-top:2px;">From P150</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:1;"></div>
+            <div style="display:flex;padding:12px 8px 16px;background:{{ pal.navBg }};border-radius:26px 26px 0 0;box-shadow:{{ pal.shNav }};">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;border-radius:11px;background:{{ pal.selectedBg }};"><span class="msym msym-fill" style="font-size:21px;color:{{ pal.accentText }};">home</span></div>
+                <div style="font-size:10px;font-weight:700;color:{{ pal.accentText }};">Home</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">receipt_long</span></div>
+                <div style="font-size:10px;color:{{ pal.textMuted }};">Bookings</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">chat_bubble</span></div>
+                <div style="font-size:10px;color:{{ pal.textMuted }};">Messages</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">person</span></div>
+                <div style="font-size:10px;color:{{ pal.textMuted }};">Account</div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">2 · HOME</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Rides takes the hero because it is dispatch and daily; every service tile states a real count, so a thin category reads as new rather than broken</div>
+      </div>
+      <div data-screen-label="Category browse" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+              <div style="flex:1;">
+                <div style="font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Plumbing</div>
+                <div style="font-size:11.5px;color:{{ pal.textMuted }};">Gaborone · 6 providers</div>
+              </div>
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:{{ pal.accentText }};">tune</span></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:16px 18px 14px;overflow:hidden;">
+              <sc-for list="{{ browseDirections }}" as="d" hint-placeholder-count="3">
+                <div onClick="{{ d.onClick }}" style="border:1.5px solid {{ d.borderColor }};background:{{ d.bg }};color:{{ d.color }};padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;">{{ d.label }}</div>
+              </sc-for>
+            </div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:11px;">
+              <sc-for list="{{ browseListings }}" as="l" hint-placeholder-count="3">
+                <div style="background:{{ pal.cardBg }};border-radius:20px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <div style="display:flex;gap:12px;align-items:flex-start;">
+                    <div style="width:46px;height:46px;flex-shrink:0;border-radius:15px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:23px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:14px;font-weight:700;color:{{ pal.textPrimary }};">{{ l.name }}</div>
+                      <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:2px;">{{ l.tag }}</div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                      <div style="font-size:9.5px;font-weight:700;letter-spacing:0.5px;color:{{ pal.textFaint }};">FROM</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:{{ pal.textPrimary }};">{{ l.price }}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:12px;padding-top:11px;border-top:1px solid {{ pal.divider }};">
+                    <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:{{ l.badgeText }};background:{{ l.badgeBg }};padding:4px 10px;border-radius:100px;">
+                      <span class="msym" style="font-size:14px;">{{ l.badgeGlyph }}</span>{{ l.badge }}
+                    </div>
+                    <div style="flex:1;"></div>
+                    <span class="msym" style="font-size:18px;color:{{ pal.textFaint }};">chevron_right</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">3 · CATEGORY BROWSE</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Each provider is a card with the price pulled right; the direction filter narrows by how the service is delivered</div>
+      </div>
+      <div data-screen-label="Listing detail" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="height:160px;background:linear-gradient(160deg, oklch(0.95 0.035 180) 0%, oklch(0.9 0.05 180) 100%);position:relative;display:flex;align-items:center;justify-content:center;">
+              <div style="position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="text-align:center;color:oklch(0.5 0.13 180);">
+                <span class="msym" style="font-size:38px;">photo_camera</span>
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;margin-top:4px;">PROVIDER PHOTO</div>
+              </div>
+            </div>
+            <div style="padding:0 18px;margin-top:-26px;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+                  <div style="width:44px;height:44px;border-radius:15px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:16.5px;font-weight:700;line-height:1.3;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:2px;">Plumbing · Block 8, Gaborone</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <div style="display:flex;align-items:center;gap:6px;background:{{ pal.verifiedBg }};color:{{ pal.verifiedText }};padding:6px 12px;border-radius:100px;font-size:11.5px;font-weight:700;">
+                    <span class="msym" style="font-size:15px;">verified_user</span>Verified · Plumbing
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;background:{{ pal.chipNeutralBg }};color:{{ pal.chipNeutralText }};padding:6px 12px;border-radius:100px;font-size:11.5px;font-weight:700;">New on Ipelege</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;display:flex;flex-direction:column;gap:11px;">
+              <div style="display:flex;align-items:flex-start;gap:11px;background:{{ pal.selectedBg }};border-radius:18px;padding:14px;">
+                <span class="msym" style="font-size:19px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.55;color:{{ pal.accentText }};">0 completed jobs yet. Verification confirms identity and trade certification, independent of a review history.</div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:10px;">SERVICE DIRECTION</div>
+                <div style="display:inline-flex;align-items:center;gap:7px;background:#145A8D;color:#fff;padding:9px 15px;border-radius:100px;font-size:13px;font-weight:700;">
+                  <span class="msym" style="font-size:17px;">directions_walk</span>Comes to you
+                </div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};display:flex;align-items:center;">
+                <div style="flex:1;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:5px;">STARTING FROM</div>
+                  <div style="display:flex;align-items:baseline;gap:1px;font-family:'IBM Plex Mono',monospace;color:{{ pal.textPrimary }};">
+                    <span style="font-size:15px;color:{{ pal.textMuted }};">P</span><span style="font-size:28px;font-weight:600;line-height:1;">150</span>
+                  </div>
+                </div>
+                <div style="font-size:11.5px;line-height:1.5;color:{{ pal.textMuted }};max-width:150px;text-align:right;">Call-out fee. The quote comes back on your request.</div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:16px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Request booking</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">4 · LISTING DETAIL</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">The identity card overlaps the photo band; verification stands on its own with no fabricated rating for a provider with zero jobs</div>
+      </div>
+      <div data-screen-label="Booking" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;gap:6px;">
+              <sc-for list="{{ bookingTabs }}" as="tab" hint-placeholder-count="2">
+                <div onClick="{{ tab.onClick }}" style="flex:1;text-align:center;padding:11px;font-size:13px;font-weight:700;border-radius:14px;cursor:pointer;color:{{ tab.color }};background:{{ tab.bg }};box-shadow:{{ tab.shadow }};">{{ tab.label }}</div>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ isRequestTab }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px 18px 0;display:flex;flex-direction:column;gap:11px;">
+                <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Verified · from P150</div>
+                  </div>
+                </div>
+
+                <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:10px;">SERVICE DIRECTION</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{ directionOptions }}" as="dir" hint-placeholder-count="2">
+                      <div onClick="{{ dir.onClick }}" style="display:flex;align-items:center;gap:11px;border:1.5px solid {{ dir.borderColor }};background:{{ dir.bg }};border-radius:15px;padding:13px 14px;cursor:pointer;">
+                        <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ dir.dotBorder }};background:{{ dir.dotBg }};flex-shrink:0;"></div>
+                        <div style="flex:1;">
+                          <div style="font-size:13.5px;font-weight:700;color:{{ dir.textColor }};">{{ dir.label }}</div>
+                          <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">{{ dir.sub }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <sc-if value="{{ needsLocation }}" hint-placeholder-val="{{ true }}">
+                  <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">YOUR LOCATION</div>
+                    <div style="display:flex;align-items:center;gap:10px;border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;">
+                      <span class="msym" style="font-size:19px;color:{{ pal.accentText }};">location_on</span>
+                      <div style="flex:1;font-size:13.5px;color:{{ pal.textPrimary }};">Plot 4521, Block 8, Gaborone</div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">WHEN</div>
+                  <div style="display:flex;align-items:center;gap:10px;border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;">
+                    <span class="msym" style="font-size:19px;color:{{ pal.accentText }};">schedule</span>
+                    <div style="flex:1;font-size:13.5px;color:{{ pal.textPrimary }};">Today, 14:00</div>
+                  </div>
+                </div>
+
+                <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                  <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">payments</span>
+                  <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Kabelo quotes you back. Nothing is charged now, and you pay him directly.</div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-top:4px;margin-bottom:22px;">Send booking request</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isStatusTab }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px 18px 22px;display:flex;flex-direction:column;gap:12px;">
+                <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                  <div style="display:flex;gap:6px;margin-bottom:12px;">
+                    <div style="flex:1;height:5px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                    <div style="flex:1;height:5px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                    <div style="flex:1;height:5px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                    <div style="flex:1;height:5px;border-radius:3px;background:{{ pal.divider }};"></div>
+                  </div>
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:3px;">STAGE 3 OF 4</div>
+                  <div style="font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Service delivered</div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Arrived 14:06 · finished 15:20</div>
+                  </div>
+                  <div style="width:36px;height:36px;border-radius:12px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:18px;color:{{ pal.accentText }};">call</span></div>
+                </div>
+
+                <div style="background:radial-gradient(130% 115% at 82% -12%, #1E7BB5 0%, #145A8D 46%, #0D3D62 100%);border-radius:22px;padding:18px;color:#fff;box-shadow:0 10px 24px rgba(13,61,98,0.28);">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.72);margin-bottom:8px;">PAY KABELO DIRECTLY</div>
+                  <div style="display:flex;align-items:baseline;gap:2px;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;">
+                    <span style="font-size:17px;color:rgba(255,255,255,0.8);">P</span><span style="font-size:34px;font-weight:600;line-height:1;letter-spacing:-1px;">250</span><span style="font-size:17px;color:rgba(255,255,255,0.8);">.00</span>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.16);padding:6px 11px;border-radius:100px;font-size:11px;font-weight:700;"><span class="msym" style="font-size:15px;">payments</span>Cash</div>
+                    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.16);padding:6px 11px;border-radius:100px;font-size:11px;font-weight:700;"><span class="msym" style="font-size:15px;">smartphone</span>Orange Money</div>
+                  </div>
+                  <div style="font-size:11.5px;line-height:1.5;color:rgba(255,255,255,0.8);padding-top:12px;border-top:1px solid rgba(255,255,255,0.16);">In person, before Kabelo closes the job. Ipelege does not process this payment.</div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:oklch(0.97 0.035 80);border:1.5px solid oklch(0.86 0.09 80);color:oklch(0.45 0.13 80);border-radius:15px;padding:14px 0;font-size:13.5px;font-weight:700;">
+                  <span class="msym" style="font-size:18px;">report_problem</span>Something went wrong
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">5–6 · BOOKING REQUEST / STATUS</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Direction is a radio card set; the payment moment gets the hero treatment because it is the one thing that must not be misread</div>
+      </div>
+      <div data-screen-label="Booking status states" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <div style="display:flex;flex-wrap:wrap;gap:5px;width:380px;">
+          <sc-for list="{{ bookingStateTabs }}" as="t" hint-placeholder-count="11">
+            <div onClick="{{ t.onClick }}" style="font-size:9.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;padding:5px 8px;border-radius:6px;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};border:1px solid {{ t.border }};">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:16px;font-weight:700;color:{{ pal.textPrimary }};">Your booking</div>
+              <div style="font-size:10.5px;font-weight:700;color:#fff;background:oklch(0.5 0.13 180);padding:5px 11px;border-radius:100px;">Plumbing</div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};border-left:4px solid {{ bsTone.dot }};">
+                <div style="display:flex;align-items:center;gap:8px;background:{{ bsTone.bg }};color:{{ bsTone.fg }};padding:7px 13px;border-radius:100px;width:fit-content;font-size:12px;font-weight:700;margin-bottom:14px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:{{ bsTone.dot }};flex-shrink:0;"></div>
+                  Waiting on Kabelo
+                </div>
+                <sc-if value="{{ bsShowSteps }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;gap:6px;margin-bottom:14px;">
+                    <sc-for list="{{ bsSteps }}" as="st" hint-placeholder-count="6">
+                      <div style="height:5px;border-radius:3px;background:{{ st.color }};width:{{ st.w }}px;"></div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="font-size:19px;font-weight:700;line-height:1.25;color:{{ pal.textPrimary }};">Request sent</div>
+                <sc-if value="{{ bsShowBody }}" hint-placeholder-val="{{ true }}">
+                  <div style="font-size:13.5px;line-height:1.55;color:{{ pal.textMuted }};margin-top:7px;">{{ bs.body }}</div>
+                </sc-if>
+              </div>
+            </div>
+
+            <sc-if value="{{ bsShowPay }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:12px 18px 0;">
+                <div style="background:radial-gradient(130% 115% at 82% -12%, #1E7BB5 0%, #145A8D 46%, #0D3D62 100%);border-radius:22px;padding:18px;color:#fff;box-shadow:0 10px 24px rgba(13,61,98,0.28);">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.72);margin-bottom:8px;">PAY KABELO DIRECTLY, NOW</div>
+                  <div style="display:flex;align-items:baseline;gap:2px;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;">
+                    <span style="font-size:17px;color:rgba(255,255,255,0.8);">P</span><span style="font-size:34px;font-weight:600;line-height:1;letter-spacing:-1px;">250</span><span style="font-size:17px;color:rgba(255,255,255,0.8);">.00</span>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.16);padding:6px 11px;border-radius:100px;font-size:11px;font-weight:700;"><span class="msym" style="font-size:15px;">payments</span>Cash</div>
+                    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.16);padding:6px 11px;border-radius:100px;font-size:11px;font-weight:700;"><span class="msym" style="font-size:15px;">smartphone</span>Orange Money</div>
+                  </div>
+                  <div style="font-size:11.5px;line-height:1.5;color:rgba(255,255,255,0.8);padding-top:12px;border-top:1px solid rgba(255,255,255,0.16);">In person, while Kabelo is still with you. Ipelege does not process this payment and never holds your money.</div>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="padding:12px 18px 0;">
+              <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                  <div style="display:flex;align-items:center;gap:5px;margin-top:2px;">
+                    <span class="msym" style="font-size:14px;color:{{ pal.verifiedText }};">verified_user</span>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};">Verified · Plumbing</div>
+                  </div>
+                </div>
+                <div style="width:36px;height:36px;border-radius:12px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:18px;color:{{ pal.accentText }};">call</span></div>
+              </div>
+            </div>
+
+            <sc-if value="{{ bsShowNote }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:12px 18px 0;">
+                <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.sectionAlt }};border-radius:16px;padding:13px 14px;">
+                  <span class="msym" style="font-size:18px;color:{{ pal.textFaint }};">info</span>
+                  <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.textMuted }};">{{ bs.note }}</div>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="flex:1;"></div>
+            <div style="padding:16px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:{{ bsBtnBg }};color:{{ bsBtnColor }};border:1.5px solid {{ bsBtnBorder }};border-radius:15px;padding:15px 0;font-size:15px;font-weight:700;cursor:pointer;">Cancel request</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">BOOKING STATUS · 11 STATES</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Tap a state above. Payment sits at step 4, before the provider marks complete — the correction the activity diagrams forced. Three states carry provisional copy where the spec is still open.</div>
+      </div>
+
+      <!-- SCREEN 7: Ride request & tracking -->
+      <div data-screen-label="Ride request" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="height:300px;background:linear-gradient(165deg,#123A55 0%,#0D2436 100%);position:relative;display:flex;align-items:center;justify-content:center;">
+              <div style="position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:#fff;">arrow_back</span></div>
+              <div style="text-align:center;color:rgba(255,255,255,0.28);">
+                <span class="msym" style="font-size:36px;">navigation</span>
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;margin-top:4px;">LIVE MAP · DRIVER LOCATION</div>
+              </div>
+              <div style="position:absolute;bottom:16px;left:16px;right:16px;background:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(13,36,54,0.34);">
+                <div style="width:40px;height:40px;border-radius:14px;background:oklch(0.95 0.035 230);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:21px;color:oklch(0.5 0.13 230);">directions_car</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:14px;font-weight:700;color:#0D2436;">Arriving in 4 min</div>
+                  <div style="font-size:11.5px;color:#5F7387;">Onalenna is 1.1 km away</div>
+                </div>
+                <div style="width:8px;height:8px;border-radius:50%;background:oklch(0.6 0.13 152);"></div>
+              </div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+                  <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(140deg,#3D93C4,#145A8D);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">OM</div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">Onalenna M.</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:1px;">Toyota Corolla · silver</div>
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:700;color:{{ pal.textPrimary }};background:{{ pal.chipNeutralBg }};padding:6px 11px;border-radius:9px;">B 123 ABC</div>
+                </div>
+                <div style="display:flex;gap:9px;">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:{{ pal.selectedBg }};color:{{ pal.accentText }};border-radius:14px;padding:12px 0;font-size:13px;font-weight:700;"><span class="msym" style="font-size:18px;">call</span>Call</div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:{{ pal.selectedBg }};color:{{ pal.accentText }};border-radius:14px;padding:12px 0;font-size:13px;font-weight:700;"><span class="msym" style="font-size:18px;">chat_bubble</span>Message</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:12px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                  <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;">
+                    <div style="width:9px;height:9px;border-radius:50%;background:#145A8D;"></div>
+                    <div style="width:2px;height:28px;background:{{ pal.divider }};margin:3px 0;"></div>
+                    <div style="width:9px;height:9px;border-radius:2px;background:oklch(0.55 0.19 25);"></div>
+                  </div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:600;color:{{ pal.textPrimary }};">Airport Junction Mall</div>
+                    <div style="font-size:10.5px;color:{{ pal.textFaint }};margin-bottom:14px;">Pickup</div>
+                    <div style="font-size:13.5px;font-weight:600;color:{{ pal.textPrimary }};">Plot 4521, Block 8</div>
+                    <div style="font-size:10.5px;color:{{ pal.textFaint }};">Destination · 6.4 km</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:9.5px;font-weight:700;letter-spacing:0.5px;color:{{ pal.textFaint }};">FARE</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:{{ pal.textPrimary }};">P120</div>
+                    <div style="font-size:10px;color:{{ pal.textMuted }};">in cash</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:1;"></div>
+            <div style="padding:16px 18px 22px;display:flex;gap:10px;">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:{{ pal.cardBg }};color:{{ pal.accentText }};border-radius:15px;padding:14px 0;font-size:13.5px;font-weight:700;box-shadow:{{ pal.shCard }};"><span class="msym" style="font-size:18px;">share</span>Share trip</div>
+              <div style="width:100px;display:flex;align-items:center;justify-content:center;background:oklch(0.97 0.02 25);border:1.5px solid oklch(0.86 0.07 25);color:oklch(0.5 0.17 25);border-radius:15px;padding:12.5px 0;font-size:13.5px;font-weight:700;">Cancel</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">7 · RIDE REQUEST &amp; TRACKING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">The one auto-dispatch flow. Driver, vehicle, plate and route each get their own card, and the fare states it is cash</div>
+      </div>
+      <div data-screen-label="Rate and review" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:26px 22px 0;">
+              <div style="font-size:21px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:6px;">How did it go?</div>
+              <div style="font-size:13px;color:{{ pal.textMuted }};">Your rating is the only signal a new provider has.</div>
+            </div>
+            <div style="padding:18px 22px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px;">
+                  <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Kabelo's Plumbing &amp; Repairs</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Completed today · P250</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:center;gap:10px;padding:6px 0 4px;">
+                  <sc-for list="{{ ratingStars }}" as="star" hint-placeholder-count="5">
+                    <div onClick="{{ star.onClick }}" style="cursor:pointer;"><span class="msym msym-fill" style="font-size:36px;color:{{ star.color }};">star</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 22px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">COMMENT · OPTIONAL</div>
+                <div style="border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;font-size:13px;color:{{ pal.textFaint }};height:86px;">On time, good work...</div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:16px 22px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-bottom:10px;">Submit review</div>
+              <div style="text-align:center;font-size:13px;font-weight:700;color:{{ pal.textMuted }};">Skip</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">8 · RATE &amp; REVIEW</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Stars are Material glyphs on the booking card itself, and the copy says why the rating matters for a provider with no history</div>
+      </div>
+
+    </div>
+
+      </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const REQUIREMENTS = {
+  rides: ['Driving licence', 'Vehicle registration'],
+  movers: ['Driving licence', 'Vehicle registration'],
+  rentals: ['Proof of ownership', 'Property inspection'],
+  beauty: ['Identity verification'],
+  plumbing: ['Plumbing certification', 'Identity verification'],
+  electrical: ['Electrical licence', 'Identity verification'],
+  tiling: ['Proof of past work', 'Identity verification'],
+  catering: ['Food handling permit', 'Identity verification'],
+  hire: ['Proof of equipment ownership', 'Identity verification'],
+};
+
+const CATS = [
+  { key: 'rides', mono: 'RI', glyph: 'directions_car', hue: 230, label: 'Rides', supply: 'ok', supplyText: '62 drivers nearby' },
+  { key: 'movers', mono: 'MV', glyph: 'local_shipping', hue: 205, label: 'Movers & hauling', supply: 'ok', supplyText: '21 trucks in Gaborone' },
+  { key: 'rentals', mono: 'PR', glyph: 'meeting_room', hue: 255, label: 'Property rentals', supply: 'ok', supplyText: '140 rooms listed' },
+  { key: 'beauty', mono: 'HB', glyph: 'content_cut', hue: 330, label: 'Hairdressing & beauty', supply: 'thin', supplyText: 'New in Gaborone · 4 providers' },
+  { key: 'plumbing', mono: 'PL', glyph: 'plumbing', hue: 180, label: 'Plumbing', supply: 'thin', supplyText: 'New in Gaborone · 6 plumbers' },
+  { key: 'electrical', mono: 'EL', glyph: 'electrical_services', hue: 85, label: 'Electrical', supply: 'thin', supplyText: 'New in Gaborone · 4 electricians' },
+  { key: 'tiling', mono: 'TL', glyph: 'grid_view', hue: 40, label: 'Tiling', supply: 'thin', supplyText: 'New in Gaborone · 3 tilers' },
+  { key: 'catering', mono: 'CA', glyph: 'restaurant', hue: 25, label: 'Catering', supply: 'thin', supplyText: 'New in Gaborone · 3 home cooks' },
+  { key: 'hire', mono: 'HR', glyph: 'chair', hue: 300, label: 'Hire', supply: 'thin', supplyText: 'New in Gaborone · 2 providers' },
+];
+
+const DEEP = '#145A8D';
+
+const PAL = {
+  light: {
+    screenBg: '#ffffff', screenBg2: '#EDF3F8', cardBg: '#ffffff', cardBorder: 'oklch(0.91 0.008 250)',
+    textPrimary: '#0D2436', textSecondary: 'oklch(0.32 0.012 250)', textMuted: '#5F7387', textFaint: '#9CAFBF',
+    inputBorder: '#DCE7EF', inputBg: '#ffffff', divider: '#E9F0F5', navBg: '#ffffff', navMuted: '#9CAFBF',
+    shCard: '0 4px 14px rgba(20,90,141,0.06)', shRaise: '0 6px 20px rgba(20,90,141,0.07)', shNav: '0 -6px 24px rgba(20,90,141,0.08)',
+    stripe1: 'oklch(0.93 0.008 250)', stripe2: 'oklch(0.97 0.004 250)', chipNeutralBg: '#E1EDF5', chipNeutralText: '#5F7387',
+    verifiedBg: 'oklch(0.95 0.03 152)', verifiedText: 'oklch(0.38 0.11 152)', pendingBg: 'oklch(0.96 0.045 80)', pendingText: 'oklch(0.45 0.13 80)',
+    notUploadedBg: '#E1EDF5', notUploadedText: '#5F7387', selectedBg: 'oklch(0.96 0.02 235)', sectionAlt: 'oklch(0.97 0.004 250)',
+    infoBg: 'oklch(0.96 0.02 235)', infoBorder: 'oklch(0.88 0.03 235)', infoTitle: '#061326', infoText: '#145A8D',
+    accentText: '#145A8D', creditColor: 'oklch(0.5 0.13 152)', subtleBg: 'oklch(0.965 0.006 250)',
+    dangerBg: 'oklch(0.96 0.04 25)', dangerText: 'oklch(0.48 0.17 25)',
+  },
+  dark: {
+    screenBg: 'oklch(0.18 0.015 235)', screenBg2: 'oklch(0.145 0.014 235)', cardBg: 'oklch(0.235 0.016 235)', cardBorder: 'oklch(0.33 0.016 235)',
+    textPrimary: 'oklch(0.96 0.004 250)', textSecondary: 'oklch(0.82 0.01 250)', textMuted: 'oklch(0.68 0.012 250)', textFaint: 'oklch(0.6 0.012 250)',
+    inputBorder: 'oklch(0.4 0.014 250)', inputBg: 'oklch(0.23 0.014 250)', divider: 'oklch(0.33 0.014 250)', navBg: 'oklch(0.2 0.014 250)', navMuted: 'oklch(0.55 0.012 250)',
+    shCard: '0 4px 14px rgba(0,0,0,0.30)', shRaise: '0 6px 20px rgba(0,0,0,0.34)', shNav: '0 -6px 24px rgba(0,0,0,0.36)',
+    stripe1: 'oklch(0.28 0.012 250)', stripe2: 'oklch(0.24 0.01 250)', chipNeutralBg: 'oklch(0.3 0.014 250)', chipNeutralText: 'oklch(0.8 0.01 250)',
+    verifiedBg: 'oklch(0.3 0.06 152)', verifiedText: 'oklch(0.85 0.09 152)', pendingBg: 'oklch(0.32 0.07 80)', pendingText: 'oklch(0.88 0.1 80)',
+    notUploadedBg: 'oklch(0.3 0.014 250)', notUploadedText: 'oklch(0.75 0.012 250)', selectedBg: 'oklch(0.28 0.05 235)', sectionAlt: 'oklch(0.2 0.012 250)',
+    infoBg: 'oklch(0.26 0.05 235)', infoBorder: 'oklch(0.36 0.06 235)', infoTitle: '#bcdcf5', infoText: '#9dcdf0',
+    accentText: '#75BDEB', creditColor: 'oklch(0.68 0.13 152)', subtleBg: 'oklch(0.21 0.012 250)',
+    dangerBg: 'oklch(0.32 0.07 25)', dangerText: 'oklch(0.88 0.1 25)',
+  },
+};
+
+class Component extends DCLogic {
+  state = {
+    darkMode: false, appearanceMode: 'light',
+    otp: ['', '', '', ''], consent1: false, consent2: false,
+    bookingTab: 'request', bookingDirection: 'provider_comes',
+    providerCategory: 'movers', topupAmount: 200, topupMethod: 'orange',
+    rating: 4, bookingState: 'REQUESTED', browseDirection: 'any',
+    listingPriceMode: 'from', listingActive: true,
+  };
+
+  setAppearance = (mode) => this.setState({ appearanceMode: mode, darkMode: mode === 'dark' });
+  setRating = (n) => this.setState({ rating: n });
+  setBookingState = (k) => this.setState({ bookingState: k });
+  setBrowseDirection = (k) => this.setState({ browseDirection: k });
+  setPriceMode = (k) => this.setState({ listingPriceMode: k });
+  toggleListingActive = () => this.setState((s) => ({ listingActive: !s.listingActive }));
+  toggleConsent1 = () => this.setState((s) => ({ consent1: !s.consent1 }));
+  toggleConsent2 = () => this.setState((s) => ({ consent2: !s.consent2 }));
+
+  onOtpChange = (e) => {
+    const i = parseInt(e.target.dataset.idx, 10);
+    const v = e.target.value.replace(/[^0-9]/g, '').slice(-1);
+    this.setState((s) => { const otp = [...s.otp]; otp[i] = v; return { otp }; });
+    if (v && e.target.nextElementSibling) e.target.nextElementSibling.focus();
+  };
+
+  renderVals() {
+    const s = this.state;
+    const pal = s.darkMode ? PAL.dark : PAL.light;
+
+    const appearance = [
+      { key: 'light', label: 'Light', active: s.appearanceMode === 'light', onClick: () => this.setAppearance('light') },
+      { key: 'dark', label: 'Dark', active: s.appearanceMode === 'dark', onClick: () => this.setAppearance('dark') },
+      { key: 'system', label: 'System', active: s.appearanceMode === 'system', onClick: () => this.setAppearance('system') },
+    ].map((a) => ({
+      ...a,
+      bg: a.active ? pal.accentText : 'transparent',
+      color: a.active ? '#fff' : pal.textMuted,
+      rowBg: a.active ? pal.selectedBg : pal.cardBg,
+      borderColor: a.active ? pal.accentText : pal.cardBorder,
+      textColor: a.active ? pal.accentText : pal.textPrimary,
+      dotBorder: a.active ? pal.accentText : pal.inputBorder,
+      dotBg: a.active ? pal.accentText : 'transparent',
+    }));
+
+    const categories = CATS.map((c) => ({
+      ...c,
+      tint: `oklch(0.95 0.035 ${c.hue})`,
+      ink: `oklch(0.5 0.13 ${c.hue})`,
+      supplyDotColor: c.supply === 'ok' ? 'oklch(0.6 0.13 152)' : pal.navMuted,
+    }));
+
+    const selectedCat = CATS.find((c) => c.key === s.providerCategory) || CATS[0];
+    const otpBoxes = s.otp.map((value, index) => ({ value, index }));
+
+    const isRequestTab = s.bookingTab === 'request';
+    const isStatusTab = s.bookingTab === 'status';
+    const bookingTabs = [
+      { key: 'request', label: 'Request', color: isRequestTab ? '#fff' : pal.textMuted, bg: isRequestTab ? pal.accentText : pal.cardBg, shadow: isRequestTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'request' }) },
+      { key: 'status', label: 'Status', color: isStatusTab ? '#fff' : pal.textMuted, bg: isStatusTab ? pal.accentText : pal.cardBg, shadow: isStatusTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'status' }) },
+    ];
+
+    const dirDefs = [
+      { key: 'provider_comes', label: 'Comes to you', sub: 'Provider travels to your location' },
+      { key: 'customer_goes', label: 'You go to them', sub: 'Service is at their premises' },
+    ];
+    const directionOptions = dirDefs.map((d) => {
+      const selected = d.key === s.bookingDirection;
+      return { ...d,
+        borderColor: selected ? pal.accentText : pal.inputBorder,
+        bg: selected ? pal.selectedBg : pal.cardBg,
+        textColor: selected ? pal.accentText : pal.textPrimary,
+        dotBorder: selected ? pal.accentText : pal.inputBorder,
+        dotBg: selected ? pal.accentText : 'transparent',
+        onClick: () => this.setState({ bookingDirection: d.key }) };
+    });
+    const needsLocation = s.bookingDirection === 'provider_comes';
+
+    const browseDirDefs = [
+      { key: 'any', label: 'Any direction' },
+      { key: 'to_you', label: 'Comes to you' },
+      { key: 'to_me', label: 'You go to them' },
+    ];
+    const browseDirections = browseDirDefs.map((d) => {
+      const selected = d.key === s.browseDirection;
+      return { ...d, bg: selected ? pal.accentText : pal.cardBg, color: selected ? '#fff' : pal.textPrimary, borderColor: selected ? pal.accentText : pal.cardBorder, onClick: () => this.setBrowseDirection(d.key) };
+    });
+    const browseListings = [
+      { name: "Kabelo's Plumbing & Repairs", tag: 'Comes to you · Block 8', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P150' },
+      { name: 'Mpho Pipes & Drains', tag: 'Comes to you · Extension 12', badge: 'New on Ipelege', badgeGlyph: 'schedule', badgeBg: pal.chipNeutralBg, badgeText: pal.chipNeutralText, price: 'P120' },
+      { name: 'Tshepo Plumbing Works', tag: 'Comes to you · Broadhurst', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P200' },
+    ];
+
+    const BSTATES = [
+      { key: 'REQUESTED', chip: 'Waiting on Kabelo', tone: 'pend', step: 1, head: 'Request sent', body: 'Kabelo has until 14:00 today to accept. We will text you either way.', action: 'Cancel request', actionKind: 'ghost', note: '' },
+      { key: 'ACCEPTED', chip: 'Accepted', tone: 'ok', step: 2, head: 'Kabelo accepted', body: 'Today at 14:00, at Plot 4521, Block 8. Kabelo has your number.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'IN_PROGRESS', chip: 'In progress', tone: 'ok', step: 3, head: 'Job under way', body: 'Started 14:05. Kabelo will mark it done when the work is finished.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'AWAITING_PAYMENT', chip: 'Pay Kabelo now', tone: 'pay', step: 4, head: 'Work finished — pay Kabelo', body: '', action: 'I have paid Kabelo', actionKind: 'primary', note: '' },
+      { key: 'PENDING_CONFIRMATION', chip: 'Confirm it is done', tone: 'pend', step: 5, head: 'Kabelo marked this complete', body: 'Confirm the work was done so this booking can close. If something is wrong, say so instead.', action: 'Yes, it is done', actionKind: 'primary', note: 'Something is wrong' },
+      { key: 'COMPLETED', chip: 'Completed', tone: 'ok', step: 6, head: 'Booking closed', body: 'Paid P250.00 directly to Kabelo. Rate the job so the next customer knows what to expect.', action: 'Rate this booking', actionKind: 'outline', note: '' },
+      { key: 'DECLINED', chip: 'Declined', tone: 'bad', step: 0, head: 'Kabelo declined', body: 'No reason given, and none is required. Five other plumbers cover Block 8.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'EXPIRED', chip: 'Expired', tone: 'off', step: 0, head: 'No answer from Kabelo', body: 'The request timed out at 14:00. Nothing was charged to anyone.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'CANCELLED', chip: 'Cancelled', tone: 'off', step: 0, head: 'You cancelled this', body: 'Cancelled at 11:20, before Kabelo started. Kabelo has been told.', action: 'Book again', actionKind: 'outline', note: 'Cancellation rules are not settled — this copy is provisional' },
+      { key: 'NO_SHOW', chip: 'No-show', tone: 'bad', step: 0, head: 'Kabelo did not arrive', body: 'Reported at 15:00. Ipelege reviews repeat no-shows against a provider\'s verification.', action: 'See other plumbers', actionKind: 'primary', note: 'No fee rule exists yet — provisional copy' },
+      { key: 'DISPUTED', chip: 'Under review', tone: 'bad', step: 0, head: 'You raised a problem', body: 'Ipelege has both sides and will contact you. Payment stays between you and Kabelo.', action: 'Add more detail', actionKind: 'outline', note: 'Dispute handling is undesigned in the spec — provisional' },
+    ];
+    const TONES = {
+      ok: { bg: pal.verifiedBg, fg: pal.verifiedText, dot: 'oklch(0.6 0.13 152)' },
+      pend: { bg: pal.pendingBg, fg: pal.pendingText, dot: 'oklch(0.72 0.15 80)' },
+      bad: { bg: pal.dangerBg, fg: pal.dangerText, dot: 'oklch(0.58 0.19 25)' },
+      off: { bg: pal.chipNeutralBg, fg: pal.chipNeutralText, dot: pal.navMuted },
+      pay: { bg: pal.infoBg, fg: pal.infoTitle, dot: '#145A8D' },
+    };
+    const bs = BSTATES.find((b) => b.key === s.bookingState) || BSTATES[0];
+    const bsTone = TONES[bs.tone];
+    const bookingStateTabs = BSTATES.map((b) => {
+      const active = b.key === s.bookingState;
+      return { key: b.key, label: b.key.replace(/_/g, ' '), onClick: () => this.setBookingState(b.key),
+        bg: active ? '#145A8D' : 'transparent', color: active ? '#fff' : '#5F7387', border: active ? '#145A8D' : '#DCE7EF' };
+    });
+    const bsSteps = [1, 2, 3, 4, 5, 6].map((n) => ({ n,
+      color: bs.step === 0 ? pal.divider : (n <= bs.step ? 'oklch(0.6 0.13 152)' : pal.divider),
+      w: n === bs.step ? 22 : 8 }));
+    const bsPrimary = bs.actionKind === 'primary';
+    const bsBtnBg = bsPrimary ? '#145A8D' : 'transparent';
+    const bsBtnColor = bsPrimary ? '#fff' : (bs.actionKind === 'outline' ? '#145A8D' : pal.textMuted);
+    const bsBtnBorder = bsPrimary ? '#145A8D' : (bs.actionKind === 'outline' ? '#145A8D' : pal.inputBorder);
+
+    const ratingStars = [1, 2, 3, 4, 5].map((n) => ({ n, onClick: () => this.setRating(n), color: n <= s.rating ? '#145A8D' : pal.divider }));
+
+    const kycDocCounts = { rides: '4 documents', movers: '3 documents', rentals: '3 documents', beauty: '2 documents', plumbing: '3 documents', electrical: '3 documents', tiling: '2 documents', catering: '3 documents', hire: '3 documents' };
+    const kycPickCats = CATS.map((c) => {
+      const sel = c.key === s.providerCategory;
+      return { ...c,
+        tint: `oklch(0.95 0.035 ${c.hue})`, ink: `oklch(0.5 0.13 ${c.hue})`,
+        bg: sel ? pal.selectedBg : pal.cardBg,
+        border: sel ? pal.accentText : pal.cardBorder,
+        labelColor: sel ? pal.accentText : pal.textPrimary,
+        docCount: kycDocCounts[c.key],
+        onClick: () => this.setState({ providerCategory: c.key }) };
+    });
+
+    const pmDefs = [
+      { key: 'from', label: 'From', unit: 'starting price', hint: 'Customers see “from P400”. You quote the real amount on each request.' },
+      { key: 'fixed', label: 'Fixed', unit: 'per job', hint: 'One price, no quoting. Best where the work does not vary.' },
+      { key: 'hour', label: 'Per hour', unit: 'per hour', hint: 'Customers see the rate. The total depends on time on site.' },
+    ];
+    const activePm = pmDefs.find((m) => m.key === s.listingPriceMode) || pmDefs[0];
+    const priceModes = pmDefs.map((m) => {
+      const sel = m.key === s.listingPriceMode;
+      return { ...m, bg: sel ? pal.accentText : pal.cardBg, border: sel ? pal.accentText : pal.inputBorder, color: sel ? '#fff' : pal.textPrimary, onClick: () => this.setPriceMode(m.key) };
+    });
+
+    const hole = [{ bsChip: bs.chip, bsHead: bs.head, bsAction: bs.action, catLabel: selectedCat.label }];
+
+    return {
+      hole, pal, appearance, categories, otpBoxes,
+      onOtpChange: this.onOtpChange,
+      toggleConsent1: this.toggleConsent1, toggleConsent2: this.toggleConsent2,
+      consent1BorderColor: s.consent1 ? pal.accentText : pal.inputBorder,
+      consent1BgColor: s.consent1 ? pal.accentText : pal.inputBg,
+      consent2BorderColor: s.consent2 ? pal.accentText : pal.inputBorder,
+      consent2BgColor: s.consent2 ? pal.accentText : pal.inputBg,
+      bookingTabs, isRequestTab, isStatusTab, directionOptions, needsLocation,
+      browseDirections, browseListings,
+      bs, bsTone, bookingStateTabs, bsSteps, bsBtnBg, bsBtnColor, bsBtnBorder,
+      bsShowPay: bs.key === 'AWAITING_PAYMENT',
+      bsShowSteps: bs.step > 0,
+      bsShowNote: !!bs.note,
+      bsShowBody: !!bs.body,
+      ratingStars,
+      kycPickCats, priceModes, priceUnit: activePm.unit, priceHint: activePm.hint,
+      toggleListingActive: this.toggleListingActive,
+      listingToggleBg: s.listingActive ? pal.accentText : pal.chipNeutralBg,
+      listingToggleX: s.listingActive ? 21 : 3,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

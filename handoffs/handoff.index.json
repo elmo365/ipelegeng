@@ -3,62 +3,78 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-20T06:12:00+02:00",
+    "saved": "2026-08-20T20:15:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "16c56cb",
-      "subject": "Build the Flutter shell: theme, navigation, components"
+      "hash": "e3dfd83",
+      "subject": "Provision arm64 VPS stack; resolve ledger grain; add wallet.md"
     },
-    "summary": "Provisioned the production VPS and resolved the schema-blocking open questions. Got into the Azure arm64 box, switched it to SSH-key auth, discovered its big NVMe is ephemeral and attached a 64GB Premium SSD at /data instead, then stood up Postgres 16.4+PostGIS 3.4.3, Redis, MinIO and Caddy in Docker Compose - all arm64-native, localhost-bound, reboot-surviving. Then, via the interview skill, settled ledger-account grain as one wallet per provider (corroborated by data-model 1:1 and the design canvas), reframed the other blockers as admin/policy, and wrote docs/wallet.md consolidating the wallet flow end to end.",
-    "state": "Running arm64 data stack on the VM (no schema yet) + 30 spec docs including new wallet.md; still no product screens, no Django app",
+    "summary": "Full design resync, then real UI implementation. Took three passes: a first resync that was too thin, two rounds of user pushback that were both correct, and finally a four-way split of the design canvas in Claude Design that made the whole of it readable for the first time. 485 KB recovered against 262 KB truncated. Then built five screens and six components on the corrected tokens, with 97 tests passing.",
+    "state": "Design source complete and single-vintage (4 mobile parts + admin, none truncated); every colour read from PAL rather than inferred; 5 of ~30 screens built; no backend; never run on a device",
     "decisions": [
-      "One wallet per provider, not per category - sets the ledger PK; per-category reporting rides on JOURNAL_TRANSACTION. Corroborated by data-model USER||--||LEDGER_ACCOUNT and the design canvas load-bearing decision",
-      "Most 'blockers' are admin/policy not code (user framing): verified-badge meaning is ops, code stores a status flag; dispute window/retention are config; wallet naming is label+legal, not schema",
-      "SSH key auth set up before any provisioning because the password is in the transcript",
-      "Persistent data goes on a managed Premium SSD (/data), never the 110GB NVMe which is an Azure Direct Disk = ephemeral, wiped on deallocate",
-      "Docker Compose stack, data-root and volumes on /data, everything bound to 127.0.0.1",
-      "imresamu/postgis over official postgis/postgis - the official image has no arm64 build and silently pulls amd64"
+      "Discard rather than merge design snapshots - a half-stale archive is the trap that produced the bad first resync. Cost the old PAL; the split recovered it anyway",
+      "Split the canvas into four parts, done in Claude Design - the 256 KiB cap is server-side on get_file with no range or pagination, so the repo cannot initiate it. Sent split-plan.md into the project rather than making the user retype it",
+      "Match the design's token names exactly even where mine read better: screenBg2 is the page, screenBg stayed white. Future syncs diff directly",
+      "Supply is two states in the app (ok/thin), three in the back office (HEALTHY/THIN/CRITICAL) - different audiences. The copy is the real decision: 'New in Gaborone · 2 providers', never '2 nearby'",
+      "JourneyShape on CategoryToken so rentals structurally cannot offer a booking",
+      "DecisionPair ships as one component so 'never two blue buttons side by side' cannot be half-applied",
+      "New-provider boost is one slot, non-compounding, second position - earns a look, does not claim to be the best match"
     ],
     "working": [
-      "ssh ipelege logs in by key (no password); host key pinned; secrets+.env hold creds, key path, Azure context, stack passwords",
-      "VM: Standard_D2pds_v6, Ubuntu 24.04, aarch64, 2vCPU/7.7GB, SouthAfricaNorth zone 3, passwordless sudo, 40.127.10.234",
-      "64GB Premium SSD mounted at /data by UUID (fstab, reboot-safe); docker data-root at /data/docker",
-      "Stack all healthy, arm64-native, restart:unless-stopped, docker enabled: Postgres 16.4+PostGIS 3.4.3, Redis 7 (auth), MinIO, Caddy",
-      "docs/wallet.md consolidates the wallet system; ledger-grain decision resolved and cross-linked across 6 docs + README"
+      "Four mobile design parts + admin canvas, all truncated:false. 485 KB vs 262 KB from the single-file pull",
+      "PAL recovered: both modes read, not derived. Dark surfaces are hue 235 and dark shadows are black, both of which the inferred values had wrong",
+      "Navigation/back rules, state restoration, motion table, haptics, loading rules, light/dark rules all recovered and recorded in design-system.md",
+      "Five screens: consumer home, category browse, listing detail, provider dashboard, wallet. Six new components incl. surface depths, ledger entry with VAT tie-line, week chart",
+      "97 tests pass, flutter analyze clean. The 47-test baseline carried unverified through two handoffs was re-run and confirmed",
+      "Tests caught four real bugs: two 360dp overflows, StatusChip pill blowout, and rentals offering a booking it has no flow for"
     ],
     "notWorking": [
-      "No product screens, no Django backend - every Flutter route still renders PlaceholderScreen",
-      "Stack has no schema - Postgres running with PostGIS but no app tables (deliberate; waits on the booking-state blocker)",
-      "Nothing public - Postgres/Redis/MinIO localhost-only by design; Caddy has no domain and no NSG rule for 80/443",
-      "Not a durable host - 'Azure for Students' sub (~$100 cap), auto-deallocated once mid-session; real hosting quote still outstanding",
-      "47-passing-tests claim carried from prior handoff, not re-verified this session",
-      "VM has no swap yet"
+      "No way into the app - no splash, register, sign in, OTP or auth gate. Boots straight to Home. This is the ordering mistake noted in next steps",
+      "No Django backend; screens read core/demo_data.dart which is scaffolding to delete",
+      "Most screens still placeholders: booking request/status, ride tracking, rate & review, mode switcher, my categories, inbox, top up, become a provider, KYC, six settings screens",
+      "Never run on a handset or emulator - carried from two prior handoffs. The surface rework has never been seen rendered",
+      "navPillBg is the one remaining derived colour (inline literal, not a token)",
+      "VM stack untouched, still no schema"
     ],
     "doNotRepeat": [
-      "postgis/postgis:16-3.4 on arm64 - no arm64 manifest, pulls amd64, exec format error; use imresamu/postgis",
-      "curl | sudo bash installers - blocked by auto-mode classifier; use stepwise apt-repository installs",
-      "Backgrounding az login over a one-shot SSH command (setsid/nohup &) - SSH hangs on the held channel, timeout kills it, output lost; use systemd-run --unit --collect then read the file in a separate SSH call",
-      "az login --use-device-code --only-show-errors - the flag suppresses the device-code prompt itself; drop it",
-      "Bash heredocs for large local files - use the Write tool and scp (still true from last session)"
+      "Claiming 'components came through complete' when meaning 'retrieved' - the set had gone 4 groups to 7. Say applied or retrieved, never blur them",
+      "Merging an old snapshot with a fresh pull to cover a truncated tail - produces a file where some values are current and some are days stale with nothing marking which",
+      "Grepping for backRules/motionSpecs/haptics to find the spec tables - the design rebuilt them as prose; the array names return zero hits in all four parts",
+      "Trying to split the canvas from the repo side - impossible by construction, reading the tail is what is blocked",
+      "A bare grep -o with a complex alternation over a 256 KB HTML file - catastrophic backtracking, 120s timeout. Use Python for structured extraction",
+      "sed -i '1i import ...' on a Dart file with a library; directive - puts the import above the doc comment and fails to parse"
     ],
     "nextSteps": [
-      "Run the Flutter shell on a handset/emulator (still never done)",
-      "Decide what happens to already-accepted bookings when a category is revoked - the last genuinely-code blocker; admin.md says Revoke cannot ship without it",
-      "Start the Django backend against the running Postgres (127.0.0.1:5432, creds in secrets, PostGIS enabled); model LEDGER_ACCOUNT/JOURNAL_* now that grain is settled",
-      "Build first real screens: consumer Home, category browse, listing detail",
-      "Add swap on the VM; decide student-sub vs local Tier III (Digital Delta DC1) quote",
-      "When a domain exists: point Caddy at it, open NSG 80/443, front MinIO/API (Caddyfile stub already at /data/stack)"
+      "Close the account gap first (splash, register, sign in, OTP, biometric+passcode, consent, auth gate, location) - the design's own stated build order, and the auth gate is a dependency of booking request",
+      "Booking request + booking status: 11 states, carrying the payment-before-mark-complete correction",
+      "Pair the admin side in where a mobile flow needs it - first pair is KYC submission to admin verification queue to document review",
+      "Run it on a handset or emulator before building ten more screens on tokens nobody has looked at",
+      "Provider management surface: mode switcher, my categories, booking inbox, top up, become a provider, nine KYC screens",
+      "Six settings screens from part 4, then the stage-7 loop prompt",
+      "Retire stripe1/stripe2/info* from AppPalette if a later pull confirms they are gone rather than merely unused"
     ],
     "blockers": [
-      "Already-accepted bookings on category revoke - the last code/behaviour blocker; blocks the admin Revoke action shipping",
-      "Verified badge meaning - admin/policy not code; ops decides raise-vs-lower, schema stores a status",
-      "Wallet naming vs compliance.md - goes to counsel with EPS; does not change schema",
-      "Reversal policy (who/when/partial/no-show fee), negative-balance rule, min top-up, per-category commission rates - all open in their home docs and wallet.md#open",
-      "Hosting - student sub not durable; local Tier III price still unquoted",
-      "External/legal unchanged: EPS licensing, data residency (DPA 2024), KYC retention, GPS DPIA"
+      "Already-accepted bookings on category revoke - unchanged, still the code blocker for the admin Revoke action",
+      "Late-cancellation fee amount - percentage, flat, or first-occurrence waiver. Screens written so the number drops in",
+      "No-show consequence for providers - what happens, and after how many",
+      "Commission rate per category - rides shows 8%, trades and rentals unresolved",
+      "Dispute turnaround - screens promise contact but name no timeframe",
+      "Not yet designed at all: customer-provider messaging, provider listing management at scale, empty/offline states",
+      "Wallet naming vs compliance.md - design says 'wallet balance', the project's CLAUDE.md still says 'commission credit' and no screen follows it",
+      "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-20-2015.md",
+      "saved": "2026-08-20T06:12:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "16c56cb",
+        "subject": "Build the Flutter shell: theme, navigation, components"
+      },
+      "summary": "Provisioned the production VPS and resolved the schema-blocking open questions. Postgres 16.4+PostGIS, Redis, MinIO and Caddy on an Azure arm64 box, all localhost-bound and reboot-surviving. Settled ledger-account grain as one wallet per provider and wrote docs/wallet.md."
+    },
     {
       "file": "handoffs/2026-08-20-0612.md",
       "saved": "2026-08-18T06:15:00+02:00",
@@ -67,7 +83,7 @@
         "hash": "e06616c",
         "subject": "Import design system; close specification gaps; decide stack"
       },
-      "summary": "Built the Flutter shell: theme, navigation, shared components, money formatting, 47 passing tests. Governing rule: central theme-driven UI, nothing hardcoded per screen. Then swept README, CONTRIBUTING, sdlc-overview and design-system so no document still describes the repo as pre-build."
+      "summary": "Built the Flutter shell: theme, navigation, shared components, money formatting, 47 passing tests. Governing rule: central theme-driven UI, nothing hardcoded per screen."
     },
     {
       "file": "handoffs/2026-08-18-0615.md",
@@ -77,7 +93,7 @@
         "hash": "dcc4735",
         "subject": "Rename app to Ipelege throughout docs; save session handoff"
       },
-      "summary": "Imported the Claude Design system into the repo, then closed the specification gaps the import exposed. Eight new documents and eleven revised. Backend, admin, routing and hosting decided. Coding deferred to the next session by user direction."
+      "summary": "Imported the Claude Design system into the repo, then closed the specification gaps the import exposed. Eight new documents and eleven revised. Backend, admin, routing and hosting decided."
     },
     {
       "file": "handoffs/2026-08-18-0321.md",
@@ -87,7 +103,7 @@
         "hash": "5aea5f2",
         "subject": "Add Ipelegeng specification documents"
       },
-      "summary": "Bootstrapped the repository: read all 21 specification documents, initialised git and pushed to github.com/elmo365/ipelegeng, stood up Serena and CodeGraph indexes, corrected the app name from Ipelegeng to Ipelege throughout the docs."
+      "summary": "Bootstrapped the repository: read all 21 specification documents, initialised git and pushed to github.com/elmo365/ipelegeng, stood up Serena and CodeGraph indexes, corrected the app name from Ipelegeng to Ipelege."
     }
   ]
 }

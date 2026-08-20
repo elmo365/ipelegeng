@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0;background:oklch(0.985 0.004 250);}
+a{color:#145A8D;}
+a:hover{color:#0e4570;}
+*{box-sizing:border-box;}
+.msym{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+.msym-fill{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;}
+@keyframes ipEnter{0%{opacity:0;transform:translateY(12px)}14%{opacity:1;transform:translateY(0)}86%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(12px)}}
+@keyframes ipOutA{0%,42%{opacity:1;transform:translateY(0)}56%,100%{opacity:0;transform:translateY(-10px)}}
+@keyframes ipInB{0%,42%{opacity:0;transform:translateY(10px)}56%,100%{opacity:1;transform:translateY(0)}}
+@keyframes ipFill{0%,34%{width:34%}58%,100%{width:67%}}
+@keyframes ipStepA{0%,40%{opacity:1}54%,100%{opacity:0}}
+@keyframes ipStepB{0%,40%{opacity:0}54%,100%{opacity:1}}
+</style>
+</helmet>
+
+<div style="font-family:'IBM Plex Sans',system-ui,sans-serif;color:#111111;background:oklch(0.985 0.004 250);min-height:100vh;">
+
+  <div style="background:#061326;padding:40px 48px 34px;display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:6px;"><img src="assets/mark-icon.png" alt="Ipelege mark" style="width:100%;height:100%;object-fit:contain;" /></div>
+      <img src="assets/wordmark-dark.png" alt="ipelege" style="height:28px;object-fit:contain;" />
+      <div style="width:1px;height:26px;background:rgba(255,255,255,0.22);"></div>
+      <div style="font-size:19px;font-weight:700;color:#ffffff;letter-spacing:-0.2px;">3 · Provider journey</div>
+    </div>
+    <div style="max-width:700px;font-size:14px;line-height:1.65;color:oklch(0.88 0.012 240);">Mode switch, provider home, my categories, booking inbox, commission credit, top-up, become a provider, all nine KYC screens, create listing, rental listing.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <a href="Ipelege%20Design%20System%20-%201%20Foundations.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">01</span>&nbsp;&nbsp;Foundations</a>
+      <a href="Ipelege%20Design%20System%20-%202%20Customer.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">02</span>&nbsp;&nbsp;Customer journey</a>
+      <span style="font-size:12.5px;font-weight:700;color:#061326;background:#ffffff;padding:7px 14px;border-radius:100px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">03</span>&nbsp;&nbsp;Provider journey</span>
+      <a href="Ipelege%20Design%20System%20-%204%20Specs.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.10);padding:7px 14px;border-radius:100px;text-decoration:none;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.6;">04</span>&nbsp;&nbsp;Account, settings &amp; specs</a>
+      <a href="Ipelege%20Admin%20Back%20Office.dc.html" style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.6);padding:7px 6px;text-decoration:none;">Back office &rarr;</a>
+    </div>
+  </div>
+  <div style="padding:0 48px 64px;">
+    <div style="display:inline-flex;gap:2px;background:oklch(0.94 0.006 250);border-radius:14px;padding:3px;margin-bottom:32px;">
+      <sc-for list="{{ appearance }}" as="mode" hint-placeholder-count="2">
+        <div onClick="{{ mode.onClick }}" style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:{{ mode.bg }};color:{{ mode.color }};">{{ mode.label }}</div>
+      </sc-for>
+    </div>
+
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Stage 4B · Switching between the two journeys</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Mode switcher" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;position:relative;">
+            <div style="padding:20px;opacity:0.32;">
+              <div style="font-size:19px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:14px;">Account</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="height:56px;border-radius:18px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};"></div>
+                <div style="height:56px;border-radius:18px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};"></div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="background:{{ pal.cardBg }};border-radius:28px 28px 0 0;padding:22px 20px 26px;box-shadow:0 -10px 30px rgba(13,36,54,0.20);">
+              <div style="width:40px;height:4px;border-radius:2px;background:{{ pal.divider }};margin:0 auto 20px;"></div>
+              <div style="font-size:18px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:6px;">Switch mode</div>
+              <div style="font-size:12.5px;line-height:1.5;color:{{ pal.textMuted }};margin-bottom:18px;">Same account, same number. Your bookings as a customer stay separate from the work you take on.</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;gap:13px;background:{{ pal.selectedBg }};border:1.5px solid {{ pal.accentText }};border-radius:18px;padding:15px;">
+                  <div style="width:42px;height:42px;border-radius:14px;background:{{ pal.accentText }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:#fff;">person</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.accentText }};">Consumer</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:1px;">Book rides and services</div>
+                  </div>
+                  <span class="msym msym-fill" style="font-size:22px;color:{{ pal.accentText }};">check_circle</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:13px;background:{{ pal.cardBg }};border:1.5px solid {{ pal.cardBorder }};border-radius:18px;padding:15px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:42px;height:42px;border-radius:14px;background:{{ pal.chipNeutralBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:{{ pal.textMuted }};">work</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">Service provider</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:1px;">Approved in 2 categories</div>
+                  </div>
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">MODE SWITCHER</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Two buttons, not a per-category toggle. Switching is navigation, not authentication — no re-login</div>
+      </div>
+      <div data-screen-label="Mode switcher - customer only" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;position:relative;">
+            <div style="padding:20px;opacity:0.32;">
+              <div style="font-size:19px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:14px;">Account</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="height:56px;border-radius:18px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};"></div>
+                <div style="height:56px;border-radius:18px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};"></div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="background:{{ pal.cardBg }};border-radius:28px 28px 0 0;padding:22px 20px 26px;box-shadow:0 -10px 30px rgba(13,36,54,0.20);">
+              <div style="width:40px;height:4px;border-radius:2px;background:{{ pal.divider }};margin:0 auto 20px;"></div>
+              <div style="font-size:18px;font-weight:700;color:{{ pal.textPrimary }};margin-bottom:6px;">Switch mode</div>
+              <div style="font-size:12.5px;line-height:1.5;color:{{ pal.textMuted }};margin-bottom:18px;">You are set up as a customer. Offering a service needs verification in that category first.</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;gap:13px;background:{{ pal.selectedBg }};border:1.5px solid {{ pal.accentText }};border-radius:18px;padding:15px;">
+                  <div style="width:42px;height:42px;border-radius:14px;background:{{ pal.accentText }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:#fff;">person</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.accentText }};">Consumer</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:1px;">Book rides and services</div>
+                  </div>
+                  <span class="msym msym-fill" style="font-size:22px;color:{{ pal.accentText }};">check_circle</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:13px;background:{{ pal.subtleBg }};border-radius:18px;padding:15px;opacity:0.75;">
+                  <div style="width:42px;height:42px;border-radius:14px;background:{{ pal.chipNeutralBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:{{ pal.textFaint }};">lock</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.textMuted }};">Service provider</div>
+                    <div style="font-size:11.5px;color:{{ pal.textFaint }};margin-top:1px;">Not available yet</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:15px 0;font-size:14.5px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);margin-top:14px;">
+                <span class="msym" style="font-size:19px;">add_business</span>Apply to offer a service
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">MODE SWITCHER · CUSTOMER ONLY</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Disabled with a reason and a route forward, never hidden. A hidden control reads as a missing feature</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Provider journey</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Provider home" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#3D93C4,#145A8D);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">KM</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;color:{{ pal.textMuted }};">Dumela, Kagiso</div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="font-size:15px;font-weight:700;color:{{ pal.textPrimary }};">Service provider</div>
+                  <span class="msym" style="font-size:16px;color:{{ pal.accentText }};">swap_horiz</span>
+                </div>
+              </div>
+              <div style="width:38px;height:38px;border-radius:14px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;position:relative;">
+                <span class="msym" style="font-size:20px;color:{{ pal.accentText }};">notifications</span>
+                <div style="position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:oklch(0.55 0.19 25);border:1.5px solid {{ pal.cardBg }};"></div>
+              </div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:radial-gradient(130% 115% at 82% -12%, #1E7BB5 0%, #145A8D 46%, #0D3D62 100%);border-radius:26px;padding:20px;color:#fff;box-shadow:0 12px 28px rgba(13,61,98,0.30);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:1.1px;color:rgba(255,255,255,0.72);">WALLET BALANCE</div>
+                  <div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.18);padding:5px 10px;border-radius:100px;">
+                    <div style="width:6px;height:6px;border-radius:50%;background:oklch(0.78 0.16 152);"></div>
+                    <div style="font-size:10.5px;font-weight:700;">Can accept work</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:2px;font-family:'IBM Plex Mono',monospace;margin-bottom:18px;">
+                  <span style="font-size:19px;font-weight:500;color:rgba(255,255,255,0.8);">P</span>
+                  <span style="font-size:44px;font-weight:600;line-height:1;letter-spacing:-1.5px;">340</span>
+                  <span style="font-size:20px;font-weight:500;color:rgba(255,255,255,0.8);">.00</span>
+                </div>
+                <div style="display:flex;gap:9px;">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;color:#0D3D62;border-radius:13px;padding:12px 0;font-size:13.5px;font-weight:700;"><span class="msym" style="font-size:18px;">add</span>Top up</div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.16);color:#fff;border-radius:13px;padding:12px 0;font-size:13.5px;font-weight:700;"><span class="msym" style="font-size:18px;">receipt_long</span>Ledger</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:17px 18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+                  <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 205);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:21px;color:oklch(0.5 0.13 205);">local_shipping</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:14.5px;font-weight:700;color:{{ pal.textPrimary }};">2 new requests</div>
+                    <div style="font-size:11.5px;font-weight:600;color:oklch(0.55 0.19 25);">Oldest expires in 3h 20m</div>
+                  </div>
+                  <span class="msym" style="font-size:20px;color:{{ pal.textFaint }};">chevron_right</span>
+                </div>
+                <div style="display:flex;gap:7px;">
+                  <div style="flex:1;height:5px;border-radius:3px;background:oklch(0.55 0.19 25);"></div>
+                  <div style="flex:1;height:5px;border-radius:3px;background:oklch(0.85 0.07 25);"></div>
+                  <div style="flex:2.4;height:5px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:14px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:17px 18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;">
+                  <div>
+                    <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textMuted }};margin-bottom:4px;">THIS MONTH</div>
+                    <div style="display:flex;align-items:baseline;gap:7px;">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:27px;font-weight:600;line-height:1;color:{{ pal.textPrimary }};">4</div>
+                      <div style="font-size:12.5px;color:{{ pal.textMuted }};">jobs done</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px;background:{{ pal.verifiedBg }};color:{{ pal.verifiedText }};padding:5px 10px;border-radius:100px;font-size:11px;font-weight:700;">
+                    <span class="msym" style="font-size:14px;">trending_up</span>+2
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-end;gap:7px;height:56px;margin-bottom:9px;">
+                  <div style="flex:1;height:38%;border-radius:6px 6px 3px 3px;background:#CFE2EE;"></div>
+                  <div style="flex:1;height:22%;border-radius:6px 6px 3px 3px;background:#CFE2EE;"></div>
+                  <div style="flex:1;height:64%;border-radius:6px 6px 3px 3px;background:#7FB2D4;"></div>
+                  <div style="flex:1;height:48%;border-radius:6px 6px 3px 3px;background:#CFE2EE;"></div>
+                  <div style="flex:1;height:100%;border-radius:6px 6px 3px 3px;background:#145A8D;"></div>
+                  <div style="flex:1;height:30%;border-radius:6px 6px 3px 3px;background:#CFE2EE;"></div>
+                  <div style="flex:1;height:14%;border-radius:6px 6px 3px 3px;background:{{ pal.divider }};"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:9.5px;font-weight:600;color:{{ pal.textFaint }};">
+                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:13px;border-top:1px solid {{ pal.divider }};">
+                  <div style="font-size:12px;color:{{ pal.textMuted }};">Fees paid this month</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:{{ pal.textPrimary }};">P48.94</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="display:flex;padding:12px 8px 16px;background:{{ pal.navBg }};border-radius:26px 26px 0 0;box-shadow:{{ pal.shNav }};">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;border-radius:11px;background:{{ pal.selectedBg }};"><span class="msym msym-fill" style="font-size:21px;color:{{ pal.accentText }};">space_dashboard</span></div>
+                <div style="font-size:10px;font-weight:700;color:{{ pal.accentText }};">Dashboard</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;border-radius:11px;background:transparent;position:relative;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">inbox</span><div style="position:absolute;top:1px;right:8px;min-width:15px;height:15px;border-radius:100px;background:oklch(0.55 0.19 25);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid {{ pal.navBg }};">2</div></div>
+                <div style="font-size:10px;font-weight:400;color:{{ pal.textMuted }};">Requests</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;border-radius:11px;background:transparent;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">list_alt</span></div>
+                <div style="font-size:10px;font-weight:400;color:{{ pal.textMuted }};">Listings</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="display:flex;align-items:center;justify-content:center;width:46px;height:32px;border-radius:11px;background:transparent;"><span class="msym" style="font-size:21px;color:{{ pal.navMuted }};">person</span></div>
+                <div style="font-size:10px;font-weight:400;color:{{ pal.textMuted }};">Account</div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">9 · PROVIDER HOME</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Balance gates accepting work, so it leads and carries its own actions. The month is a chart, not a printed number</div>
+      </div>
+      <div data-screen-label="My categories" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">My categories</div>
+            </div>
+            <div style="padding:14px 18px 0;font-size:12.5px;line-height:1.55;color:{{ pal.textMuted }};">Verification attaches to the category, not to you. Approved in one and pending in another is normal.</div>
+            <div style="padding:16px 18px 0;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:20px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="width:40px;height:40px;border-radius:14px;background:oklch(0.95 0.035 205);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:21px;color:oklch(0.5 0.13 205);">local_shipping</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Movers &amp; hauling</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">3 listings live · 4 jobs done</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 10px;border-radius:100px;"><span class="msym" style="font-size:14px;">verified_user</span>Approved</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:20px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="width:40px;height:40px;border-radius:14px;background:oklch(0.95 0.035 255);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:21px;color:oklch(0.5 0.13 255);">meeting_room</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Property rentals</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Inspection booked for 21 Aug</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 10px;border-radius:100px;"><span class="msym" style="font-size:14px;">hourglass_top</span>Pending</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:20px;padding:14px;box-shadow:{{ pal.shCard }};border-left:4px solid {{ pal.dangerText }};">
+                <div style="width:40px;height:40px;border-radius:14px;background:oklch(0.95 0.035 85);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:21px;color:oklch(0.5 0.13 85);">electrical_services</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Electrical</div>
+                  <div style="font-size:11px;color:{{ pal.dangerText }};margin-top:1px;">Licence expired · listings hidden</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:{{ pal.dangerText }};background:{{ pal.dangerBg }};padding:4px 10px;border-radius:100px;"><span class="msym" style="font-size:14px;">error</span>Action</div>
+              </div>
+            </div>
+            <div style="padding:18px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">APPLY FOR ANOTHER</div>
+            <div style="padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;background:{{ pal.cardBg }};border-radius:16px;padding:12px;box-shadow:{{ pal.shCard }};">
+                <div style="width:32px;height:32px;border-radius:11px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+                <div style="flex:1;font-size:12px;font-weight:700;color:{{ pal.textPrimary }};">Plumbing</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:{{ pal.cardBg }};border-radius:16px;padding:12px;box-shadow:{{ pal.shCard }};">
+                <div style="width:32px;height:32px;border-radius:11px;background:oklch(0.95 0.035 40);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:oklch(0.5 0.13 40);">grid_view</span></div>
+                <div style="flex:1;font-size:12px;font-weight:700;color:{{ pal.textPrimary }};">Tiling</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:{{ pal.cardBg }};border-radius:16px;padding:12px;box-shadow:{{ pal.shCard }};">
+                <div style="width:32px;height:32px;border-radius:11px;background:oklch(0.95 0.035 25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:oklch(0.5 0.13 25);">restaurant</span></div>
+                <div style="flex:1;font-size:12px;font-weight:700;color:{{ pal.textPrimary }};">Catering</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:{{ pal.cardBg }};border-radius:16px;padding:12px;box-shadow:{{ pal.shCard }};">
+                <div style="width:32px;height:32px;border-radius:11px;background:oklch(0.95 0.035 300);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:oklch(0.5 0.13 300);">chair</span></div>
+                <div style="flex:1;font-size:12px;font-weight:700;color:{{ pal.textPrimary }};">Hire</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:18px;"></div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">10 · MY CATEGORIES</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Three states at once — approved, pending, and one needing action. A revoked category hides its listings and says so</div>
+      </div>
+      <div data-screen-label="Booking inbox" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="flex:1;font-size:19px;font-weight:700;color:{{ pal.textPrimary }};">Requests</div>
+              <div style="font-size:10.5px;font-weight:700;color:#fff;background:oklch(0.55 0.19 25);padding:5px 11px;border-radius:100px;">2 new</div>
+            </div>
+            <div style="padding:14px 18px 0;display:flex;gap:8px;">
+              <div style="background:{{ pal.accentText }};color:#fff;padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;">New</div>
+              <div style="background:{{ pal.cardBg }};color:{{ pal.textPrimary }};padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;box-shadow:{{ pal.shCard }};">Accepted</div>
+              <div style="background:{{ pal.cardBg }};color:{{ pal.textPrimary }};padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;box-shadow:{{ pal.shCard }};">Done</div>
+            </div>
+            <div style="padding:16px 18px 0;display:flex;flex-direction:column;gap:11px;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:15px;box-shadow:{{ pal.shRaise }};border-left:4px solid oklch(0.55 0.19 25);">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#3D93C4,#145A8D);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;">TS</div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Tebogo S.</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Two-bedroom move · Sat 09:00</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;color:{{ pal.textPrimary }};">P400</div>
+                    <div style="font-size:10px;font-weight:700;color:oklch(0.55 0.19 25);">3h 20m left</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:9px;">
+                  <div style="width:84px;display:flex;align-items:center;justify-content:center;background:oklch(0.97 0.02 25);border:1.5px solid oklch(0.86 0.07 25);color:oklch(0.5 0.17 25);border-radius:14px;padding:10.5px 0;font-size:12.5px;font-weight:700;">Decline</div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:oklch(0.5 0.13 152);color:#fff;border-radius:14px;padding:12px 0;font-size:13px;font-weight:700;box-shadow:0 8px 20px oklch(0.5 0.13 152 / 0.30);"><span class="msym" style="font-size:17px;">check</span>Accept</div>
+                </div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:15px;box-shadow:{{ pal.shRaise }};border-left:4px solid oklch(0.62 0.14 80);">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#3D93C4,#145A8D);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;">LK</div>
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ pal.textPrimary }};">Lorato K.</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Office desks, 6 units · Mon 14:00</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;color:{{ pal.textPrimary }};">P650</div>
+                    <div style="font-size:10px;font-weight:700;color:oklch(0.45 0.13 80);">9h left</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:9px;">
+                  <div style="width:84px;display:flex;align-items:center;justify-content:center;background:oklch(0.97 0.02 25);border:1.5px solid oklch(0.86 0.07 25);color:oklch(0.5 0.17 25);border-radius:14px;padding:10.5px 0;font-size:12.5px;font-weight:700;">Decline</div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:oklch(0.5 0.13 152);color:#fff;border-radius:14px;padding:12px 0;font-size:13px;font-weight:700;box-shadow:0 8px 20px oklch(0.5 0.13 152 / 0.30);"><span class="msym" style="font-size:17px;">check</span>Accept</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">account_balance_wallet</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Wallet P340.00 — enough for both. Commission is deducted on completion, never on accepting.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:18px;"></div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">11 · BOOKING INBOX</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Each request is a card with the fee clock on it. Accept is green, decline is danger-toned — never two blue buttons</div>
+      </div>
+      <div data-screen-label="Wallet" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Wallet</div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:radial-gradient(135% 120% at 85% -15%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);border-radius:26px;padding:20px;color:#fff;box-shadow:0 12px 28px rgba(13,61,98,0.30);">
+                <div style="font-size:10px;font-weight:700;letter-spacing:1.1px;color:rgba(255,255,255,0.72);margin-bottom:8px;">WALLET BALANCE</div>
+                <div style="display:flex;align-items:baseline;gap:2px;font-family:'IBM Plex Mono',monospace;margin-bottom:14px;">
+                  <span style="font-size:20px;font-weight:500;color:rgba(255,255,255,0.8);">P</span>
+                  <span style="font-size:46px;font-weight:600;line-height:1;letter-spacing:-1.5px;">340</span>
+                  <span style="font-size:21px;font-weight:500;color:rgba(255,255,255,0.8);">.00</span>
+                </div>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.16);padding:6px 12px;border-radius:100px;margin-bottom:14px;">
+                  <span class="msym" style="font-size:15px;">lock</span>
+                  <div style="font-size:10.5px;font-weight:700;letter-spacing:0.3px;">NON-REDEEMABLE · FEES ONLY</div>
+                </div>
+                <div style="font-size:11.5px;line-height:1.55;color:rgba(255,255,255,0.82);padding-top:13px;border-top:1px solid rgba(255,255,255,0.16);">Every Ipelege fee comes out of here — commission and listing fees, each plus 14% VAT. Nothing is charged to you separately.</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;display:flex;gap:10px;">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:#145A8D;color:#fff;border-radius:15px;padding:14px 0;font-size:14px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">add</span>Top up</div>
+              <div style="width:52px;display:flex;align-items:center;justify-content:center;background:{{ pal.cardBg }};border-radius:15px;box-shadow:{{ pal.shCard }};"><span class="msym" style="font-size:21px;color:{{ pal.accentText }};">filter_list</span></div>
+            </div>
+            <div style="padding:20px 18px 10px;display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">RECENT ACTIVITY</div>
+              <div style="font-size:11.5px;font-weight:700;color:{{ pal.accentText }};">All</div>
+            </div>
+            <div style="padding:0 18px 18px;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};border-left:4px solid oklch(0.62 0.14 80);">
+                <div style="width:36px;height:36px;border-radius:12px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:19px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:700;color:{{ pal.textPrimary }};">Reversal under review</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Ride #4462 · balance unchanged</div>
+                </div>
+                <div style="font-size:9.5px;font-weight:700;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">PENDING</div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:12px;background:oklch(0.95 0.035 230);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:19px;color:oklch(0.5 0.13 230);">directions_car</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:{{ pal.textPrimary }};">Commission · ride #4471</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Today 09:12 · 8% of P120</div>
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;color:{{ pal.textPrimary }};">−P9.60</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:11px;padding-top:11px;border-top:1px dashed {{ pal.divider }};">
+                  <div style="width:36px;flex-shrink:0;display:flex;justify-content:center;"><div style="width:2px;height:14px;background:{{ pal.divider }};border-radius:1px;"></div></div>
+                  <div style="flex:1;font-size:11.5px;color:{{ pal.textMuted }};">VAT · 14% of P9.60</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:{{ pal.textMuted }};">−P1.34</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="width:36px;height:36px;border-radius:12px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:19px;color:{{ pal.verifiedText }};">arrow_downward</span></div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:700;color:{{ pal.textPrimary }};">Top-up · Orange Money</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Yesterday 18:40 · settled</div>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;color:{{ pal.creditColor }};">+P200.00</div>
+              </div>
+              <div style="background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:12px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:19px;color:{{ pal.verifiedText }};">undo</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:{{ pal.textPrimary }};">Commission reversed</div>
+                    <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Job #1264 · cancellation confirmed</div>
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;color:{{ pal.creditColor }};">+P24.00</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:11px;padding-top:11px;border-top:1px dashed {{ pal.divider }};">
+                  <div style="width:36px;flex-shrink:0;display:flex;justify-content:center;"><div style="width:2px;height:14px;background:{{ pal.divider }};border-radius:1px;"></div></div>
+                  <div style="flex:1;font-size:11.5px;color:{{ pal.textMuted }};">VAT reversed · credit note</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:{{ pal.creditColor }};">+P3.36</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">12 · WALLET</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Each entry is a card, VAT nested under its parent fee on a dashed tie-line. A pending reversal shows no amount, because none has moved</div>
+      </div>
+      <div data-screen-label="Top up" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">Top up wallet</div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:12px;">AMOUNT</div>
+                <div style="display:flex;gap:9px;margin-bottom:14px;">
+                  <div style="flex:1;text-align:center;background:{{ pal.cardBg }};border:1.5px solid {{ pal.inputBorder }};color:{{ pal.textPrimary }};border-radius:14px;padding:13px 0;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;">P100</div>
+                  <div style="flex:1;text-align:center;background:#145A8D;border:1.5px solid #145A8D;color:#fff;border-radius:14px;padding:13px 0;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;">P200</div>
+                  <div style="flex:1;text-align:center;background:{{ pal.cardBg }};border:1.5px solid {{ pal.inputBorder }};color:{{ pal.textPrimary }};border-radius:14px;padding:13px 0;font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:600;">P500</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:{{ pal.textFaint }};">P</div>
+                  <div style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:{{ pal.textFaint }};">Other amount</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:12px;">PAY WITH</div>
+                <div style="display:flex;flex-direction:column;gap:9px;">
+                  <div style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ pal.accentText }};background:{{ pal.selectedBg }};border-radius:15px;padding:13px 14px;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ pal.accentText }};background:{{ pal.accentText }};flex-shrink:0;"></div>
+                    <div style="flex:1;font-size:13.5px;font-weight:700;color:{{ pal.accentText }};">Orange Money</div>
+                    <span class="msym" style="font-size:19px;color:{{ pal.accentText }};">smartphone</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ pal.inputBorder }};background:{{ pal.cardBg }};border-radius:15px;padding:13px 14px;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ pal.inputBorder }};flex-shrink:0;"></div>
+                    <div style="flex:1;font-size:13.5px;font-weight:600;color:{{ pal.textPrimary }};">EFT</div>
+                    <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">account_balance</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;border:1.5px solid {{ pal.inputBorder }};background:{{ pal.cardBg }};border-radius:15px;padding:13px 14px;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid {{ pal.inputBorder }};flex-shrink:0;"></div>
+                    <div style="flex:1;font-size:13.5px;font-weight:600;color:{{ pal.textPrimary }};">Card</div>
+                    <span class="msym" style="font-size:19px;color:{{ pal.textFaint }};">credit_card</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">lock</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">This balance pays Ipelege fees only. It cannot be withdrawn or sent to anyone.</div>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:16px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Top up P200</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">13 · TOP UP</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Amount and method are separate cards. The non-redeemable rule is restated at the moment money goes in, not buried in terms</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Becoming a provider · per-category verification</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Become a provider" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(130% 110% at 80% -10%, #1E7BB5 0%, #145A8D 45%, #0D3D62 100%);padding:24px 22px 28px;border-radius:0 0 28px 28px;">
+              <div style="width:44px;height:44px;border-radius:15px;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><span class="msym" style="font-size:23px;color:#fff;">add_business</span></div>
+              <div style="font-size:21px;font-weight:700;color:#fff;margin-bottom:6px;">Offer a service</div>
+              <div style="font-size:13px;line-height:1.55;color:rgba(255,255,255,0.82);">Pick the category you work in. Each one is verified separately, because the documents differ.</div>
+            </div>
+            <div style="padding:18px 18px 0;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">CHOOSE A CATEGORY</div>
+            <div style="padding:11px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <sc-for list="{{ kycPickCats }}" as="c" hint-placeholder-count="9">
+                <div onClick="{{ c.onClick }}" style="background:{{ c.bg }};border:1.5px solid {{ c.border }};border-radius:18px;padding:13px;cursor:pointer;">
+                  <div style="width:34px;height:34px;border-radius:12px;background:{{ c.tint }};display:flex;align-items:center;justify-content:center;margin-bottom:9px;">
+                    <span class="msym" style="font-size:19px;color:{{ c.ink }};">{{ c.glyph }}</span>
+                  </div>
+                  <div style="font-size:12.5px;font-weight:700;line-height:1.25;color:{{ c.labelColor }};">{{ c.label }}</div>
+                  <div style="font-size:10px;color:{{ pal.textMuted }};margin-top:3px;">{{ c.docCount }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Continue with {{ hole.0.catLabel }}</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">14 · BECOME A PROVIDER</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Tap a tile to see its document set change on the next screen. Each states its document count up front, so the heavier categories are honest about it</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 8px;">All nine KYC screens</div>
+    <div style="font-size:13px;line-height:1.6;color:oklch(0.42 0.014 250);max-width:640px;margin:0 0 20px;">One screen per category, because the document set is what differs. Same shell, same three states, different requirements — a provider who has done this once recognises the second one.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="KYC Rides" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 230);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 230);">directions_car</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Rides</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">2/4</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR RIDES</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Driving licence</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Vehicle registration</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Roadworthy certificate</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.notUploadedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.notUploadedText }};">upload</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Vehicle photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.notUploadedText }};background:{{ pal.notUploadedBg }};padding:4px 9px;border-radius:100px;">UPLOAD</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">A driver cannot accept trips until the roadworthy certificate clears.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · RIDES</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">4 documents · 2 verified</div>
+      </div>
+      <div data-screen-label="KYC Movers & hauling" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 205);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 205);">local_shipping</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Movers & hauling</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">3/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR MOVERS & HAULING</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Driving licence</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Vehicle registration</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Vehicle photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Load capacity comes from your listing, not from verification.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · MOVERS & HAULING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 3 verified</div>
+      </div>
+      <div data-screen-label="KYC Property rentals" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 255);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 255);">meeting_room</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Property rentals</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">2/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR PROPERTY RENTALS</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Proof of ownership</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Property photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Physical inspection</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Inspection is booked with an Ipelege agent. Listings stay hidden until it passes.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · PROPERTY RENTALS</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 2 verified</div>
+      </div>
+      <div data-screen-label="KYC Hairdressing & beauty" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 330);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 330);">content_cut</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Hairdressing & beauty</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">1/2</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR HAIRDRESSING & BEAUTY</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.notUploadedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.notUploadedText }};">upload</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Work photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.notUploadedText }};background:{{ pal.notUploadedBg }};padding:4px 9px;border-radius:100px;">UPLOAD</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">The lightest category. Identity only — no trade certificate exists for this work in Botswana.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · HAIRDRESSING & BEAUTY</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">2 documents · 1 verified</div>
+      </div>
+      <div data-screen-label="KYC Plumbing" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 180);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 180);">plumbing</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Plumbing</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">1/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR PLUMBING</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Plumbing certification</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.notUploadedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.notUploadedText }};">upload</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Proof of past work</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.notUploadedText }};background:{{ pal.notUploadedBg }};padding:4px 9px;border-radius:100px;">UPLOAD</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Certification is checked against the issuing body before approval.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · PLUMBING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 1 verified</div>
+      </div>
+      <div data-screen-label="KYC Electrical" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 85);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 85);">electrical_services</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Electrical</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">3/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR ELECTRICAL</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Electrical licence</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Licence expiry date</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">The only category with an expiry that revokes access. Listings hide automatically when it lapses.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · ELECTRICAL</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 3 verified</div>
+      </div>
+      <div data-screen-label="KYC Tiling" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 40);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 40);">grid_view</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Tiling</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">1/2</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR TILING</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Proof of past work</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">No formal licence exists, so past work carries the verification.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · TILING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">2 documents · 1 verified</div>
+      </div>
+      <div data-screen-label="KYC Catering" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 25);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 25);">restaurant</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Catering</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">1/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR CATERING</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Food handling permit</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.notUploadedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.notUploadedText }};">upload</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Kitchen photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.notUploadedText }};background:{{ pal.notUploadedBg }};padding:4px 9px;border-radius:100px;">UPLOAD</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Permit is issued by the local council and must name the kitchen you cook in.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · CATERING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 1 verified</div>
+      </div>
+      <div data-screen-label="KYC Hire" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="width:38px;height:38px;border-radius:13px;background:oklch(0.95 0.035 300);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:20px;color:oklch(0.5 0.13 300);">chair</span></div>
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;color:{{ pal.textPrimary }};">Hire</div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};">Verification</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">PROGRESS</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">1/3</div>
+                </div>
+                <div style="display:flex;gap:5px;">
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.6 0.13 152);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:oklch(0.72 0.15 80);"></div>
+                  <div style="flex:1;height:6px;border-radius:3px;background:{{ pal.divider }};"></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};">REQUIRED FOR HIRE</div>
+            <div style="padding:0 18px;display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.verifiedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.verifiedText }};">check_circle</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Omang or passport</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.verifiedText }};background:{{ pal.verifiedBg }};padding:4px 9px;border-radius:100px;">VERIFIED</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.pendingBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.pendingText }};">hourglass_top</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Proof of equipment ownership</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.pendingText }};background:{{ pal.pendingBg }};padding:4px 9px;border-radius:100px;">IN REVIEW</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:{{ pal.cardBg }};border-radius:16px;padding:13px 14px;box-shadow:{{ pal.shCard }};">
+                  <div style="width:34px;height:34px;border-radius:11px;background:{{ pal.notUploadedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:18px;color:{{ pal.notUploadedText }};">upload</span></div>
+                  <div style="flex:1;font-size:12.5px;font-weight:600;color:{{ pal.textPrimary }};">Equipment photos</div>
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:{{ pal.notUploadedText }};background:{{ pal.notUploadedBg }};padding:4px 9px;border-radius:100px;">UPLOAD</div>
+                </div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="display:flex;align-items:flex-start;gap:10px;background:{{ pal.selectedBg }};border-radius:16px;padding:13px 14px;">
+                <span class="msym" style="font-size:18px;color:{{ pal.accentText }};">info</span>
+                <div style="flex:1;font-size:11.5px;line-height:1.5;color:{{ pal.accentText }};">Ownership proof covers tents, chairs and sound equipment as separate items.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">upload</span>Upload next document</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">KYC · HIRE</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">3 documents · 1 verified</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:oklch(0.5 0.014 250);margin:0 0 20px;">Listing &amp; earning</div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:56px;">
+
+      <div data-screen-label="Create listing" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="padding:18px 18px 0;display:flex;align-items:center;gap:13px;">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">close</span></div>
+              <div style="flex:1;font-size:17px;font-weight:700;color:{{ pal.textPrimary }};">New listing</div>
+              <div style="font-size:10.5px;font-weight:700;color:#fff;background:oklch(0.5 0.13 205);padding:5px 11px;border-radius:100px;">Movers</div>
+            </div>
+            <div style="padding:16px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:9px;">WHAT YOU OFFER</div>
+                <div style="border:1.5px solid {{ pal.accentText }};border-radius:14px;padding:12px 13px;font-size:13.5px;color:{{ pal.textPrimary }};margin-bottom:9px;">Two-tonne truck with driver</div>
+                <div style="border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;font-size:12.5px;line-height:1.5;color:{{ pal.textFaint }};height:64px;">Household moves within Gaborone. Loading help included.</div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shRaise }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:11px;">HOW YOU PRICE IT</div>
+                <div style="display:flex;gap:8px;margin-bottom:12px;">
+                  <sc-for list="{{ priceModes }}" as="m" hint-placeholder-count="3">
+                    <div onClick="{{ m.onClick }}" style="flex:1;text-align:center;background:{{ m.bg }};border:1.5px solid {{ m.border }};color:{{ m.color }};border-radius:13px;padding:10px 0;font-size:11.5px;font-weight:700;cursor:pointer;">{{ m.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid {{ pal.inputBorder }};border-radius:14px;padding:12px 13px;">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;color:{{ pal.textMuted }};">P</div>
+                  <div style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:{{ pal.textPrimary }};">400</div>
+                  <div style="font-size:12px;color:{{ pal.textMuted }};">{{ priceUnit }}</div>
+                </div>
+                <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:9px;line-height:1.5;">{{ priceHint }}</div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:11px;">PHOTOS</div>
+                <div style="display:flex;gap:9px;">
+                  <div style="width:70px;height:70px;border-radius:15px;background:oklch(0.95 0.035 205);display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:24px;color:oklch(0.5 0.13 205);">image</span></div>
+                  <div style="width:70px;height:70px;border-radius:15px;border:1.5px dashed {{ pal.inputBorder }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;"><span class="msym" style="font-size:22px;color:{{ pal.textFaint }};">add_a_photo</span><div style="font-size:9px;font-weight:600;color:{{ pal.textFaint }};">Add</div></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="display:flex;align-items:center;gap:11px;background:{{ pal.cardBg }};border-radius:18px;padding:14px;box-shadow:{{ pal.shCard }};">
+                <span class="msym" style="font-size:20px;color:{{ pal.accentText }};">visibility</span>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:700;color:{{ pal.textPrimary }};">Live when saved</div>
+                  <div style="font-size:11px;color:{{ pal.textMuted }};margin-top:1px;">Customers can find it immediately</div>
+                </div>
+                <div onClick="{{ toggleListingActive }}" style="width:44px;height:26px;border-radius:100px;background:{{ listingToggleBg }};position:relative;flex-shrink:0;cursor:pointer;"><div style="position:absolute;top:3px;left:{{ listingToggleX }}px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);">Publish listing</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">15 · CREATE LISTING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Pricing mode is a live switch — tap From / Fixed / Per hour and the unit and hint change with it</div>
+      </div>
+      <div data-screen-label="Rental listing" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+        <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" width="{{ 380 }}" height="{{ 760 }}" hint-size="380,760">
+          <div style="min-height:100%;background:{{ pal.screenBg2 }};display:flex;flex-direction:column;">
+            <div style="height:150px;background:linear-gradient(160deg, oklch(0.95 0.035 255) 0%, oklch(0.9 0.05 255) 100%);position:relative;display:flex;align-items:center;justify-content:center;">
+              <div style="position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:13px;background:{{ pal.cardBg }};box-shadow:{{ pal.shCard }};display:flex;align-items:center;justify-content:center;"><span class="msym" style="font-size:21px;color:{{ pal.textPrimary }};">arrow_back</span></div>
+              <div style="text-align:center;color:oklch(0.5 0.13 255);">
+                <span class="msym" style="font-size:34px;">apartment</span>
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;margin-top:4px;">PROPERTY PHOTOS · 6</div>
+              </div>
+            </div>
+            <div style="padding:0 18px;margin-top:-24px;">
+              <div style="background:{{ pal.cardBg }};border-radius:22px;padding:18px;box-shadow:{{ pal.shRaise }};">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+                  <div style="width:44px;height:44px;border-radius:15px;background:oklch(0.95 0.035 255);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:22px;color:oklch(0.5 0.13 255);">meeting_room</span></div>
+                  <div style="flex:1;">
+                    <div style="font-size:16px;font-weight:700;line-height:1.3;color:{{ pal.textPrimary }};">Single room, Block 8</div>
+                    <div style="font-size:11.5px;color:{{ pal.textMuted }};margin-top:2px;">Shared kitchen · own entrance</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:2px;font-family:'IBM Plex Mono',monospace;color:{{ pal.textPrimary }};">
+                  <span style="font-size:15px;color:{{ pal.textMuted }};">P</span><span style="font-size:30px;font-weight:600;line-height:1;">1,200</span><span style="font-size:14px;color:{{ pal.textMuted }};margin-left:3px;">/month</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+                  <div style="display:flex;align-items:center;gap:6px;background:{{ pal.verifiedBg }};color:{{ pal.verifiedText }};padding:6px 12px;border-radius:100px;font-size:11.5px;font-weight:700;"><span class="msym" style="font-size:15px;">verified_user</span>Inspected by Ipelege</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 0;">
+              <div style="background:{{ pal.cardBg }};border-radius:20px;padding:16px;box-shadow:{{ pal.shCard }};">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.9px;color:{{ pal.textSecondary }};margin-bottom:12px;">WHAT VIEWING MEANS HERE</div>
+                <div style="display:flex;gap:12px;margin-bottom:13px;">
+                  <div style="width:30px;height:30px;border-radius:10px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:17px;color:{{ pal.accentText }};">event</span></div>
+                  <div style="flex:1;font-size:12px;line-height:1.5;color:{{ pal.textPrimary }};">You request a viewing slot. The landlord confirms a time.</div>
+                </div>
+                <div style="display:flex;gap:12px;margin-bottom:13px;">
+                  <div style="width:30px;height:30px;border-radius:10px;background:{{ pal.selectedBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:17px;color:{{ pal.accentText }};">handshake</span></div>
+                  <div style="flex:1;font-size:12px;line-height:1.5;color:{{ pal.textPrimary }};">Rent, deposit and lease are agreed directly between you and the landlord.</div>
+                </div>
+                <div style="display:flex;gap:12px;">
+                  <div style="width:30px;height:30px;border-radius:10px;background:{{ pal.chipNeutralBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="msym" style="font-size:17px;color:{{ pal.textMuted }};">money_off</span></div>
+                  <div style="flex:1;font-size:12px;line-height:1.5;color:{{ pal.textMuted }};">Ipelege never holds a deposit and never takes a cut of rent.</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="padding:14px 18px 22px;">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#145A8D;color:#fff;border-radius:15px;padding:16px 0;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(20,90,141,0.30);"><span class="msym" style="font-size:19px;">event</span>Request a viewing</div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.3px;color:oklch(0.55 0.014 250);">16 · RENTAL LISTING</div>
+        <div style="font-size:12px;color:oklch(0.5 0.014 250);text-align:center;max-width:300px;">Rentals are the one category with no service delivery, so the screen explains what a booking actually buys — a viewing, not a lease</div>
+      </div>
+    </div>
+
+      </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const REQUIREMENTS = {
+  rides: ['Driving licence', 'Vehicle registration'],
+  movers: ['Driving licence', 'Vehicle registration'],
+  rentals: ['Proof of ownership', 'Property inspection'],
+  beauty: ['Identity verification'],
+  plumbing: ['Plumbing certification', 'Identity verification'],
+  electrical: ['Electrical licence', 'Identity verification'],
+  tiling: ['Proof of past work', 'Identity verification'],
+  catering: ['Food handling permit', 'Identity verification'],
+  hire: ['Proof of equipment ownership', 'Identity verification'],
+};
+
+const CATS = [
+  { key: 'rides', mono: 'RI', glyph: 'directions_car', hue: 230, label: 'Rides', supply: 'ok', supplyText: '62 drivers nearby' },
+  { key: 'movers', mono: 'MV', glyph: 'local_shipping', hue: 205, label: 'Movers & hauling', supply: 'ok', supplyText: '21 trucks in Gaborone' },
+  { key: 'rentals', mono: 'PR', glyph: 'meeting_room', hue: 255, label: 'Property rentals', supply: 'ok', supplyText: '140 rooms listed' },
+  { key: 'beauty', mono: 'HB', glyph: 'content_cut', hue: 330, label: 'Hairdressing & beauty', supply: 'thin', supplyText: 'New in Gaborone · 4 providers' },
+  { key: 'plumbing', mono: 'PL', glyph: 'plumbing', hue: 180, label: 'Plumbing', supply: 'thin', supplyText: 'New in Gaborone · 6 plumbers' },
+  { key: 'electrical', mono: 'EL', glyph: 'electrical_services', hue: 85, label: 'Electrical', supply: 'thin', supplyText: 'New in Gaborone · 4 electricians' },
+  { key: 'tiling', mono: 'TL', glyph: 'grid_view', hue: 40, label: 'Tiling', supply: 'thin', supplyText: 'New in Gaborone · 3 tilers' },
+  { key: 'catering', mono: 'CA', glyph: 'restaurant', hue: 25, label: 'Catering', supply: 'thin', supplyText: 'New in Gaborone · 3 home cooks' },
+  { key: 'hire', mono: 'HR', glyph: 'chair', hue: 300, label: 'Hire', supply: 'thin', supplyText: 'New in Gaborone · 2 providers' },
+];
+
+const DEEP = '#145A8D';
+
+const PAL = {
+  light: {
+    screenBg: '#ffffff', screenBg2: '#EDF3F8', cardBg: '#ffffff', cardBorder: 'oklch(0.91 0.008 250)',
+    textPrimary: '#0D2436', textSecondary: 'oklch(0.32 0.012 250)', textMuted: '#5F7387', textFaint: '#9CAFBF',
+    inputBorder: '#DCE7EF', inputBg: '#ffffff', divider: '#E9F0F5', navBg: '#ffffff', navMuted: '#9CAFBF',
+    shCard: '0 4px 14px rgba(20,90,141,0.06)', shRaise: '0 6px 20px rgba(20,90,141,0.07)', shNav: '0 -6px 24px rgba(20,90,141,0.08)',
+    stripe1: 'oklch(0.93 0.008 250)', stripe2: 'oklch(0.97 0.004 250)', chipNeutralBg: '#E1EDF5', chipNeutralText: '#5F7387',
+    verifiedBg: 'oklch(0.95 0.03 152)', verifiedText: 'oklch(0.38 0.11 152)', pendingBg: 'oklch(0.96 0.045 80)', pendingText: 'oklch(0.45 0.13 80)',
+    notUploadedBg: '#E1EDF5', notUploadedText: '#5F7387', selectedBg: 'oklch(0.96 0.02 235)', sectionAlt: 'oklch(0.97 0.004 250)',
+    infoBg: 'oklch(0.96 0.02 235)', infoBorder: 'oklch(0.88 0.03 235)', infoTitle: '#061326', infoText: '#145A8D',
+    accentText: '#145A8D', creditColor: 'oklch(0.5 0.13 152)', subtleBg: 'oklch(0.965 0.006 250)',
+    dangerBg: 'oklch(0.96 0.04 25)', dangerText: 'oklch(0.48 0.17 25)',
+  },
+  dark: {
+    screenBg: 'oklch(0.18 0.015 235)', screenBg2: 'oklch(0.145 0.014 235)', cardBg: 'oklch(0.235 0.016 235)', cardBorder: 'oklch(0.33 0.016 235)',
+    textPrimary: 'oklch(0.96 0.004 250)', textSecondary: 'oklch(0.82 0.01 250)', textMuted: 'oklch(0.68 0.012 250)', textFaint: 'oklch(0.6 0.012 250)',
+    inputBorder: 'oklch(0.4 0.014 250)', inputBg: 'oklch(0.23 0.014 250)', divider: 'oklch(0.33 0.014 250)', navBg: 'oklch(0.2 0.014 250)', navMuted: 'oklch(0.55 0.012 250)',
+    shCard: '0 4px 14px rgba(0,0,0,0.30)', shRaise: '0 6px 20px rgba(0,0,0,0.34)', shNav: '0 -6px 24px rgba(0,0,0,0.36)',
+    stripe1: 'oklch(0.28 0.012 250)', stripe2: 'oklch(0.24 0.01 250)', chipNeutralBg: 'oklch(0.3 0.014 250)', chipNeutralText: 'oklch(0.8 0.01 250)',
+    verifiedBg: 'oklch(0.3 0.06 152)', verifiedText: 'oklch(0.85 0.09 152)', pendingBg: 'oklch(0.32 0.07 80)', pendingText: 'oklch(0.88 0.1 80)',
+    notUploadedBg: 'oklch(0.3 0.014 250)', notUploadedText: 'oklch(0.75 0.012 250)', selectedBg: 'oklch(0.28 0.05 235)', sectionAlt: 'oklch(0.2 0.012 250)',
+    infoBg: 'oklch(0.26 0.05 235)', infoBorder: 'oklch(0.36 0.06 235)', infoTitle: '#bcdcf5', infoText: '#9dcdf0',
+    accentText: '#75BDEB', creditColor: 'oklch(0.68 0.13 152)', subtleBg: 'oklch(0.21 0.012 250)',
+    dangerBg: 'oklch(0.32 0.07 25)', dangerText: 'oklch(0.88 0.1 25)',
+  },
+};
+
+class Component extends DCLogic {
+  state = {
+    darkMode: false, appearanceMode: 'light',
+    otp: ['', '', '', ''], consent1: false, consent2: false,
+    bookingTab: 'request', bookingDirection: 'provider_comes',
+    providerCategory: 'movers', topupAmount: 200, topupMethod: 'orange',
+    rating: 4, bookingState: 'REQUESTED', browseDirection: 'any',
+    listingPriceMode: 'from', listingActive: true,
+  };
+
+  setAppearance = (mode) => this.setState({ appearanceMode: mode, darkMode: mode === 'dark' });
+  setRating = (n) => this.setState({ rating: n });
+  setBookingState = (k) => this.setState({ bookingState: k });
+  setBrowseDirection = (k) => this.setState({ browseDirection: k });
+  setPriceMode = (k) => this.setState({ listingPriceMode: k });
+  toggleListingActive = () => this.setState((s) => ({ listingActive: !s.listingActive }));
+  toggleConsent1 = () => this.setState((s) => ({ consent1: !s.consent1 }));
+  toggleConsent2 = () => this.setState((s) => ({ consent2: !s.consent2 }));
+
+  onOtpChange = (e) => {
+    const i = parseInt(e.target.dataset.idx, 10);
+    const v = e.target.value.replace(/[^0-9]/g, '').slice(-1);
+    this.setState((s) => { const otp = [...s.otp]; otp[i] = v; return { otp }; });
+    if (v && e.target.nextElementSibling) e.target.nextElementSibling.focus();
+  };
+
+  renderVals() {
+    const s = this.state;
+    const pal = s.darkMode ? PAL.dark : PAL.light;
+
+    const appearance = [
+      { key: 'light', label: 'Light', active: s.appearanceMode === 'light', onClick: () => this.setAppearance('light') },
+      { key: 'dark', label: 'Dark', active: s.appearanceMode === 'dark', onClick: () => this.setAppearance('dark') },
+      { key: 'system', label: 'System', active: s.appearanceMode === 'system', onClick: () => this.setAppearance('system') },
+    ].map((a) => ({
+      ...a,
+      bg: a.active ? pal.accentText : 'transparent',
+      color: a.active ? '#fff' : pal.textMuted,
+      rowBg: a.active ? pal.selectedBg : pal.cardBg,
+      borderColor: a.active ? pal.accentText : pal.cardBorder,
+      textColor: a.active ? pal.accentText : pal.textPrimary,
+      dotBorder: a.active ? pal.accentText : pal.inputBorder,
+      dotBg: a.active ? pal.accentText : 'transparent',
+    }));
+
+    const categories = CATS.map((c) => ({
+      ...c,
+      tint: `oklch(0.95 0.035 ${c.hue})`,
+      ink: `oklch(0.5 0.13 ${c.hue})`,
+      supplyDotColor: c.supply === 'ok' ? 'oklch(0.6 0.13 152)' : pal.navMuted,
+    }));
+
+    const selectedCat = CATS.find((c) => c.key === s.providerCategory) || CATS[0];
+    const otpBoxes = s.otp.map((value, index) => ({ value, index }));
+
+    const isRequestTab = s.bookingTab === 'request';
+    const isStatusTab = s.bookingTab === 'status';
+    const bookingTabs = [
+      { key: 'request', label: 'Request', color: isRequestTab ? '#fff' : pal.textMuted, bg: isRequestTab ? pal.accentText : pal.cardBg, shadow: isRequestTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'request' }) },
+      { key: 'status', label: 'Status', color: isStatusTab ? '#fff' : pal.textMuted, bg: isStatusTab ? pal.accentText : pal.cardBg, shadow: isStatusTab ? '0 8px 20px rgba(20,90,141,0.28)' : pal.shCard, onClick: () => this.setState({ bookingTab: 'status' }) },
+    ];
+
+    const dirDefs = [
+      { key: 'provider_comes', label: 'Comes to you', sub: 'Provider travels to your location' },
+      { key: 'customer_goes', label: 'You go to them', sub: 'Service is at their premises' },
+    ];
+    const directionOptions = dirDefs.map((d) => {
+      const selected = d.key === s.bookingDirection;
+      return { ...d,
+        borderColor: selected ? pal.accentText : pal.inputBorder,
+        bg: selected ? pal.selectedBg : pal.cardBg,
+        textColor: selected ? pal.accentText : pal.textPrimary,
+        dotBorder: selected ? pal.accentText : pal.inputBorder,
+        dotBg: selected ? pal.accentText : 'transparent',
+        onClick: () => this.setState({ bookingDirection: d.key }) };
+    });
+    const needsLocation = s.bookingDirection === 'provider_comes';
+
+    const browseDirDefs = [
+      { key: 'any', label: 'Any direction' },
+      { key: 'to_you', label: 'Comes to you' },
+      { key: 'to_me', label: 'You go to them' },
+    ];
+    const browseDirections = browseDirDefs.map((d) => {
+      const selected = d.key === s.browseDirection;
+      return { ...d, bg: selected ? pal.accentText : pal.cardBg, color: selected ? '#fff' : pal.textPrimary, borderColor: selected ? pal.accentText : pal.cardBorder, onClick: () => this.setBrowseDirection(d.key) };
+    });
+    const browseListings = [
+      { name: "Kabelo's Plumbing & Repairs", tag: 'Comes to you · Block 8', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P150' },
+      { name: 'Mpho Pipes & Drains', tag: 'Comes to you · Extension 12', badge: 'New on Ipelege', badgeGlyph: 'schedule', badgeBg: pal.chipNeutralBg, badgeText: pal.chipNeutralText, price: 'P120' },
+      { name: 'Tshepo Plumbing Works', tag: 'Comes to you · Broadhurst', badge: 'Verified', badgeGlyph: 'verified_user', badgeBg: pal.verifiedBg, badgeText: pal.verifiedText, price: 'P200' },
+    ];
+
+    const BSTATES = [
+      { key: 'REQUESTED', chip: 'Waiting on Kabelo', tone: 'pend', step: 1, head: 'Request sent', body: 'Kabelo has until 14:00 today to accept. We will text you either way.', action: 'Cancel request', actionKind: 'ghost', note: '' },
+      { key: 'ACCEPTED', chip: 'Accepted', tone: 'ok', step: 2, head: 'Kabelo accepted', body: 'Today at 14:00, at Plot 4521, Block 8. Kabelo has your number.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'IN_PROGRESS', chip: 'In progress', tone: 'ok', step: 3, head: 'Job under way', body: 'Started 14:05. Kabelo will mark it done when the work is finished.', action: 'Message Kabelo', actionKind: 'outline', note: '' },
+      { key: 'AWAITING_PAYMENT', chip: 'Pay Kabelo now', tone: 'pay', step: 4, head: 'Work finished — pay Kabelo', body: '', action: 'I have paid Kabelo', actionKind: 'primary', note: '' },
+      { key: 'PENDING_CONFIRMATION', chip: 'Confirm it is done', tone: 'pend', step: 5, head: 'Kabelo marked this complete', body: 'Confirm the work was done so this booking can close. If something is wrong, say so instead.', action: 'Yes, it is done', actionKind: 'primary', note: 'Something is wrong' },
+      { key: 'COMPLETED', chip: 'Completed', tone: 'ok', step: 6, head: 'Booking closed', body: 'Paid P250.00 directly to Kabelo. Rate the job so the next customer knows what to expect.', action: 'Rate this booking', actionKind: 'outline', note: '' },
+      { key: 'DECLINED', chip: 'Declined', tone: 'bad', step: 0, head: 'Kabelo declined', body: 'No reason given, and none is required. Five other plumbers cover Block 8.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'EXPIRED', chip: 'Expired', tone: 'off', step: 0, head: 'No answer from Kabelo', body: 'The request timed out at 14:00. Nothing was charged to anyone.', action: 'See other plumbers', actionKind: 'primary', note: '' },
+      { key: 'CANCELLED', chip: 'Cancelled', tone: 'off', step: 0, head: 'You cancelled this', body: 'Cancelled at 11:20, before Kabelo started. Kabelo has been told.', action: 'Book again', actionKind: 'outline', note: 'Cancellation rules are not settled — this copy is provisional' },
+      { key: 'NO_SHOW', chip: 'No-show', tone: 'bad', step: 0, head: 'Kabelo did not arrive', body: 'Reported at 15:00. Ipelege reviews repeat no-shows against a provider\'s verification.', action: 'See other plumbers', actionKind: 'primary', note: 'No fee rule exists yet — provisional copy' },
+      { key: 'DISPUTED', chip: 'Under review', tone: 'bad', step: 0, head: 'You raised a problem', body: 'Ipelege has both sides and will contact you. Payment stays between you and Kabelo.', action: 'Add more detail', actionKind: 'outline', note: 'Dispute handling is undesigned in the spec — provisional' },
+    ];
+    const TONES = {
+      ok: { bg: pal.verifiedBg, fg: pal.verifiedText, dot: 'oklch(0.6 0.13 152)' },
+      pend: { bg: pal.pendingBg, fg: pal.pendingText, dot: 'oklch(0.72 0.15 80)' },
+      bad: { bg: pal.dangerBg, fg: pal.dangerText, dot: 'oklch(0.58 0.19 25)' },
+      off: { bg: pal.chipNeutralBg, fg: pal.chipNeutralText, dot: pal.navMuted },
+      pay: { bg: pal.infoBg, fg: pal.infoTitle, dot: '#145A8D' },
+    };
+    const bs = BSTATES.find((b) => b.key === s.bookingState) || BSTATES[0];
+    const bsTone = TONES[bs.tone];
+    const bookingStateTabs = BSTATES.map((b) => {
+      const active = b.key === s.bookingState;
+      return { key: b.key, label: b.key.replace(/_/g, ' '), onClick: () => this.setBookingState(b.key),
+        bg: active ? '#145A8D' : 'transparent', color: active ? '#fff' : '#5F7387', border: active ? '#145A8D' : '#DCE7EF' };
+    });
+    const bsSteps = [1, 2, 3, 4, 5, 6].map((n) => ({ n,
+      color: bs.step === 0 ? pal.divider : (n <= bs.step ? 'oklch(0.6 0.13 152)' : pal.divider),
+      w: n === bs.step ? 22 : 8 }));
+    const bsPrimary = bs.actionKind === 'primary';
+    const bsBtnBg = bsPrimary ? '#145A8D' : 'transparent';
+    const bsBtnColor = bsPrimary ? '#fff' : (bs.actionKind === 'outline' ? '#145A8D' : pal.textMuted);
+    const bsBtnBorder = bsPrimary ? '#145A8D' : (bs.actionKind === 'outline' ? '#145A8D' : pal.inputBorder);
+
+    const ratingStars = [1, 2, 3, 4, 5].map((n) => ({ n, onClick: () => this.setRating(n), color: n <= s.rating ? '#145A8D' : pal.divider }));
+
+    const kycDocCounts = { rides: '4 documents', movers: '3 documents', rentals: '3 documents', beauty: '2 documents', plumbing: '3 documents', electrical: '3 documents', tiling: '2 documents', catering: '3 documents', hire: '3 documents' };
+    const kycPickCats = CATS.map((c) => {
+      const sel = c.key === s.providerCategory;
+      return { ...c,
+        tint: `oklch(0.95 0.035 ${c.hue})`, ink: `oklch(0.5 0.13 ${c.hue})`,
+        bg: sel ? pal.selectedBg : pal.cardBg,
+        border: sel ? pal.accentText : pal.cardBorder,
+        labelColor: sel ? pal.accentText : pal.textPrimary,
+        docCount: kycDocCounts[c.key],
+        onClick: () => this.setState({ providerCategory: c.key }) };
+    });
+
+    const pmDefs = [
+      { key: 'from', label: 'From', unit: 'starting price', hint: 'Customers see “from P400”. You quote the real amount on each request.' },
+      { key: 'fixed', label: 'Fixed', unit: 'per job', hint: 'One price, no quoting. Best where the work does not vary.' },
+      { key: 'hour', label: 'Per hour', unit: 'per hour', hint: 'Customers see the rate. The total depends on time on site.' },
+    ];
+    const activePm = pmDefs.find((m) => m.key === s.listingPriceMode) || pmDefs[0];
+    const priceModes = pmDefs.map((m) => {
+      const sel = m.key === s.listingPriceMode;
+      return { ...m, bg: sel ? pal.accentText : pal.cardBg, border: sel ? pal.accentText : pal.inputBorder, color: sel ? '#fff' : pal.textPrimary, onClick: () => this.setPriceMode(m.key) };
+    });
+
+    const hole = [{ bsChip: bs.chip, bsHead: bs.head, bsAction: bs.action, catLabel: selectedCat.label }];
+
+    return {
+      hole, pal, appearance, categories, otpBoxes,
+      onOtpChange: this.onOtpChange,
+      toggleConsent1: this.toggleConsent1, toggleConsent2: this.toggleConsent2,
+      consent1BorderColor: s.consent1 ? pal.accentText : pal.inputBorder,
+      consent1BgColor: s.consent1 ? pal.accentText : pal.inputBg,
+      consent2BorderColor: s.consent2 ? pal.accentText : pal.inputBorder,
+      consent2BgColor: s.consent2 ? pal.accentText : pal.inputBg,
+      bookingTabs, isRequestTab, isStatusTab, directionOptions, needsLocation,
+      browseDirections, browseListings,
+      bs, bsTone, bookingStateTabs, bsSteps, bsBtnBg, bsBtnColor, bsBtnBorder,
+      bsShowPay: bs.key === 'AWAITING_PAYMENT',
+      bsShowSteps: bs.step > 0,
+      bsShowNote: !!bs.note,
+      bsShowBody: !!bs.body,
+      ratingStars,
+      kycPickCats, priceModes, priceUnit: activePm.unit, priceHint: activePm.hint,
+      toggleListingActive: this.toggleListingActive,
+      listingToggleBg: s.listingActive ? pal.accentText : pal.chipNeutralBg,
+      listingToggleX: s.listingActive ? 21 : 3,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

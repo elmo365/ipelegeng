@@ -74,8 +74,12 @@ abstract final class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: scheme,
-      scaffoldBackgroundColor: palette.screenBg,
-      canvasColor: palette.screenBg,
+      // The page is `screenBg2`, not `screenBg` — the design's own naming,
+      // kept so a future sync diffs cleanly. `screenBg` stayed white in the
+      // restyle; `screenBg2` is the #EDF3F8 tint every screen actually sits
+      // on, and it is what "tinted page" refers to.
+      scaffoldBackgroundColor: palette.screenBg2,
+      canvasColor: palette.screenBg2,
       dividerColor: palette.divider,
       textTheme: text,
       fontFamily: AppFonts.sans,
@@ -109,18 +113,21 @@ abstract final class AppTheme {
         space: 1,
       ),
 
+      // No border, and no Material elevation either: the design's card shadow
+      // is blue-tinted and Material's is grey, so a card that needs depth
+      // wraps itself in a DecoratedBox carrying `palette.shadowCard`. Setting
+      // elevation here would stack a grey shadow under the tinted one.
       cardTheme: CardThemeData(
         color: palette.cardBg,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: Radii.cardAll,
-          side: BorderSide(color: palette.cardBorder),
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: Radii.cardAll),
       ),
 
-      // Primary action: brand fill, white label, radius 12, padding 14x24.
+      // Primary action: brand fill, white label, radius 15, padding 14x24,
+      // and a shadow in its own hue — "the primary button is solid blue with
+      // a coloured shadow".
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.resolveWith(
@@ -134,8 +141,13 @@ abstract final class AppTheme {
           overlayColor: WidgetStatePropertyAll(
             Brand.white.withValues(alpha: 0.12),
           ),
-          elevation: const WidgetStatePropertyAll(0),
-          shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+          // Material cannot express `0 8px 20px rgba(20,90,141,0.30)`
+          // directly; elevation 6 tinted with the brand blue is the closest
+          // it gets, and it drops to 0 when the button is disabled or flat.
+          elevation: WidgetStateProperty.resolveWith(
+            (s) => s.contains(WidgetState.disabled) ? 0 : 6,
+          ),
+          shadowColor: const WidgetStatePropertyAll(Brand.deep),
           textStyle: const WidgetStatePropertyAll(AppTypography.buttonLabel),
           padding: const WidgetStatePropertyAll(
             EdgeInsets.symmetric(horizontal: Space.x6, vertical: 14),
@@ -270,9 +282,13 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: palette.navBg,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: palette.selectedBg,
+        // A tinted 42 x 30 pill behind the active icon, not a full capsule —
+        // the design replaced the hairline strip with a raised sheet and this
+        // pill. The sheet's own 26 px top radius and upward shadow are drawn
+        // by AppShell, which owns the surface the bar sits on.
+        indicatorColor: palette.navPillBg,
         indicatorShape: const RoundedRectangleBorder(
-          borderRadius: Radii.pillAll,
+          borderRadius: Radii.navPillAll,
         ),
         elevation: 0,
         height: 64,
@@ -344,7 +360,8 @@ abstract final class AppTheme {
 
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? Brand.white : palette.cardBg,
+          (s) =>
+              s.contains(WidgetState.selected) ? Brand.white : palette.cardBg,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)

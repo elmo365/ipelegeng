@@ -50,8 +50,46 @@ void main() {
         await pump(tester, const StatusChip.newProvider(), theme);
         expect(find.text('New on Ipelege'), findsOneWidget);
 
+        // The restyle moved the neutral token itself off grey and onto a
+        // tinted blue plate, so this chip reads as information rather than as
+        // a disabled state. It is the chip a provider with no history wears,
+        // and grey made that look like a fault.
         final label = tester.widget<Text>(find.text('New on Ipelege'));
         expect(label.style?.color, palette.chipNeutralText);
+
+        // And it is the one tone with no glyph: there is no icon for
+        // "nothing has happened yet" that does not read as a warning.
+        expect(
+          find.descendant(
+            of: find.byType(StatusChip),
+            matching: find.byType(Icon),
+          ),
+          findsNothing,
+        );
+      });
+
+      testWidgets('$name status chips pair a hue with a glyph', (
+        tester,
+      ) async {
+        // "Status never depends on colour alone" — the design states this as
+        // a rule, and it is also what keeps the chip legible to a
+        // colour-blind user.
+        for (final (chipTone, glyph) in [
+          (ChipTone.verified, Icons.verified_user),
+          (ChipTone.pending, Icons.hourglass_top),
+          (ChipTone.danger, Icons.error),
+        ]) {
+          await pump(
+            tester,
+            StatusChip(label: 'Status', tone: chipTone),
+            theme,
+          );
+          expect(
+            find.byIcon(glyph),
+            findsOneWidget,
+            reason: '$chipTone must carry $glyph',
+          );
+        }
       });
     });
   });
@@ -65,13 +103,19 @@ void main() {
       ) async {
         await pump(
           tester,
-          const CategoryTile(category: Categories.plumbing),
+          const CategoryTile(
+            category: Categories.plumbing,
+            supplyLabel: '6 nearby',
+          ),
           theme,
         );
 
         expect(find.text('Plumbing'), findsOneWidget);
 
-        final monogram = tester.widget<Container>(
+        // The tinted plate takes the category's own hue in either theme, and
+        // the Material Symbol on it takes the matching ink. The monogram is
+        // gone: identity is carried by icon and hue, not by two grey letters.
+        final plate = tester.widget<Container>(
           find
               .descendant(
                 of: find.byType(CategoryTile),
@@ -80,9 +124,34 @@ void main() {
               .first,
         );
         expect(
-          (monogram.decoration as BoxDecoration).color,
-          Categories.plumbing.hue,
+          (plate.decoration as BoxDecoration).color,
+          Categories.plumbing.plateOf(theme.brightness),
         );
+
+        final icon = tester.widget<Icon>(
+          find.descendant(
+            of: find.byType(CategoryTile),
+            matching: find.byType(Icon),
+          ),
+        );
+        expect(icon.icon, Icons.plumbing);
+        expect(icon.color, Categories.plumbing.inkOf(theme.brightness));
+      });
+
+      testWidgets('$name states supply honestly rather than hiding it', (
+        tester,
+      ) async {
+        // Thin supply is shown, not suppressed — a home screen that hides low
+        // supply looks broken the moment the customer taps in.
+        await pump(
+          tester,
+          const CategoryTile(
+            category: Categories.tiling,
+            supplyLabel: '4 nearby',
+          ),
+          theme,
+        );
+        expect(find.text('4 nearby'), findsOneWidget);
       });
     });
 

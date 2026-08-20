@@ -18,16 +18,27 @@ import '../../theme/typography.dart';
 
 enum ChipTone {
   /// A category the provider is verified in.
-  verified,
+  verified(Icons.verified_user),
 
   /// Submitted, awaiting an admin.
-  pending,
+  pending(Icons.hourglass_top),
 
   /// Nothing wrong — just nothing yet. New on Ipelege, or not uploaded.
-  neutral,
+  ///
+  /// The only tone with no glyph: it marks an absence, and there is no icon
+  /// for "nothing has happened yet" that does not read as a warning.
+  neutral(null),
 
   /// Rejected, revoked, expired.
-  danger,
+  danger(Icons.error);
+
+  const ChipTone(this.glyph);
+
+  /// Every tone but [neutral] pairs its hue with a glyph, so **status never
+  /// depends on colour alone** — the design states this as a rule, and it is
+  /// also what makes the chip legible to a colour-blind user and in the
+  /// screenshots that end up in a WhatsApp support thread.
+  final IconData? glyph;
 }
 
 class StatusChip extends StatelessWidget {
@@ -39,13 +50,11 @@ class StatusChip extends StatelessWidget {
   });
 
   /// `Verified · Plumbing`, `New on Ipelege`, `Awaiting review`.
+  /// `Verified · Plumbing`. Carries the `verified_user` glyph, not the dot —
+  /// the design replaced the dot so the chip states its meaning rather than
+  /// relying on the tint.
   const StatusChip.verified(String category, {Key? key})
-    : this(
-        key: key,
-        label: 'Verified · $category',
-        tone: ChipTone.verified,
-        showDot: true,
-      );
+    : this(key: key, label: 'Verified · $category', tone: ChipTone.verified);
 
   const StatusChip.newProvider({Key? key})
     : this(key: key, label: 'New on Ipelege');
@@ -53,8 +62,9 @@ class StatusChip extends StatelessWidget {
   final String label;
   final ChipTone tone;
 
-  /// The 14 px status dot. Carried by the verified chip so the meaning
-  /// survives for a user who cannot separate the two background tints.
+  /// Kept for the rare caller that wants the dot instead of the glyph. The
+  /// glyph is the default now: the design replaced the dot with a Material
+  /// Symbol per tone so the chip carries meaning, not just emphasis.
   final bool showDot;
 
   ({Color bg, Color fg, Color dot}) _colours(AppPalette p) => switch (tone) {
@@ -68,6 +78,10 @@ class StatusChip extends StatelessWidget {
       fg: p.pendingText,
       dot: Status.warning,
     ),
+    // Still `chipNeutralBg` — but the token itself moved in the restyle, from
+    // grey to a tinted blue plate (#E1EDF5 / #5F7387). It reads as
+    // information now rather than as a disabled state, which matters because
+    // this is the chip a provider with no history wears.
     ChipTone.neutral => (
       bg: p.chipNeutralBg,
       fg: p.chipNeutralText,
@@ -81,10 +95,8 @@ class StatusChip extends StatelessWidget {
     final c = _colours(context.palette);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Space.x3,
-        vertical: Space.x1 + 2,
-      ),
+      // 6 x 12, per the components section.
+      padding: const EdgeInsets.symmetric(horizontal: Space.x3, vertical: 6),
       decoration: BoxDecoration(color: c.bg, borderRadius: Radii.pillAll),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -96,8 +108,21 @@ class StatusChip extends StatelessWidget {
               decoration: BoxDecoration(color: c.dot, shape: BoxShape.circle),
             ),
             const SizedBox(width: 6),
+          ] else if (tone.glyph != null) ...[
+            Icon(tone.glyph, size: 15, color: c.fg),
+            const SizedBox(width: 6),
           ],
-          Text(label, style: AppTypography.chipLabel.copyWith(color: c.fg)),
+          // Flexible, because the label carries a category name and
+          // "Verified · Hairdressing & beauty" is wider than a phone chip.
+          // It ellipsizes; it never pushes past its own pill.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.chipLabel.copyWith(color: c.fg),
+            ),
+          ),
         ],
       ),
     );

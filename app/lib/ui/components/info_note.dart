@@ -79,10 +79,7 @@ class InfoNote extends StatelessWidget {
                   ),
                   const SizedBox(height: Space.x1),
                 ],
-                Text(
-                  body,
-                  style: text.bodySmall?.copyWith(color: bodyColor),
-                ),
+                Text(body, style: text.bodySmall?.copyWith(color: bodyColor)),
               ],
             ),
           ),

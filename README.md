@@ -72,7 +72,8 @@ Start with the [SDLC overview](docs/sdlc-overview.md) for reading order.
 
 | Document | What's in it |
 |---|---|
-| [Design system](docs/design-system.md) | Tokens, type scale, motion, navigation, components |
+| [Design system](docs/design-system.md) | Mobile tokens, type scale, surface treatment, motion, navigation, components |
+| [Back office design](docs/admin-design.md) | The desktop admin screens, and the token set that is deliberately not the app's |
 | [Design deltas](docs/design-deltas.md) | **Where the design moved past these specifications** |
 | [`design/`](design/) | Archived source from Claude Design |
 
