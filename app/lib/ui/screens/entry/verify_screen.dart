@@ -88,9 +88,16 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
 
     // Replace, not push: the code has been spent, and back must not be able to
     // re-enter a flow that would send a second one.
-    context.goReplacing(
-      ref.read(sessionProvider).locationGranted ? Routes.home : Routes.location,
-    );
+    //
+    // The enrolment offer comes straight after the first OTP and is made once —
+    // "offered once after first OTP, declinable without penalty". Skipping it
+    // is what left `/unlock` unreachable by any real path.
+    final session = ref.read(sessionProvider);
+    context.goReplacing(switch (session) {
+      _ when !session.biometricOffered => Routes.biometricEnrolment,
+      _ when !session.locationGranted => Routes.location,
+      _ => Routes.home,
+    });
   }
 
   @override
@@ -99,91 +106,108 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
     final text = Theme.of(context).textTheme;
     final phone = ref.watch(sessionProvider).phone ?? '';
 
-    return Scaffold(
-      body: Column(
-        children: [
-          EntryHeader(
-            leading: const HeaderGlyph(icon: Icons.sms),
-            title: 'Confirm your number',
-            subtitleRich: Text.rich(
-              TextSpan(
-                text: 'Code sent to ',
-                children: [
-                  TextSpan(
-                    text: phone,
-                    style: TextStyle(
-                      fontFamily: AppFonts.mono,
-                      fontWeight: FontWeight.w600,
-                      color: Brand.white,
-                    ),
-                  ),
-                ],
-              ),
+    // "Back is blocked in two places. During an OTP verification round trip,
+    // and while a payment or top-up is in flight." The code has already been
+    // sent server-side, so backing out here does not un-send it — it just
+    // strands the person outside a flow they are already in the middle of.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'The code has already been sent. Enter it, or start again from '
+              'sign in.',
             ),
           ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(22, Space.x5, 22, Space.x5),
-              children: [
-                _CodeCard(
-                  controller: _code,
-                  focusNode: _codeFocus,
-                  remaining: _remaining,
-                  onResend: _startCountdown,
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'CONSENT · V${Consent.current}',
-                  style: AppTypography.sectionLabel.copyWith(
-                    color: palette.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 9),
-                ConsentCard(
-                  required: true,
-                  value: _agreed,
-                  onChanged: (v) => setState(() => _agreed = v),
-                  label:
-                      'I agree to the Terms of Service and Privacy Policy',
-                ),
-                const SizedBox(height: 9),
-                ConsentCard(
-                  value: _smsUpdates,
-                  onChanged: (v) => setState(() => _smsUpdates = v),
-                  label: ConsentChannel.sms.label,
-                ),
-              ],
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_complete && !_agreed)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: Space.x2),
-                      child: Text(
-                        'The required consent above has to be ticked before '
-                        'the account can be created.',
-                        textAlign: TextAlign.center,
-                        style: text.labelSmall?.copyWith(
-                          fontSize: 11.5,
-                          color: palette.textMuted,
-                        ),
+        );
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            EntryHeader(
+              leading: const HeaderGlyph(icon: Icons.sms),
+              title: 'Confirm your number',
+              subtitleRich: Text.rich(
+                TextSpan(
+                  text: 'Code sent to ',
+                  children: [
+                    TextSpan(
+                      text: phone,
+                      style: TextStyle(
+                        fontFamily: AppFonts.mono,
+                        fontWeight: FontWeight.w600,
+                        color: Brand.white,
                       ),
                     ),
-                  PrimaryAction(
-                    label: 'Verify & continue',
-                    onPressed: _ready ? _verify : null,
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(22, Space.x5, 22, Space.x5),
+                children: [
+                  _CodeCard(
+                    controller: _code,
+                    focusNode: _codeFocus,
+                    remaining: _remaining,
+                    onResend: _startCountdown,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'CONSENT · V${Consent.current}',
+                    style: AppTypography.sectionLabel.copyWith(
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 9),
+                  ConsentCard(
+                    required: true,
+                    value: _agreed,
+                    onChanged: (v) => setState(() => _agreed = v),
+                    label: 'I agree to the Terms of Service and Privacy Policy',
+                  ),
+                  const SizedBox(height: 9),
+                  ConsentCard(
+                    value: _smsUpdates,
+                    onChanged: (v) => setState(() => _smsUpdates = v),
+                    label: ConsentChannel.sms.label,
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_complete && !_agreed)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: Space.x2),
+                        child: Text(
+                          'The required consent above has to be ticked before '
+                          'the account can be created.',
+                          textAlign: TextAlign.center,
+                          style: text.labelSmall?.copyWith(
+                            fontSize: 11.5,
+                            color: palette.textMuted,
+                          ),
+                        ),
+                      ),
+                    PrimaryAction(
+                      label: 'Verify & continue',
+                      onPressed: _ready ? _verify : null,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -251,9 +275,7 @@ class _CodeCard extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       autofillHints: const [AutofillHints.oneTimeCode],
                       maxLength: VerifyScreen.codeLength,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                         counterText: '',
                         border: InputBorder.none,

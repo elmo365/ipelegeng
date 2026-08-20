@@ -55,7 +55,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _continue() {
     ref
         .read(sessionProvider.notifier)
-        .requestCode(name: _name.text.trim(), phone: Phone.normalise(_phone.text));
+        .requestCode(
+          name: _name.text.trim(),
+          phone: Phone.normalise(_phone.text),
+        );
     context.goReplacing(Routes.verify);
   }
 

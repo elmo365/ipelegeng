@@ -295,28 +295,58 @@ review.
 
 ## Motion
 
-Seven tokens. Motion explains a change; it never decorates one. Anything
-entering in place travels **12 dp at most** — only sheets go further. **Nothing
-loops.**
+**The canvas table is the authority.** Motion explains a change; it never
+decorates one. Anything entering in place travels **12 dp at most** — only
+sheets go further. **Nothing loops** except the incoming-ride countdown, which
+the design names as the single exception.
+
+Read from part 4 of the split canvas. Every duration below is stated there; none
+of them is inferred.
+
+| Transition | Duration | Curve & movement |
+|---|---|---|
+| Tab change | 120 ms | Cross-fade only, **no slide**. Tabs are siblings, not a journey. |
+| Push to detail | 220 ms | Ease-out, slide in from the right, **16 px parallax on the outgoing screen**. |
+| Bottom sheet | 260 in / 180 out | Ease-out on entry, ease-in on dismissal. Scrim fades over the same interval. |
+| Booking state change | 300 ms | Chip colour and step bar animate **together**, so the change reads as one event. |
+| Incoming ride request | 180 ms | Sheet rises fast, timer starts immediately. The countdown is **the only looping animation in the app**. |
+| Wallet balance update | 400 ms | Figure counts to the new amount. Money changing deserves to be noticed. |
+| Verification status change | none | Arrives by notification, so the screen is simply correct when opened. |
+
+The tokens that carry it, in `theme/motion.dart`:
 
 ```dart
-class Motion {
-  static const tap   = Duration(milliseconds: 120);
-  static const enter = Duration(milliseconds: 220);
-  static const exit  = Duration(milliseconds: 160);
-  static const sheet = Duration(milliseconds: 280);
-  static const page  = Duration(milliseconds: 250);
-  static const count = Duration(milliseconds: 600);
-  static const none  = Duration.zero;
+abstract final class Motion {
+  static const tap         = Duration(milliseconds: 120);
+  static const tabChange   = Duration(milliseconds: 120); // cross-fade only
+  static const enter       = Duration(milliseconds: 220);
+  static const exit        = Duration(milliseconds: 160);
+  static const page        = Duration(milliseconds: 220); // + pushParallax
+  static const sheet       = Duration(milliseconds: 260);
+  static const sheetOut    = Duration(milliseconds: 180);
+  static const stateChange = Duration(milliseconds: 300);
+  static const count       = Duration(milliseconds: 400);
+  static const none        = Duration.zero;
 
   static const curve    = Curves.easeOutCubic;
   static const curveOut = Curves.easeInCubic;
+
+  static const travel       = 12.0; // anything entering in place
+  static const pushParallax = 16.0; // the outgoing screen under a push
 
   // Every duration goes through here. No exceptions.
   static Duration of(BuildContext c, Duration d) =>
       MediaQuery.of(c).disableAnimations ? none : d;
 }
 ```
+
+> **Corrected 2026-08-20.** This section previously carried a seven-token block
+> with `sheet: 280`, `page: 250` and `count: 600`, and no tab-change or parallax
+> at all — values that predate the restyle and appear nowhere in the canvas. The
+> resync **appended** the recovered table further down the document instead of
+> replacing the stale block, so this file contained two `## Motion` sections
+> disagreeing with each other, and `theme/motion.dart` was built from the wrong
+> one. The duplicate is gone and the numbers above are the canvas's own.
 
 ### The three that carry the most meaning
 
@@ -413,48 +443,10 @@ Three movements look similar on screen and must not be built the same way.
 
 The app bar back arrow and the system gesture always do the same thing.
 
-### State restoration
+### What the system back gesture does
 
-Restoration is a requirement, not a polish item — the OS reclaims memory
-constantly on these handsets. Notably: a provider who backgrounds the app
-mid-KYC and comes back an hour later, after Android has killed the process, must
-land on the same step with the same documents attached. **That is why the KYC
-draft lives on the server from the moment of upload rather than in the widget
-tree.**
-
-> **Recovered 2026-08-20.** Both tables — what the system back gesture does, and
-> what survives being killed — are written out under
-> [Navigation and the system back gesture](#navigation-and-the-system-back-gesture)
-> below.
-
-## Feedback
-
-### Haptics
-
-Four moments earn a real buzz, and they are the four where money moves.
-Everything else is either the lightest possible click or silence — a phone that
-vibrates constantly gets its haptics switched off in system settings, and then
-the four that mattered are gone too.
-
-### Loading
-
-One loading treatment for every wait is the mistake. A 200 ms cached read and a
-6 s upload on 3G need opposite things, and on these phones the second case is
-not rare. Treatment is banded by expected duration.
-
-### What gets kept
-
-Autosave is right for effort and wrong for money. A listing draft should survive
-anything; a top-up amount should survive nothing.
-
-> **Recovered 2026-08-20.** The haptics, loading and saving rules are written
-> out under [Motion](#motion) below.
-
-## Navigation and the system back gesture
-
-Recovered 2026-08-20 from part 4 of the split canvas. Written as a
-specification, not guidance — Android's back gesture is trusted more than
-anything on screen, so these are rules rather than preferences.
+Written as a specification, not guidance — Android's back gesture is trusted
+more than anything on screen, so these are rules rather than preferences.
 
 | Rule | Behaviour |
 |---|---|
@@ -462,8 +454,25 @@ anything on screen, so these are rules rather than preferences.
 | Sheets and dialogs | One gesture dismisses **the top layer only**. A sheet over a screen takes two gestures to leave the screen. |
 | Multi-step flows | Step back one field group, **holding entered values**. Nothing clears until the flow is abandoned deliberately. |
 | Unsaved work | Asks first — but **only** where real typing or an upload would be lost: create listing, verification, a written review. Never on a screen the person only read. |
-| Blocked entirely | During an OTP round trip, and while a payment or top-up is in flight. Both show progress instead, because the result is already server-side. |
+| Blocked entirely | During an **OTP round trip**, and while a **payment or top-up is in flight**. Both show progress instead, because the result is already server-side. |
 | Mode switching | **Resets the stack.** Provider mode starts fresh at provider home; back returns to customer home, not into provider history. |
+
+### State restoration
+
+Restoration is a requirement, not a polish item — the OS reclaims memory
+constantly on these handsets. Notably: a provider who backgrounds the app
+mid-KYC and comes back an hour later, after Android has killed the process, must
+land on the same step with the same documents attached. **That is why the draft
+persists to local storage on every field change, not on a save action** — a
+save button the process never reaches is not a save.
+
+> **Corrected 2026-08-20.** This said the KYC draft "lives on the server from
+> the moment of upload", which was inferred and contradicted the design twice in
+> the very next subsection. The canvas is explicit in both places: *"half-finished
+> verification uploads, stored **locally** until submitted"* and *"drafts persist
+> to **local storage** on every field change"*. Local, not server — the
+> difference decides whether an unsubmitted Omang ever leaves the handset, which
+> is a privacy position, not an implementation detail.
 
 ### What survives being killed
 
@@ -480,31 +489,30 @@ Implementation note from the design: tab roots use nested `Navigator`s with a
 `PopScope` at each root, and drafts persist to local storage **on every field
 change**, not on a save action.
 
-## Motion
-
-Four durations, three curves, and one rule: **motion tells you where something
-came from.** Anything not doing that job is cut, because it costs frames on the
-target handsets.
-
-| Transition | Duration | Curve & movement |
-|---|---|---|
-| Tab change | 120 ms | Cross-fade only, no slide. Tabs are siblings, not a journey. |
-| Push to detail | 220 ms | Ease-out, slide in from the right, 16 px parallax on the outgoing screen. |
-| Bottom sheet | 260 / 180 ms | Ease-out in, ease-in on dismissal. Scrim fades over the same interval. |
-| Booking state change | 300 ms | Chip colour and step bar animate **together**, so the change reads as one event. |
-| Incoming ride request | 180 ms | Sheet rises fast, timer starts immediately. The countdown is **the only looping animation in the app**. |
-| Wallet balance update | 400 ms | Figure counts to the new amount. Money changing deserves to be noticed. |
-| Verification status change | none | Arrives by notification, so the screen is simply correct when opened. |
+## Feedback
 
 ### Haptics
 
-Three uses only — a phone that buzzes at everything gets muted.
+**Three uses only** — a phone that buzzes at everything gets muted, and then the
+three that mattered are gone too.
 
-- **Light** — accepting or declining a request, confirming a booking is done.
-- **Heavy** — an incoming ride request, alongside the ringtone.
-- **Error** — a wrong OTP or a failed top-up, paired with the message.
+| Strength | When |
+|---|---|
+| Light | Accepting or declining a request; confirming a booking is done. |
+| Heavy | An incoming ride request, alongside the ringtone. |
+| Error | A wrong OTP or a failed top-up, paired with the message. |
 
-### Waiting and saving
+> **Corrected 2026-08-20.** This said "four moments … the four where money
+> moves", which is not what the canvas specifies — it names three, and two of
+> them (a request accepted, a wrong OTP) are not money moving at all. The
+> recovered table had been appended in a second `## Motion` section rather than
+> replacing this prose.
+
+### Loading and saving
+
+One loading treatment for every wait is the mistake. A 200 ms cached read and a
+6 s upload on 3G need opposite things, and on these phones the second case is
+not rare.
 
 - Lists load as **skeleton cards in the shape they will take**, never a centred
   spinner on an empty page.
@@ -514,6 +522,12 @@ Three uses only — a phone that buzzes at everything gets muted.
   and says why.
 - Offline shows **the last known data under a banner**, not an empty screen.
   Actions queue and retry.
+
+### What gets kept
+
+Autosave is right for effort and wrong for money. A listing draft should survive
+anything; a top-up amount should survive nothing. The full kept/not-kept list is
+under [Navigation](#navigation).
 
 ## Light and dark
 

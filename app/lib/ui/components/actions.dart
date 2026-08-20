@@ -117,6 +117,52 @@ class SoftAction extends StatelessWidget {
   }
 }
 
+/// The full-width way out, in muted weight: "Not now", "Keep looking around".
+///
+/// The canvas gives both of these the same treatment — 14 px, weight 700,
+/// `textMuted`, 12 px of vertical padding, centred and full width. Not an
+/// accent link: declining is a real choice and gets a real target, but it must
+/// not compete with the primary for attention. Distinct from [InlineLink],
+/// which is a route *elsewhere* rather than a way past this screen.
+class QuietAction extends StatelessWidget {
+  const QuietAction({super.key, required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final text = Theme.of(context).textTheme;
+
+    return Semantics(
+      button: true,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: Radii.buttonAll,
+          child: Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(minHeight: Touch.min),
+            padding: const EdgeInsets.symmetric(vertical: Space.x3),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: text.titleMedium?.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: palette.textMuted,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The centred line under the primary action: "Already have an account? Sign
 /// in". Plain text with one tappable span, not a button — it is a route out,
 /// not a competing decision.

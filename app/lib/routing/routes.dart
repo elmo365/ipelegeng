@@ -26,6 +26,10 @@ abstract final class Routes {
   /// session that was already active on this device.
   static const unlock = '/unlock';
 
+  /// The enrolment offer, made once after the first OTP. Distinct from
+  /// [unlock]: this asks, that one uses.
+  static const biometricEnrolment = '/biometric';
+
   static const location = '/location';
 
   /// Every entry route, for the guard in the router and the build-order test.
@@ -36,6 +40,7 @@ abstract final class Routes {
     verify,
     consent,
     unlock,
+    biometricEnrolment,
     location,
   ];
 

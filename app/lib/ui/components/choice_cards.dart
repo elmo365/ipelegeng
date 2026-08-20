@@ -13,11 +13,31 @@ import '../../theme/tokens.dart';
 
 /// A statement the app is making about itself: "Nothing tracked in the
 /// background". Not tappable — it is a promise, not a control.
+/// A statement the app is making about itself: "Nothing tracked in the
+/// background", "Ipelege never sees your fingerprint". Not tappable — it is a
+/// promise, not a control.
+///
+/// [iconColor] is required rather than defaulted, because the two screens that
+/// use this card take **different greens** and the design means both:
+///
+/// - Location permission draws `oklch(0.5 0.13 152)`, which converts to
+///   `#05773B` — the palette's `creditColor`.
+/// - Biometric enrolment draws `pal.verifiedText`.
+///
+/// A default here would quietly make one of them wrong, which is what happened
+/// when this was first written against a flattened reading rather than the
+/// artboards.
 class PromiseCard extends StatelessWidget {
-  const PromiseCard({super.key, required this.label, this.icon});
+  const PromiseCard({
+    super.key,
+    required this.label,
+    required this.iconColor,
+    this.icon = Icons.check_circle,
+  });
 
   final String label;
-  final IconData? icon;
+  final Color iconColor;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +54,7 @@ class PromiseCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         child: Row(
           children: [
-            Icon(
-              icon ?? Icons.check_circle,
-              size: 19,
-              // The design's own green, not the palette's credit colour: this
-              // is a reassurance, not money moving.
-              color: Status.success,
-            ),
+            Icon(icon, size: 19, color: iconColor),
             const SizedBox(width: 11),
             Expanded(
               child: Text(

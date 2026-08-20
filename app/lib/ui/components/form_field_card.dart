@@ -210,9 +210,7 @@ class _InputState extends State<_Input> {
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: Space.x3,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: Space.x3),
                 hintText: widget.hint,
                 hintStyle: style?.copyWith(color: palette.textFaint),
               ),

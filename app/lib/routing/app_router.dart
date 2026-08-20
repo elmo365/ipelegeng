@@ -17,6 +17,7 @@ import '../theme/motion.dart';
 import '../ui/screens/consumer/category_browse_screen.dart';
 import '../ui/screens/consumer/home_screen.dart';
 import '../ui/screens/consumer/listing_detail_screen.dart';
+import '../ui/screens/entry/biometric_enrolment_screen.dart';
 import '../ui/screens/entry/consent_screen.dart';
 import '../ui/screens/entry/location_screen.dart';
 import '../ui/screens/entry/register_screen.dart';
@@ -75,6 +76,11 @@ GoRouter createRouter({String initialLocation = Routes.splash}) {
         path: Routes.unlock,
         pageBuilder: (context, state) =>
             _replacingPage(state, const UnlockScreen()),
+      ),
+      GoRoute(
+        path: Routes.biometricEnrolment,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const BiometricEnrolmentScreen()),
       ),
       GoRoute(
         path: Routes.location,
@@ -183,8 +189,11 @@ StatefulShellBranch _branch(
 Page<void> _lateralPage(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
-    transitionDuration: Motion.enter,
-    reverseTransitionDuration: Motion.exit,
+    // 120 ms, both ways. The canvas is explicit: "cross-fade only, no slide —
+    // tabs are siblings, not a journey". A tab change that takes as long as a
+    // push reads as travel.
+    transitionDuration: Motion.tabChange,
+    reverseTransitionDuration: Motion.tabChange,
     child: child,
     transitionsBuilder: PageMotion.lateral,
   );

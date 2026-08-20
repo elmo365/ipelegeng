@@ -43,7 +43,12 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(Space.x6, Space.x6, Space.x6, Space.x2),
+              padding: const EdgeInsets.fromLTRB(
+                Space.x6,
+                Space.x6,
+                Space.x6,
+                Space.x2,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -77,8 +82,7 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
                     required: true,
                     value: _agreed,
                     onChanged: (v) => setState(() => _agreed = v),
-                    label:
-                        'I agree to the Terms of Service and Privacy Policy',
+                    label: 'I agree to the Terms of Service and Privacy Policy',
                   ),
                   const SizedBox(height: Space.x3),
                   Text(

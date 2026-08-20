@@ -35,6 +35,7 @@ const _built = <String>{
   Routes.verify,
   Routes.consent,
   Routes.unlock,
+  Routes.biometricEnrolment,
   Routes.location,
   // Built during the resync, to validate the tokens.
   Routes.home,

@@ -81,7 +81,9 @@ class LocationScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 18),
               for (final promise in _promises) ...[
-                PromiseCard(label: promise),
+                // The canvas draws these ticks `oklch(0.5 0.13 152)`, which is
+                // #05773B — the palette's creditColor, not Status.success.
+                PromiseCard(label: promise, iconColor: palette.creditColor),
                 const SizedBox(height: 9),
               ],
               const Spacer(),

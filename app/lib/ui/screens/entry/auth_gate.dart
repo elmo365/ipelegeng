@@ -20,6 +20,7 @@ import '../../../core/session.dart';
 import '../../../routing/navigation.dart';
 import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
+import '../../../theme/motion.dart';
 import '../../../theme/tokens.dart';
 import '../../components/actions.dart';
 
@@ -44,6 +45,14 @@ Future<bool> requireAccount(
     // not a step inside the Home tab's stack.
     useRootNavigator: true,
     isScrollControlled: true,
+    // 260 in, 180 out — the one transition the canvas gives different
+    // durations each way: ease-out on entry, ease-in on dismissal.
+    sheetAnimationStyle: AnimationStyle(
+      duration: Motion.sheet,
+      reverseDuration: Motion.sheetOut,
+      curve: Motion.curve,
+      reverseCurve: Motion.curveOut,
+    ),
     // The listing stays legible behind it. The canvas draws the screen at 35%,
     // so the barrier is light rather than the Material default black-54.
     barrierColor: Brand.navy.withValues(alpha: 0.45),
@@ -87,11 +96,7 @@ class _AuthGateSheet extends StatelessWidget {
               color: palette.selectedBg,
               borderRadius: const BorderRadius.all(Radius.circular(16)),
             ),
-            child: Icon(
-              Icons.lock_open,
-              size: 24,
-              color: palette.accentText,
-            ),
+            child: Icon(Icons.lock_open, size: 24, color: palette.accentText),
           ),
           const SizedBox(height: Space.x4),
           Text(
@@ -121,29 +126,11 @@ class _AuthGateSheet extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           // Dismissal is a real choice, so it is a full-width target with the
-          // same weight of label — not a small "cancel".
-          Semantics(
-            button: true,
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                borderRadius: Radii.buttonAll,
-                child: Container(
-                  width: double.infinity,
-                  constraints: const BoxConstraints(minHeight: Touch.min),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Keep looking around',
-                    style: text.titleMedium?.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: palette.textMuted,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          // same weight of label — not a small "cancel". Same treatment the
+          // canvas gives "Not now" on the enrolment screen.
+          QuietAction(
+            label: 'Keep looking around',
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       ),

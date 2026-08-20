@@ -73,6 +73,8 @@ class Session {
     this.consentVersion,
     this.channels = const <ConsentChannel>{},
     this.locationGranted = false,
+    this.biometricOffered = false,
+    this.biometricUnlock = false,
   });
 
   final SessionStage stage;
@@ -89,6 +91,15 @@ class Session {
   /// Answered separately from consent, and it is allowed to be refused —
   /// picking an area from a list is a first-class path, not a degraded one.
   final bool locationGranted;
+
+  /// Whether the enrolment offer has been made. The design offers it **once**,
+  /// after the first OTP, and a declined offer is never re-asked — so this is
+  /// remembered separately from the answer.
+  final bool biometricOffered;
+
+  /// The answer. Off means an OTP every time the app is opened, which is what
+  /// the Security screen tells the user in those words.
+  final bool biometricUnlock;
 
   /// The one question the rest of the app asks. Deliberately not
   /// `stage != none`: a signed-in session on a superseded consent version
@@ -113,6 +124,8 @@ class Session {
     String? consentVersion,
     Set<ConsentChannel>? channels,
     bool? locationGranted,
+    bool? biometricOffered,
+    bool? biometricUnlock,
   }) {
     return Session(
       stage: stage ?? this.stage,
@@ -121,6 +134,8 @@ class Session {
       consentVersion: consentVersion ?? this.consentVersion,
       channels: channels ?? this.channels,
       locationGranted: locationGranted ?? this.locationGranted,
+      biometricOffered: biometricOffered ?? this.biometricOffered,
+      biometricUnlock: biometricUnlock ?? this.biometricUnlock,
     );
   }
 }
@@ -162,6 +177,18 @@ class SessionController extends Notifier<Session> {
 
   void setLocationGranted(bool granted) =>
       state = state.copyWith(locationGranted: granted);
+
+  /// The enrolment offer, answered. Recorded as *offered* either way, because
+  /// the design offers it once after the first OTP and never asks again —
+  /// declining without penalty means the offer is spent, not deferred.
+  void answerBiometricOffer({required bool enrol}) {
+    state = state.copyWith(biometricOffered: true, biometricUnlock: enrol);
+  }
+
+  /// Turned on or off later, from Security. Off means an OTP on every open,
+  /// which is what that screen says in those words.
+  void setBiometricUnlock(bool on) =>
+      state = state.copyWith(biometricUnlock: on);
 
   /// The app was reopened. Only a session that was active can lock — a visitor
   /// has nothing to unlock.

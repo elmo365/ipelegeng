@@ -47,9 +47,7 @@ class SplashScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Expanded(
-                  child: Center(child: BrandLockup(width: 176)),
-                ),
+                const Expanded(child: Center(child: BrandLockup(width: 176))),
                 for (final (icon, label) in _promises) ...[
                   _PromiseOnDark(icon: icon, label: label),
                   const SizedBox(height: 9),

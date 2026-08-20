@@ -7,6 +7,7 @@ import 'package:ipelege/routing/app_router.dart';
 import 'package:ipelege/routing/routes.dart';
 import 'package:ipelege/ui/components/entry_header.dart';
 import 'package:ipelege/ui/screens/consumer/home_screen.dart';
+import 'package:ipelege/ui/screens/entry/biometric_enrolment_screen.dart';
 import 'package:ipelege/ui/screens/entry/location_screen.dart';
 import 'package:ipelege/ui/screens/entry/register_screen.dart';
 import 'package:ipelege/ui/screens/entry/sign_in_screen.dart';
@@ -148,8 +149,41 @@ void main() {
         reason: 'the optional channel was never ticked and must not be set',
       );
 
+      // The enrolment offer comes straight after the first OTP — "offered once
+      // after first OTP, declinable without penalty". Before this existed,
+      // /unlock had no path leading to it at all.
+      expect(find.byType(BiometricEnrolmentScreen), findsOneWidget);
+      expect(find.text('Skip the code next time?'), findsOneWidget);
+
+      // Declining is free: no warning, and it still reaches the app.
+      await tester.tap(find.text('Not now'));
+      await tester.pumpAndSettle();
+
+      final answered = container.read(sessionProvider);
+      expect(answered.biometricOffered, isTrue);
+      expect(answered.biometricUnlock, isFalse);
+
       // Location is asked once, after the account exists — not at launch.
       expect(find.byType(LocationScreen), findsOneWidget);
+    });
+
+    testWidgets('the enrolment offer is made once, never re-asked', (
+      tester,
+    ) async {
+      final container = await pumpAt(tester, Routes.biometricEnrolment);
+
+      await tester.tap(find.text('Turn on biometric unlock'));
+      await tester.pumpAndSettle();
+
+      final session = container.read(sessionProvider);
+      expect(session.biometricUnlock, isTrue);
+      expect(
+        session.biometricOffered,
+        isTrue,
+        reason:
+            'the offer has to be recorded as spent either way — nagging is how '
+            'a permission prompt gets refused permanently',
+      );
     });
 
     testWidgets('refusing location is a supported answer, not a dead end', (

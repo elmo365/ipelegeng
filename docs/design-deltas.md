@@ -356,6 +356,67 @@ fault, and it dies with the scaffolding when the API lands.
 
 ---
 
+## 14. Reading the whole design, and what that corrected
+
+All five canvases were read end to end on 2026-08-20 — foundations, customer,
+provider, specs and the back office, 2,384 lines of flattened text. Everything
+before this had been done against **extracted slices**: a regex for a token
+name, a `find()` around one artboard. That works for looking something up and
+fails completely at noticing that a document disagrees with itself.
+
+**The root cause is in this repo, not in the canvas.** The 2026-08-20 resync
+*appended* the recovered sections to `design-system.md` instead of replacing the
+stale ones. The file ended up with two `## Motion` headings and two navigation
+sections, and the stale motion section carried a `Motion` class **code listing**
+— so it read as the authority, and `theme/motion.dart` was written from it.
+
+Five contradictions, all inside one document:
+
+| Where | Stale text said | The canvas says |
+|---|---|---|
+| `## Motion` (first) | `sheet: 280`, `page: 250`, `count: 600`; no tab-change, no parallax | 120 tab change · 220 push **+ 16 px parallax** · 260/180 sheet · 300 state change · **400** count |
+| `## Feedback` → Haptics | "**Four** moments … the four where money moves" | "**Three** uses only" — and two of them are not money moving |
+| State restoration | KYC draft "lives **on the server** from the moment of upload" | "stored **locally** until submitted" · "drafts persist to **local storage** on every field change" |
+| Navigation | Split across two sections with a cross-reference | One set of rules |
+| Anchors | `#motion` ambiguous between two headings | — |
+
+The third one is the serious one. Server-held versus locally-held drafts decides
+whether an unsubmitted Omang ever leaves the handset. That is a privacy
+position, and it had been written from inference into a document that the code
+is supposed to follow.
+
+**All five are now merged into one section each, sourced from the canvas text
+rather than from the doc's own copy of it** — every row re-checked against part
+4 lines 0248–0316 before it was written down.
+
+### What it changed in the app
+
+- `theme/motion.dart` rewritten to the canvas table: `tabChange` 120 added,
+  `page` 250 → 220 with `pushParallax` 16, `sheet` 280 → 260 with a separate
+  `sheetOut` 180, `count` 600 → **400**, `stateChange` 300 added.
+- Tab changes were animating for 220 ms as a fade. They are siblings, not a
+  journey — 120 ms.
+- `PageMotion.push` now drifts the outgoing screen 16 dp. It previously had no
+  parallax at all, so a push read as a swap rather than as depth.
+- The auth-gate sheet takes 260 in / 180 out instead of the theme default.
+- Back is blocked during the OTP round trip, per the navigation rules.
+
+### What it changed in the plan
+
+Phase 0's gate checked colour and nothing else, and passed. It now requires a
+motion pass as well. Phase 1 was recorded as built and is not — the biometric
+enrolment screen does not exist, the OTP screen carries one of about ten named
+states, and consent supersede is modelled without being enforced. Both are
+corrected in [`build-order.md`](build-order.md).
+
+**The lesson, for the next session:** a slice tells you what a section says. It
+cannot tell you that another section says the opposite. Read the design whole
+before implementing from it, and when a resync brings new material in, *replace*
+what it supersedes rather than appending beside it.
+
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

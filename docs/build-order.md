@@ -24,17 +24,61 @@ recording it. Update the doc and the test together.
 
 ---
 
+## Where each screen lives
+
+**Do not build a screen without opening its artboard first.** Every phase below
+names its screens by the label the canvas gives them, so the UI and the design's
+own notes are one lookup away. Extracted from the `data-screen-label` attributes
+on 2026-08-20 — 60 artboards, each rendered in both light and dark.
+
+| Canvas | Artboards |
+|---|---|
+| [`ds-2-customer`](../design/ipelege-ds-2-customer.dc.html) | `SPLASH / FIRST OPEN` · `REGISTER · UC-1` · `SIGN IN` · `BIOMETRIC UNLOCK + PASSCODE FALLBACK` · `CONSENT CAPTURE · FR-1.10` · `AUTH GATE · UC-4` · `LOCATION PERMISSION` · `1 · ONBOARDING & OTP` · `2 · HOME` · `3 · CATEGORY BROWSE` · `4 · LISTING DETAIL` · `5–6 · BOOKING REQUEST / STATUS` · `BOOKING STATUS · 11 STATES` · `7 · RIDE REQUEST & TRACKING` · `8 · RATE & REVIEW` |
+| [`ds-3-provider`](../design/ipelege-ds-3-provider.dc.html) | `MODE SWITCHER` · `MODE SWITCHER · CUSTOMER ONLY` · `9 · PROVIDER HOME` · `10 · MY CATEGORIES` · `11 · BOOKING INBOX` · `12 · WALLET` · `13 · TOP UP` · `14 · BECOME A PROVIDER` · nine `KYC ·` screens, one per category · `15 · CREATE LISTING` · `16 · RENTAL LISTING` |
+| [`ds-4-specs`](../design/ipelege-ds-4-specs.dc.html) | `17 · ACCOUNT` · `18 · PREFERENCES` · `19 · SECURITY` · `20 · BIOMETRIC ENROLMENT` · `21 · NOTIFICATIONS` · `22 · DATA & STORAGE` · `21 · ARRIVAL ATTESTATION` |
+| [`ds-1-foundations`](../design/ipelege-ds-1-foundations.dc.html) | No artboards — the journey map, the token definitions and the restyle rationale. It also carries each screen's own ✓ built / gap marker, which tracks **design** completeness, not this repo's. |
+| [`admin-back-office`](../design/ipelege-admin-back-office.dc.html) | `A0` staff sign-in · `A0b` add staff user · `A1` queue board · `A2` verification queue · `A3` document review · `A4` reversal evidence · `A5` VAT and reporting · `A6` key statistics · `A7` responsive |
+
+Two things in that index are the design's own inconsistencies, recorded rather
+than silently corrected:
+
+- **Two screens are numbered 21** — Notifications and Arrival attestation.
+- **The booking-state count differs between canvases.** The journey map in
+  foundations enumerates ten; the artboard is titled `BOOKING STATUS · 11 STATES`
+  and `design-system.md` lists `AWAITING_PAYMENT` as the eleventh. Eleven is
+  right — the map's list omits the payment step, which is exactly the step the
+  design moved. Phase 2 builds eleven.
+
+---
+
 ## Phase 0 · Look at what exists — **done 2026-08-20**
 
 All five built screens were run on a Pixel 9a emulator in both modes and
 compared against the canvas: consumer home, category browse, listing detail,
 provider dashboard, wallet.
 
-**The tokens hold.** Sampled pixels match `AppPalette` exactly — dark page
+**The colour tokens hold.** Sampled pixels match `AppPalette` exactly — dark page
 `#050B0F`, card `#171F25`, nav `#11171C`; light card and nav pure white on the
 `#EDF3F8` page. The `PAL` recovery was right, and the dark mode that had never
 been displayed renders as specified. Surface treatment, radii, icon plates and
 the raised nav sheet all read as designed.
+
+> **Phase 0's verdict was too narrow, and is corrected here.** It checked
+> *colour* against the canvas and nothing else, because it was run against
+> extracted slices of the design rather than a full reading of it. Motion was
+> never compared at all — and when the whole design was finally read end to end,
+> every duration in `theme/motion.dart` turned out to be wrong. A gate that only
+> samples pixels is not a gate on "renders as designed".
+>
+> The root cause was in this repo, not in the reading: `design-system.md`
+> carried **two `## Motion` sections** that disagreed, because the resync
+> appended the recovered canvas table instead of replacing the stale block. The
+> stale one held a `Motion` class code listing, so it read as the authority, and
+> that is what got implemented. Four further contradictions surfaced with it —
+> see [`design-deltas.md`](design-deltas.md) §14.
+>
+> **Phase 0 now also requires a motion pass**, not just a colour pass: every row
+> of the transition table checked against what the app actually does.
 
 Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
@@ -135,10 +179,35 @@ reading would not have:
   gradient band was only as wide as its own text. Invisible on register with its
   two-line subtitle; obvious on verify with its four words.
 
-**Still open in this phase:** biometry and the passcode are wired to the session
-but not to the platform — both buttons call `unlock()` and no `local_auth`
-prompt is shown yet. The screen, the states and the fallback's visual weight are
-right; the sensor is not connected.
+### What is still missing — corrected 2026-08-20
+
+Phase 1 was recorded as built. Reading the whole design showed it is not, and
+the gaps are in the design's own text, not in interpretation:
+
+- **Biometric enrolment is a screen and it does not exist.** Part 4, screen 20:
+  *"Offered once after first OTP, declinable without penalty"* — a fingerprint
+  glyph, "Skip the code next time?", two reassurance cards (*"Stays on this
+  device only"*, *"Ipelege never sees your fingerprint"*), and
+  **Turn on biometric unlock** / **Not now**. Without it there is no path by
+  which `/unlock` is ever reachable, which is why the screen could be built and
+  the omission not noticed.
+- **The OTP screen has one state; the design names about ten.** Part 1 lists
+  them: code sent · wrong code · resend cooling down · locked after N attempts ·
+  number already registered → sign in · consent declined → cannot proceed ·
+  returning to a live session → biometric prompt · biometry unavailable or
+  refused → passcode · new device or reinstall → full phone + OTP · signed out
+  explicitly → back to sign in. Built: the happy path and resend cooling down.
+- **Consent supersede is modelled but not enforced.** `Session.canBook` returns
+  false on a stale version, and nothing routes that session to `/consent`. The
+  design requires the gate to *force* re-consent "before anything else
+  proceeds".
+- **Back is not blocked during the OTP round trip**, which the navigation rules
+  state outright. *(Fixed 2026-08-20.)*
+
+**Still open, and known since it was built:** biometry and the passcode are
+wired to the session but not to the platform — both buttons call `unlock()` and
+no `local_auth` prompt is shown yet. The screen, the states and the fallback's
+visual weight are right; the sensor is not connected.
 
 ---
 
