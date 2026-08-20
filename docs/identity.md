@@ -22,8 +22,16 @@ drift apart.
 |---|---|---|
 | `appicon-light.png` | 512 × 512 | Launcher icon at every density |
 | `appicon-dark.png` | 512 × 512 | The dark cut, held for the themed icon |
-| `adaptive-foreground.png` | 432 × 432 | Adaptive-icon foreground, **and** the in-app mark |
+| `adaptive-foreground.png` | 432 × 432 | Adaptive-icon foreground layer |
 | `notification-icon.png` | 96 × 96 | Status-bar icon |
+| `mark-light.png` | 542 × 706 | The mark, below the 90 px rule |
+| `lockup-h-light.png` | 733 × 300 | The horizontal lockup, 90–180 px |
+| `wordmark-light-new.png` | 1091 × 360 | The wordmark |
+
+**The light cuts fetch and the dark ones do not** — a white knockout compresses
+smaller than the dark artwork, so the light versions fall under the cap and
+their dark counterparts do not. That is why the app has real artwork on light
+grounds and type on the splash.
 
 432 × 432 is exactly the Android adaptive-icon foreground size and 512 × 512 is
 the Play Store icon size — the design exported for the platform deliberately.
@@ -110,8 +118,15 @@ the wordmark (blocked by the cap).
   upscaled.
 - **The mark in-app** — **done.** `app/assets/brand/mark.png`, rendered by
   `BrandMark`.
-- **Splash wordmark** — blocked. The mark beside it is real; the wordmark is
-  still set in type and labelled as a placeholder in `BrandLockup`.
+- **The size ladder** — **done.** `BrandLockup` applies the canvas rule itself
+  (mark below 90, horizontal lockup 90–180, full lockup above), so a call site
+  cannot pick the wrong cut.
+- **Splash** — blocked on `mark-dark.png`. The dark cut is *different artwork*,
+  not a tint: it has a **white** `i` body where the light one is black. The light
+  mark on the navy splash would lose its body entirely, and recolouring it with
+  a `ColorFilter` flattens the ripple rings and the two blues to a silhouette —
+  exactly the damage the canvas records from the earlier mixed-export set. So
+  the splash stays type until the dark cuts arrive.
 - **Notification icon** — artwork pulled; not yet declared in the manifest.
 - **iOS** — `ios/` is stock throughout and unverified: this project has only ever
   been built on Windows, so there is no way to compile or look at an iOS build

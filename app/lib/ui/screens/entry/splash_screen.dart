@@ -47,7 +47,13 @@ class SplashScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Expanded(child: Center(child: BrandLockup(width: 176))),
+                // onDark, because the splash ground is the navy gradient and
+                // the light cuts have a black `i` body that would vanish on it.
+                // Stays type until mark-dark.png clears the fetch cap — see
+                // docs/identity.md.
+                const Expanded(
+                  child: Center(child: BrandLockup(width: 176, onDark: true)),
+                ),
                 for (final (icon, label) in _promises) ...[
                   _PromiseOnDark(icon: icon, label: label),
                   const SizedBox(height: 9),

@@ -1,17 +1,25 @@
-/// The brand, at the size the design's rules select.
+/// The brand, at the size the design's own rule selects.
 ///
-/// The canvas gives five cuts of one lockup and a rule for choosing between
-/// them:
+/// From the Foundations canvas, verbatim:
 ///
-/// - above ~180 px — the full lockup, with the tagline
-/// - 90 to 180 — the horizontal lockup
-/// - below 90 — the mark alone, where the tagline stops being legible
+/// > Use the full lockup above about 180px, the horizontal lockup between 90
+/// > and 180, and the mark alone below that, where the tagline stops being
+/// > legible.
 ///
-/// **The mark is real artwork. The wordmark is not yet.** `mark.png` is the
-/// design's own cut; the wordmark and both lockups exceed the 256 KiB fetch cap
-/// and have to be exported from the design side, so the wordmark is set in the
-/// brand face here as a placeholder that is labelled as one. See
-/// docs/identity.md.
+/// [BrandLockup] applies that ladder rather than leaving it to call sites, so
+/// "which cut" is a property of the size asked for and cannot be got wrong one
+/// screen at a time.
+///
+/// **Never recolour the artwork.** The mark is a map pin built from a stylised
+/// *i*, with ripple rings at its base, in two blues over black; the wordmark
+/// has a blue *i*. A `ColorFilter` flattens all of that to a silhouette, which
+/// is precisely the damage the canvas records from an earlier set that had been
+/// "assembled from different exports". Light and dark are **separate artwork**,
+/// not a tint of each other — the dark cut has a white *i* body, not a white
+/// version of the black one.
+///
+/// See docs/identity.md for which cuts are present and which are still blocked
+/// by the 256 KiB fetch cap.
 library;
 
 import 'package:flutter/material.dart';
@@ -19,68 +27,93 @@ import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 import '../../theme/typography.dart';
 
-/// The mark alone. Real artwork, transparent, so it sits on the splash
-/// gradient and on a light page without a plate.
+/// Which cut the design's size rule selects.
+enum BrandCut {
+  /// Below 90 — the mark alone.
+  mark,
+
+  /// 90 to 180 — mark and wordmark side by side.
+  horizontal,
+
+  /// Above 180 — the full lockup, with the tagline.
+  full;
+
+  static BrandCut forWidth(double width) {
+    if (width < 90) return BrandCut.mark;
+    if (width <= 180) return BrandCut.horizontal;
+    return BrandCut.full;
+  }
+}
+
+/// The mark alone: `mark-light.png`, the design's own cut.
+///
+/// Only correct on a **light** ground. The dark cut (`mark-dark.png`) is a
+/// different drawing and exceeds the fetch cap, so [onDark] renders the
+/// wordmark route instead of tinting this one.
 class BrandMark extends StatelessWidget {
-  const BrandMark({super.key, required this.size, this.onDark = true});
+  const BrandMark({super.key, required this.size});
 
   final double size;
 
-  /// The supplied mark is dark ink. On a dark ground it is drawn through a
-  /// white filter rather than swapped for a second file — the design ships a
-  /// light and a dark cut, and only one of them came through the cap.
-  final bool onDark;
+  /// The artwork is 542 x 706 — taller than it is wide, so a square box would
+  /// letterbox it and shrink the pin.
+  static const aspect = 542 / 706;
 
   @override
   Widget build(BuildContext context) {
-    final image = Image.asset(
-      'assets/brand/mark.png',
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.high,
-    );
-
     return Semantics(
       label: 'Ipelege',
       image: true,
-      child: onDark
-          ? ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                Brand.white,
-                BlendMode.srcIn,
-              ),
-              child: image,
-            )
-          : image,
+      child: Image.asset(
+        'assets/brand/mark-light.png',
+        height: size,
+        width: size * aspect,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+      ),
     );
   }
 }
 
-/// Mark over wordmark, as the splash stacks them: the mark at half the
-/// wordmark's width, then the name.
-class BrandLockup extends StatelessWidget {
-  const BrandLockup({super.key, required this.width, this.onDark = true});
+/// Mark and wordmark on one line — `lockup-h-light.png`, 733 x 300.
+class BrandLockupHorizontal extends StatelessWidget {
+  const BrandLockupHorizontal({super.key, required this.width});
 
-  /// Which cut the design's size rules select. The mark is drawn at half this,
-  /// matching the splash artboard's 88 against 176.
   final double width;
 
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Ipelege',
+      image: true,
+      child: Image.asset(
+        'assets/brand/lockup-h-light.png',
+        width: width,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+  }
+}
+
+/// The brand at a given width, with the design's rule choosing the cut.
+class BrandLockup extends StatelessWidget {
+  const BrandLockup({super.key, required this.width, this.onDark = false});
+
+  final double width;
+
+  /// On a dark ground the light cuts are wrong — the mark's *i* body is black
+  /// and would disappear. Until `mark-dark.png` and `wordmark-dark-new.png`
+  /// clear the fetch cap, a dark ground gets the name set in the brand face,
+  /// which is honest about being type rather than a mangled logo.
   final bool onDark;
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        BrandMark(size: width / 2, onDark: onDark),
-        SizedBox(height: width * 0.11),
-        // Placeholder. `wordmark-dark-new.png` is 1 of 3 cuts blocked by the
-        // fetch cap; when it lands this becomes an Image.asset and the
-        // letter-spacing hack below goes with it.
-        ExcludeSemantics(
+    if (onDark) {
+      return ExcludeSemantics(
+        child: Semantics(
+          label: 'Ipelege',
           child: Text(
             'ipelege',
             style: TextStyle(
@@ -88,11 +121,18 @@ class BrandLockup extends StatelessWidget {
               fontSize: width * 0.24,
               fontWeight: FontWeight.w700,
               letterSpacing: -width * 0.005,
-              color: onDark ? Brand.white : palette.textPrimary,
+              color: Brand.white,
             ),
           ),
         ),
-      ],
-    );
+      );
+    }
+
+    return switch (BrandCut.forWidth(width)) {
+      BrandCut.mark => BrandMark(size: width),
+      BrandCut.horizontal || BrandCut.full => BrandLockupHorizontal(
+        width: width,
+      ),
+    };
   }
 }

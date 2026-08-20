@@ -136,11 +136,19 @@ class CategoryTile extends StatelessWidget {
                             width: 5,
                             height: 5,
                             decoration: BoxDecoration(
-                              // Warning, never danger. A young category is not
-                              // a fault, and a red dot would say it was.
+                              // Straight from the canvas:
+                              //   supplyDotColor: supply === 'ok'
+                              //     ? 'oklch(0.6 0.13 152)' : pal.navMuted
+                              //
+                              // oklch(0.6 0.13 152) is #359658 — Status.success.
+                              // Thin is `navMuted`, a muted grey-blue, and NOT
+                              // Status.warning: amber says "caution", and the
+                              // whole point of the supply copy is that a young
+                              // category is new rather than faulty. An amber
+                              // dot argues against the words beside it.
                               color: switch (standing!) {
                                 SupplyStanding.ok => Status.success,
-                                SupplyStanding.thin => Status.warning,
+                                SupplyStanding.thin => palette.navMuted,
                               },
                               shape: BoxShape.circle,
                             ),
