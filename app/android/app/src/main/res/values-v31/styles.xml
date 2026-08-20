@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ replaced the window-background splash with a real API, and
+  ignores `windowBackground` for this purpose. Without these attributes the
+  system invents a splash from the launcher icon on its own default ground,
+  which is why the pre-12 fix alone was not enough.
+
+  Background is the palette's `screenBg2`, the same colour the app opens onto,
+  so the splash resolves into the first frame instead of cutting to it. The
+  icon is the adaptive foreground — the design's mark, dark ink, which is
+  legible on a light ground.
+-->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">@color/ipelegeLaunchBg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

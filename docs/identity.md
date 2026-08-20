@@ -127,7 +127,23 @@ the wordmark (blocked by the cap).
   a `ColorFilter` flattens the ripple rings and the two blues to a silhouette —
   exactly the damage the canvas records from the earlier mixed-export set. So
   the splash stays type until the dark cuts arrive.
-- **Notification icon** — artwork pulled; not yet declared in the manifest.
+- **Splash icon** — **done, both modes.** Android 12 replaced the
+  window-background splash with a real API and ignores `windowBackground` for
+  it, so `values-v31` and `values-night-v31` set
+  `windowSplashScreenAnimatedIcon` explicitly; without them the system invents
+  a splash from the launcher icon on its own ground.
+  - Light: the adaptive foreground on `ipelegeLaunchBg` — the same colour the
+    first Flutter frame paints, so the splash resolves into the app rather than
+    cutting to it.
+  - Dark: the design's **dark app icon** on `ipelegeSplashDarkBg`, which is
+    `Brand.navy` and identical to the plate baked into that icon, so the plate
+    disappears and only the mark reads. This is why the dark splash works
+    without `mark-dark.png`.
+- **Notification icon** — **done.** Five densities in `drawable-*dpi`, declared
+  as the FCM default icon with `ipelegeNotificationAccent` (Brand.deep) as the
+  tint. It is the design's white-on-transparent silhouette, not the launcher
+  icon: Android draws notification icons as a mask, so a full-colour icon
+  becomes a grey blob.
 - **iOS** — `ios/` is stock throughout and unverified: this project has only ever
   been built on Windows, so there is no way to compile or look at an iOS build
   here.

@@ -25,6 +25,20 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- The status-bar icon. Android draws notification icons as a
+             silhouette and tints them, so this is the design's white-on-
+             transparent cut rather than the launcher icon: pointing this at
+             a full-colour icon gets a grey blob on the status bar.
+
+             The accent below tints the small icon and the app name in the
+             shade. Brand.deep, the primary. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ipelegeNotificationAccent" />
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

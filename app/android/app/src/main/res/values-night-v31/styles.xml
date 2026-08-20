@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The dark splash cannot reuse the light icon: the design's mark has a black
+  `i` body, which disappears on a dark ground. `mark-dark.png` — the cut that
+  solves this, with a white body — exceeds the fetch cap and is not in the
+  repo (docs/identity.md).
+
+  So dark mode uses the design's own **dark app icon**, whose navy plate is
+  Brand.navy. Setting the splash background to the same navy makes the plate
+  invisible and leaves only the mark, which is the intended reading.
+-->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">@color/ipelegeSplashDarkBg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_splash_dark</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

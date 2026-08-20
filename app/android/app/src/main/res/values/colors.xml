@@ -16,4 +16,15 @@
       system theme would stop being recognisable on the home screen.
     -->
     <color name="ipelegeIconBg">#FFFFFFFF</color>
+
+    <!--
+      The dark splash ground. Brand.navy, chosen to match the plate baked into
+      the design's dark app icon so the plate disappears and only the mark
+      reads. Not screenBg2: the dark cut of the mark is not available, so the
+      icon brings its own ground with it.
+    -->
+    <color name="ipelegeSplashDarkBg">#FF061326</color>
+
+    <!-- Tints the status-bar icon and the app name in the shade. Brand.deep. -->
+    <color name="ipelegeNotificationAccent">#FF145A8D</color>
 </resources>
