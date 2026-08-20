@@ -1,177 +1,171 @@
 # Work Handoff - Ipelege
 
-**Saved:** Thursday, 2026-08-20, 20:15 (+02:00)
+**Saved:** Thursday, 2026-08-20, 21:43 (+02:00)
 **Branch:** main
-**Last commit:** e3dfd83 Provision arm64 VPS stack; resolve ledger grain; add wallet.md
+**Last commit:** 8877ff3 Build Phase 1: the account gap
 
 ## What I was working on
 
-A **full design resync followed by real UI implementation**. The session had
-three phases, and the second two only happened because the user pushed back
-twice on how thin my first resync was.
+**Following [`docs/build-order.md`](docs/build-order.md) rather than re-deriving
+it.** Phase 0 was the standing gate; it is now closed, and Phase 1 — the account
+gap — is built.
 
-1. **Resync attempt 1** — pulled the design canvas, updated tokens and docs.
-2. **The pushback.** User: *"there was an overhaul on the design side, how come
-   you say no change?"* then *"not just the component section, the whole
-   mockups and the document have moved"* then *"discard old things, refetch
-   design afresh"*. All three were correct. I had conflated *retrieved* with
-   *applied*, and had been merging a stale local snapshot with a fresh one.
-3. **The split.** The mobile canvas had grown past 512 KB against a 256 KiB
-   server-side read cap, so a third of it was unreachable. I could not split it
-   myself — reading the tail is the very thing being blocked — so I wrote a
-   `split-plan.md` into the design project; the user did the split in Claude
-   Design; I re-pulled four parts, all complete.
+1. **Phase 0.** Ran all five previously-built screens on a Pixel 9a emulator in
+   both modes and compared them against the canvas. This is the first time any
+   of this app has been seen rendered.
+2. **The identity gap Phase 0 exposed**, raised by the user mid-session: stock
+   Flutter launcher icon, a white flash on every cold start, no mark anywhere.
+3. **Phase 1**, in full: seven entry routes plus the auth gate.
 
 ## Files changed this session
 
-**Design archive (`design/`)** — old monolith deleted, not merged:
+**Commit `b95cc96` — Phase 0 and identity**
 
-- **D `ipelege-design-system.dc.html`** — the truncated single-file pull.
-- **A `ipelege-ds-1-foundations.dc.html`** (144 KB) — decisions, journey map,
-  brand/colour/type/components, visual direction.
-- **A `ipelege-ds-2-customer.dc.html`** (93 KB) — entry, onboarding, home,
-  browse, listing detail, booking, tracking, rate & review.
-- **A `ipelege-ds-3-provider.dc.html`** (136 KB) — mode switcher, provider home,
-  my categories, inbox, wallet, top up, become a provider, KYC.
-- **A `ipelege-ds-4-specs.dc.html`** (101 KB) — settings screens, attestation,
-  light & dark, category matrix, navigation/motion/feedback, **and `PAL`**.
-- **A `ipelege-admin-back-office.dc.html`** (167 KB) — desktop, complete.
-- **M `README.md`** — rewritten for the split.
+- **M** `ui/components/category_tile.dart` — supply count wraps instead of
+  ellipsising; grid extent 124 → 136.
+- **M** `test/ui/components_test.dart` — a guard that measures in the real IBM
+  Plex face, because the test font draws every glyph a full em wide.
+- **A** `android/.../values/colors.xml`, `values-night/colors.xml`; **M** both
+  `launch_background.xml` — the cold-start window paints `screenBg2` per mode.
+- **A** `docs/identity.md`, **A** `test/identity/identity_test.dart`.
+- **M** `docs/build-order.md`, `docs/design-deltas.md` (§13).
 
-**Docs** — **A `docs/admin-design.md`** (the 8 desktop screens + admin token
-set); **M `design-system.md`** (surface treatment, category hues, components,
-navigation/motion/feedback, screen inventory with build status); **M
-`design-deltas.md`** (§§8–12 added); **M `README.md`** (doc index).
+**Commit `8877ff3` — Phase 1**
 
-**Flutter** — **M** `theme/tokens.dart`, `dimens.dart`, `app_theme.dart`,
-`ui/shell/app_shell.dart`, `ui/components/{category_tile,status_chip,info_note}`,
-`routing/app_router.dart`. **A** `core/demo_data.dart`;
-`ui/components/{surface,ledger_entry,week_chart,money_row,stepper_bar,decision_pair}.dart`;
-`ui/screens/consumer/{home,category_browse,listing_detail}_screen.dart`;
-`ui/screens/provider/{dashboard,wallet}_screen.dart`. **A** three test files.
+- **A** `core/session.dart` (the entry rules as states), `core/phone.dart`.
+- **A** components: `entry_header.dart`, `form_field_card.dart`, `actions.dart`,
+  `choice_cards.dart`, `brand_lockup.dart`.
+- **A** `ui/screens/entry/`: splash, register, sign in, verify, consent, unlock,
+  location, auth gate.
+- **M** `routes.dart`, `app_router.dart` (entry routes + `_replacingPage`),
+  `tokens.dart` (`entryGradient`, `splashGradient`), `typography.dart`
+  (`fieldLabel`, `sectionLabel`), `listing_detail_screen.dart` (the gate).
+- **A** `test/core/session_test.dart`, `test/ui/entry_test.dart`.
 
 ## What is working
 
-- **The design source is complete and single-vintage.** 485 KB across four
-  parts vs 262 KB truncated; every part `truncated: false`. No local file is a
-  blend of two pulls.
-- **Every colour is read, not inferred.** `PAL` gave both modes. Dark mode was
-  previously derived and is now real.
-- **Five screens built and wired**: consumer home, category browse, listing
-  detail, provider dashboard, wallet. Six new components.
-- **97 tests pass, `flutter analyze` clean.** Up from 47 — and the 47 baseline,
-  carried unverified through two prior handoffs, was re-run and confirmed.
-- The tests found **four real bugs**, not just layout noise: the non-redeemable
-  disclaimer overflowed at 360 dp, the fees row overflowed, `StatusChip` blew
-  out its pill on "Verified · Hairdressing & beauty", and rentals was offering
-  a booking it has no flow for.
+- **The palette is correct on a real device, in both modes.** Sampled pixels
+  match `AppPalette` exactly — dark page `#050B0F`, card `#171F25`, nav
+  `#11171C`. The `PAL` recovery holds, and the dark mode that had never been
+  displayed renders as specified.
+- **The app has a way in.** Cold start lands on the splash. Register → OTP →
+  consent → location → Home works end to end on the emulator.
+- **A visitor is a first-class state.** Home, browse and listing detail are
+  reachable with no account; the wall is at the booking action and names the
+  provider.
+- **147 tests, `flutter analyze` clean.** Up from 109 at the start of the
+  session. (The "97" carried in the last two handoffs was already stale — the
+  build-order suite had taken it to 109.)
+- **The cold-start flash is gone**, asserted against `AppPalette` by
+  `identity_test.dart` so an Android XML resource cannot drift from a Dart
+  token silently.
 
 ## What is NOT working yet
 
-- **No backend.** Django not started. Screens read `core/demo_data.dart`, which
-  is scaffolding to delete when the API lands.
+- **No brand artwork, anywhere.** Stock Flutter launcher icon, no adaptive
+  icon, no splash image, no notification icon, no lockup in-app. Searched the
+  entire user profile: the PNGs are not on this machine. Blocked on an export
+  from the design project — see [`docs/identity.md`](docs/identity.md).
+- **Biometry is not wired to the platform.** Both unlock buttons call
+  `SessionController.unlock()`; no `local_auth` prompt is shown. The states and
+  the fallback's visual weight are right; the sensor is not connected.
+- **Nothing persists.** `SessionController` is in-memory, so a restart is a new
+  device. Safe direction to be wrong in, but it means `/unlock` is only
+  reachable by deep link today.
+- **No backend.** Django not started; screens still read `core/demo_data.dart`.
 - **Most screens are still placeholders** — booking request, booking status (11
-  states), ride tracking, rate & review, mode switcher, my categories, booking
-  inbox, top up, become a provider, per-category KYC, and the six settings
-  screens. All are now *available* in the design; none are built.
-- **Never run on a device.** Carried over from two prior handoffs. Widget tests
-  only — no emulator or handset run, so the surface treatment has never been
-  seen rendered.
-- `navPillBg` is the one remaining derived colour (inline literal in the canvas,
-  not a token, so no published dark form).
-- The VM stack from last session is untouched and still has no schema.
+  states), ride tracking, rate & review, mode switcher, my categories, inbox,
+  top up, become a provider, KYC, the six settings screens.
+- iOS is stock and unverified; there is no way to build it on this machine.
 
 ## Decisions made (and why)
 
-- **Discard rather than merge design snapshots.** User's call and the right
-  one: a half-stale archive is exactly the trap that produced the bad first
-  resync. Cost was the old `PAL`; the split recovered it anyway.
-- **Split into four parts, in Claude Design.** The 256 KiB cap is server-side on
-  `get_file` with no range or pagination, so the repo cannot initiate it. Sent
-  `split-plan.md` into the project rather than making the user retype it.
-- **Match the design's token names exactly**, even where mine read better —
-  `screenBg2` is the page, `screenBg` stayed white. Future syncs now diff
-  directly instead of needing translation.
-- **Supply is two states in the app, three in the back office.** `ok`/`thin` for
-  customers; `HEALTHY/THIN/CRITICAL` is the operator's recruiting view. And the
-  copy is the real decision: *"New in Gaborone · 2 providers"*, never "2
-  nearby" — young rather than failing.
-- **`JourneyShape` on `CategoryToken`** so rentals structurally cannot offer a
-  booking, rather than relying on a call site remembering.
-- **`DecisionPair` ships as one component** so "never two blue buttons side by
-  side" cannot be half-applied.
-- **New-provider boost is one slot, non-compounding** — second position, not
-  first. The boost earns a look; it does not claim to be the best match.
+- **The auth gate is a sheet, not a route.** Refusing it must not cost the
+  visitor their place. It uses the **root** navigator — see below for why that
+  is not optional.
+- **Entry routes sit outside both shells.** A flow escapable by tapping a tab
+  is not a gate.
+- **The entry rules live in `Session` as states, not as screen logic.** OTP is
+  unskippable because nothing reaches `active` without passing through
+  `confirmingNumber`; `canBook` is false on a superseded consent version, so
+  re-consent is a state rather than a prompt someone remembers to show;
+  `lock()` no-ops on a session that was never active, so biometry can only
+  unlock.
+- **Consent is captured on the OTP screen**, not after it. FR-1.10 wants it at
+  account creation, and a screen afterwards is a screen people learn to
+  dismiss. "Verify & continue" is dead until the code is complete *and* the
+  required tick is set, with a line saying why.
+- **`BrandLockup` holds the slot rather than faking a mark.** The canvas is
+  explicit that a previous set assembled from mixed exports lost the ripple
+  rings and the blue *i*; inventing a substitute would repeat that, on the
+  Play Store listing.
+- **The tile's off-grid literals are recorded, not tokenised** (20 px radius,
+  14 px padding, 38 px plate). Adding a token per inline literal is what this
+  repo already declined to do for `navPillBg`.
 
 ## Things I tried that did NOT work - do not repeat these
 
-- **Claiming "components came through complete" when I meant "retrieved".** The
-  component set had gone 4 groups → 7. Say *applied* or *retrieved*, never
-  blur them.
-- **Merging the 2026-08-17 snapshot with a fresh pull** to cover the truncated
-  tail. Produces a file where some values are current and some are 3 days stale,
-  with nothing marking which.
-- **Grepping for `backRules`, `motionSpecs`, `haptics`** to find the spec
-  tables. The design rebuilt them as prose sections; the array names return zero
-  hits in all four parts even though the content is there.
-- **Splitting the canvas from the repo side.** Impossible by construction —
-  reading the tail is what is blocked.
-- **A bare `grep -o` with a complex alternation over a 256 KB HTML file** —
-  catastrophic backtracking, hit the 120 s timeout. Use Python for structured
-  extraction from these files.
-- **`sed -i "1i import ..."`** on a Dart file with a `library;` directive —
-  puts the import above the doc comment and fails to parse.
+- **Reading a canvas shadow name as if it were ours.** `pal.shCard` is *our*
+  `shadowRow`; `pal.shRaise` is our `shadowCard`. The vocabularies invert. I
+  "fixed" the category tile to `shadowCard` on that misreading and shipped it
+  in `b95cc96` before the mapping table in `tokens.dart` corrected me. The
+  original code was right. Check that table before changing any surface depth.
+- **Pushing a modal onto a tab's Navigator.** go_router manages a branch
+  navigator's pages declaratively; an imperative route pushed onto it makes the
+  router re-sync on pop and **removes the page underneath**. Dismissing the
+  auth gate took the listing down with it. `useRootNavigator: true`.
+- **`CrossAxisAlignment.stretch` on a Row inside a ListView.** Unbounded
+  cross-axis constraint; it does not lay out at all. The consent card's accent
+  rule needs `IntrinsicHeight`. A `BoxDecoration` border is not an alternative —
+  Flutter rejects a non-uniform border on a rounded rect.
+- **A widget in a `Column` assuming it is full width.** A Column centres on the
+  cross axis, so `EntryHeader` was only as wide as its own text.
+- **Asserting text layout under the default test font.** It draws every glyph a
+  full em wide, roughly double the real width. Load the bundled face with
+  `FontLoader` when the assertion is about fitting.
+- **`find.text` on a `Text.rich` span.** Needs
+  `find.textContaining(..., findRichText: true)`.
+- **A PowerShell here-string for `git commit -m`.** It broke on the quotes in
+  the message. Write the message to a file and use `git commit -F`.
 
 ## Exact next steps to continue
 
-**The order is now established, not noted.** See
-[`docs/build-order.md`](docs/build-order.md) — it is the canonical sequence with
-dependencies and gates, and it is **enforced by
-`app/test/routing/build_order_test.dart`**, which fails if a route is claimed
-built without being built, or built without being recorded. Do not re-derive the
-order here; read that file and follow it.
+1. **Phase 2 — booking, with the payment moment moved.** Booking request,
+   booking status (11 states), rate & review. The correction it exists to carry:
+   payment precedes "mark complete", at position 4. `DISPUTED` and `NO_SHOW`
+   stay out — they have no honest copy yet.
+2. **Phase 0.5, the moment the artwork arrives.** Export the asset set into
+   `design/assets/`, then: launcher icon at all densities, adaptive icon
+   (`mipmap-anydpi-v26`), the Android 12 splash API, notification icon, and
+   swap `BrandLockup` to the image. Update `docs/identity.md` and the hashes in
+   `identity_test.dart` together — the suite fails until you do.
+3. **Finish Phase 1's two loose ends**: `local_auth` behind the unlock buttons,
+   and persistence for `SessionController` so `/unlock` is reachable the way a
+   user would actually reach it.
 
-Why it exists: the five screens built this session were chosen to *validate the
-resynced tokens*, which was right for the resync but is not the design's build
-order, and it left the app with **no way in** — no splash, register, sign in,
-OTP or auth gate. Noting that in a handoff was not enough, so it became an
-artifact with a test behind it.
-
-**Next action: Phase 0** — run the app on a handset or emulator and check the
-surface treatment in both modes. Everything else gates on it: five screens and
-six components were built against tokens only the widget tester has seen, and
-dark mode was rewritten wholesale when `PAL` was recovered and has never been
-displayed.
-
-Then Phase 1 (the account gap), Phase 2 (booking with the payment moment moved),
-and so on as `build-order.md` sets out. The admin pairings are scheduled in it
-too — Phase 4 pairs KYC with the verification queue, Phase 6 pairs the wallet
-flows with admin finance.
-
-One item with no phase, to pick up opportunistically: retire
-`stripe1`/`stripe2`/`info*` from `AppPalette` if a later pull confirms they are
-gone rather than merely unused on the screens currently readable.
+Read `docs/build-order.md` and update it with its test — do not re-derive the
+order here.
 
 ## Open questions / blockers
+
+**New and hard-blocking:** the brand artwork. Nothing in Phase 0.5 can proceed
+without it, and it cannot be reconstructed from this repo.
 
 **Unchanged and still code-blocking:** already-accepted bookings when a category
 is revoked — blocks the admin Revoke action shipping.
 
-**New, from the design's own "needs a business decision" list:**
+**From the design's own "needs a business decision" list:** late-cancellation
+fee amount · no-show consequence for providers · commission rate per category
+(rides shows 8%) · dispute turnaround.
 
-- Late-cancellation fee amount — percentage, flat figure, or first-occurrence
-  waiver. Screens are written so the number drops in without changing the flow.
-- No-show consequence for providers — currently only says verification is
-  reviewed; what actually happens, and after how many.
-- Commission rate per category — rides shows 8%; whether trades and rentals
-  differ is unresolved.
-- Dispute turnaround — screens promise contact but name no timeframe.
+**Not yet designed at all:** customer↔provider messaging, provider listing
+management at scale, empty/offline states.
 
-**Not yet designed at all:** messaging between customer and provider (referenced
-from several screens, no thread UI), provider listing management at scale,
-empty/offline states across the journey.
+**Carried:** wallet naming vs `compliance.md` · reversal policy · negative
+balance · min top-up · hosting durability · EPS licensing · data residency ·
+KYC retention · GPS DPIA.
 
-**Carried:** wallet naming vs `compliance.md` (the design says "wallet balance";
-the project's own `CLAUDE.md` still says "commission credit" and no screen
-follows it) · reversal policy · negative balance · min top-up · hosting
-durability · EPS licensing, data residency, KYC retention, GPS DPIA.
+**Minor, noted in `design-deltas.md` §13:** browse derives its header count from
+the listings it holds, so plumbing reads "3 providers" under a home tile saying
+"6 plumbers". `demo_data.dart` disagreeing with itself; dies with the
+scaffolding.

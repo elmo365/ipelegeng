@@ -3,66 +3,78 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-20T20:15:00+02:00",
+    "saved": "2026-08-20T21:43:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "e3dfd83",
-      "subject": "Provision arm64 VPS stack; resolve ledger grain; add wallet.md"
+      "hash": "8877ff3",
+      "subject": "Build Phase 1: the account gap"
     },
-    "summary": "Full design resync, then real UI implementation. Took three passes: a first resync that was too thin, two rounds of user pushback that were both correct, and finally a four-way split of the design canvas in Claude Design that made the whole of it readable for the first time. 485 KB recovered against 262 KB truncated. Then built five screens and six components on the corrected tokens, with 97 tests passing. Build order then established as docs/build-order.md with a test that enforces it, after the user pointed out that noting an order in a handoff is not the same as establishing one.",
-    "state": "Design source complete and single-vintage (4 mobile parts + admin, none truncated); every colour read from PAL rather than inferred; 5 of ~30 screens built; no backend; never run on a device",
+    "summary": "Followed docs/build-order.md rather than re-deriving it. Closed Phase 0 by running all five built screens on a Pixel 9a in both modes - the first time this app has been seen rendered. The palette came back exact; the supply count was ellipsised and is fixed. The run exposed that the app has no identity at all, raised by the user mid-session: stock Flutter icon, white cold-start flash, no mark. Fixed what needed no artwork, made the rest an enforced artifact. Then built Phase 1 in full: seven entry routes plus the auth gate, with the entry rules held as states in core/session.dart. 147 tests.",
+    "state": "Entry flow built and verified on device in both modes; 5 earlier screens confirmed against the canvas; no brand artwork anywhere; no backend; nothing persists",
     "decisions": [
-      "Build order is an artifact with a test behind it, not a handoff note: docs/build-order.md declares the sequence and app/test/routing/build_order_test.dart fails if a route is claimed built without being built, or built without being recorded",
-      "Discard rather than merge design snapshots - a half-stale archive is the trap that produced the bad first resync. Cost the old PAL; the split recovered it anyway",
-      "Split the canvas into four parts, done in Claude Design - the 256 KiB cap is server-side on get_file with no range or pagination, so the repo cannot initiate it. Sent split-plan.md into the project rather than making the user retype it",
-      "Match the design's token names exactly even where mine read better: screenBg2 is the page, screenBg stayed white. Future syncs diff directly",
-      "Supply is two states in the app (ok/thin), three in the back office (HEALTHY/THIN/CRITICAL) - different audiences. The copy is the real decision: 'New in Gaborone · 2 providers', never '2 nearby'",
-      "JourneyShape on CategoryToken so rentals structurally cannot offer a booking",
-      "DecisionPair ships as one component so 'never two blue buttons side by side' cannot be half-applied",
-      "New-provider boost is one slot, non-compounding, second position - earns a look, does not claim to be the best match"
+      "The auth gate is a sheet on the ROOT navigator, not a route - refusing it must not cost the visitor their place, and a tab's navigator is managed declaratively by go_router",
+      "Entry routes sit outside both shells: a flow escapable by tapping a tab is not a gate",
+      "The entry rules live in Session as states - OTP unskippable by construction, canBook false on a superseded consent version, lock() no-ops unless the session was active so biometry can only unlock",
+      "Consent is captured on the OTP screen, not after it (FR-1.10); the primary stays dead until code + required tick, with a line saying why",
+      "BrandLockup holds the lockup slot rather than faking a mark - the canvas says a previously assembled set lost the ripple rings and the blue i",
+      "The category tile's off-grid literals are recorded, not tokenised, as navPillBg already is",
+      "entryGradient and splashGradient added as palette tokens; splashGradient is identical in both themes on purpose"
     ],
     "working": [
-      "Four mobile design parts + admin canvas, all truncated:false. 485 KB vs 262 KB from the single-file pull",
-      "PAL recovered: both modes read, not derived. Dark surfaces are hue 235 and dark shadows are black, both of which the inferred values had wrong",
-      "Navigation/back rules, state restoration, motion table, haptics, loading rules, light/dark rules all recovered and recorded in design-system.md",
-      "Five screens: consumer home, category browse, listing detail, provider dashboard, wallet. Six new components incl. surface depths, ledger entry with VAT tie-line, week chart",
-      "97 tests pass, flutter analyze clean. The 47-test baseline carried unverified through two handoffs was re-run and confirmed",
-      "Tests caught four real bugs: two 360dp overflows, StatusChip pill blowout, and rentals offering a booking it has no flow for",
-      "Build order established and enforced: docs/build-order.md plus build_order_test.dart. Verified the guard fires by deliberately making a false claim"
+      "Palette verified pixel-exact on a real device in both modes: dark page #050B0F, card #171F25, nav #11171C. The PAL recovery holds and dark mode renders as specified",
+      "The app has a way in: cold start lands on the splash; register to OTP to consent to location to Home works end to end",
+      "A visitor reaches home, browse and listing detail with no account; the wall is at the booking action and names the provider",
+      "147 tests pass, flutter analyze clean (109 at the start of the session; the '97' in the last two handoffs was already stale)",
+      "The cold-start flash is gone, asserted against AppPalette so an Android XML resource cannot drift from a Dart token silently",
+      "The supply count wraps instead of ellipsising, guarded by a test that measures in the real IBM Plex face"
     ],
     "notWorking": [
-      "No way into the app - no splash, register, sign in, OTP or auth gate. Boots straight to Home. Now scheduled as Phase 1 in build-order.md rather than left as a note",
-      "No Django backend; screens read core/demo_data.dart which is scaffolding to delete",
+      "No brand artwork anywhere - stock Flutter launcher icon, no adaptive icon, no splash image, no notification icon, no lockup in-app. Searched the whole user profile; the PNGs are not on this machine",
+      "Biometry is not wired to the platform: both unlock buttons call unlock(), no local_auth prompt",
+      "Nothing persists - SessionController is in-memory, so /unlock is only reachable by deep link today",
+      "No Django backend; screens still read core/demo_data.dart",
       "Most screens still placeholders: booking request/status, ride tracking, rate & review, mode switcher, my categories, inbox, top up, become a provider, KYC, six settings screens",
-      "Never run on a handset or emulator - carried from two prior handoffs. The surface rework has never been seen rendered",
-      "navPillBg is the one remaining derived colour (inline literal, not a token)",
-      "VM stack untouched, still no schema"
+      "iOS is stock and unverified; it cannot be built on this machine"
     ],
     "doNotRepeat": [
-      "Claiming 'components came through complete' when meaning 'retrieved' - the set had gone 4 groups to 7. Say applied or retrieved, never blur them",
-      "Merging an old snapshot with a fresh pull to cover a truncated tail - produces a file where some values are current and some are days stale with nothing marking which",
-      "Grepping for backRules/motionSpecs/haptics to find the spec tables - the design rebuilt them as prose; the array names return zero hits in all four parts",
-      "Trying to split the canvas from the repo side - impossible by construction, reading the tail is what is blocked",
-      "A bare grep -o with a complex alternation over a 256 KB HTML file - catastrophic backtracking, 120s timeout. Use Python for structured extraction",
-      "sed -i '1i import ...' on a Dart file with a library; directive - puts the import above the doc comment and fails to parse"
+      "Reading a canvas shadow name as if it were ours - pal.shCard is our shadowRow, pal.shRaise is our shadowCard. The vocabularies invert. I shipped a wrong 'fix' on that misreading before the mapping table in tokens.dart corrected me",
+      "Pushing a modal onto a tab's Navigator - go_router re-syncs on pop and removes the page underneath. Dismissing the auth gate took the listing with it. useRootNavigator: true",
+      "CrossAxisAlignment.stretch on a Row inside a ListView - unbounded cross-axis constraint, does not lay out. Use IntrinsicHeight; a BoxDecoration border is not an alternative on a rounded rect",
+      "Assuming a widget in a Column is full width - a Column centres on the cross axis",
+      "Asserting text layout under the default test font - it draws every glyph a full em wide. Load the bundled face with FontLoader",
+      "find.text on a Text.rich span - needs find.textContaining(..., findRichText: true)",
+      "A PowerShell here-string for git commit -m - it breaks on quotes. Write the message to a file and use git commit -F",
+      "Carried: claiming 'retrieved' when meaning 'applied'; merging an old design snapshot with a fresh pull; grepping for backRules/motionSpecs/haptics; splitting the canvas from the repo side; a bare grep -o over a 256 KB HTML file"
     ],
     "nextSteps": [
-      "Phase 0 (current gate): run on a handset or emulator and check the surface treatment in both modes. Everything else gates on it - the tokens have only ever been seen by the widget tester, and dark mode was rewritten wholesale when PAL was recovered",
-      "Then follow docs/build-order.md: Phase 1 account gap, Phase 2 booking with the payment moment moved, Phase 3 loop prompt, Phase 4 KYC paired with the admin verification queue, Phase 5 provider management, Phase 6 money ops paired with admin finance, Phase 7 account and privacy",
-      "Do not re-derive the order in a handoff - read build-order.md and update it plus its test together"
+      "Phase 2 - booking with the payment moment moved: booking request, booking status (11 states), rate & review. Payment precedes 'mark complete', at position 4. DISPUTED and NO_SHOW stay out, they have no honest copy yet",
+      "Phase 0.5 the moment the artwork arrives: export into design/assets/, then launcher icon at all densities, adaptive icon, the Android 12 splash API, notification icon, and swap BrandLockup to the image. Update docs/identity.md and the hashes in identity_test.dart together",
+      "Finish Phase 1's two loose ends: local_auth behind the unlock buttons, and persistence for SessionController",
+      "Read docs/build-order.md and update it with its test - do not re-derive the order in a handoff"
     ],
     "blockers": [
-      "Already-accepted bookings on category revoke - unchanged, still the code blocker for the admin Revoke action",
-      "Late-cancellation fee amount - percentage, flat, or first-occurrence waiver. Screens written so the number drops in",
+      "NEW AND HARD-BLOCKING: the brand artwork. Nothing in Phase 0.5 can proceed without it and it cannot be reconstructed from this repo",
+      "Already-accepted bookings on category revoke - still the code blocker for the admin Revoke action",
+      "Late-cancellation fee amount - percentage, flat, or first-occurrence waiver",
       "No-show consequence for providers - what happens, and after how many",
       "Commission rate per category - rides shows 8%, trades and rentals unresolved",
       "Dispute turnaround - screens promise contact but name no timeframe",
       "Not yet designed at all: customer-provider messaging, provider listing management at scale, empty/offline states",
-      "Wallet naming vs compliance.md - design says 'wallet balance', the project's CLAUDE.md still says 'commission credit' and no screen follows it",
+      "Wallet naming vs compliance.md - design says 'wallet balance', CLAUDE.md still says 'commission credit'",
       "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-20-2143.md",
+      "saved": "2026-08-20T20:15:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "e3dfd83",
+        "subject": "Provision arm64 VPS stack; resolve ledger grain; add wallet.md"
+      },
+      "summary": "Full design resync then real UI implementation. Three passes: a thin first resync, two rounds of correct user pushback, and finally a four-way split of the canvas in Claude Design. 485 KB recovered against 262 KB truncated. Five screens and six components built on the corrected tokens. Build order then established as docs/build-order.md with a test enforcing it."
+    },
     {
       "file": "handoffs/2026-08-20-2015.md",
       "saved": "2026-08-20T06:12:00+02:00",
