@@ -19,7 +19,7 @@ This is corroborated three ways, so it is not a lone call:
 | Source | What it says |
 |---|---|
 | [data-model.md](data-model.md) | `USER \|\|--\|\| LEDGER_ACCOUNT` — a 1:1 relationship |
-| Design canvas (`design/ipelege-design-system.dc.html`) | *"One balance, every fee… a provider funds **one wallet balance** and every Ipelege charge is drawn from it, wherever in the app it originates."* Called out as the **load-bearing** decision. |
+| Design canvas (`design/ipelege-ds-1-foundations.dc.html`) | *"One balance, every fee… a provider funds **one wallet balance** and every Ipelege charge is drawn from it, wherever in the app it originates."* Called out as the **load-bearing** decision. |
 | Product decision, 2026-08-19 | One wallet for all — confirmed in session. |
 
 **Why it matters structurally.** The grain sets the ledger's primary key and

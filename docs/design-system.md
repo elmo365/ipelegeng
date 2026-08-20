@@ -1,9 +1,11 @@
 # Design system
 
-Imported from the Claude Design project **"Ipelege app design system"**
-(`012e55a7-8d3d-4aed-abf7-f1ab95fadf63`) on 2026-08-17. The source page is
-archived at [`design/ipelege-design-system.dc.html`](../design/ipelege-design-system.dc.html);
-this document is the implementable extract of it.
+Extracted from the Claude Design project **"Ipelege app design system"**
+(`012e55a7-8d3d-4aed-abf7-f1ab95fadf63`). Re-pulled 2026-08-20, after the mobile
+canvas was split into four parts so the whole of it could be read; the source is
+archived in [`design/`](../design/) as `ipelege-ds-1-foundations` through
+`ipelege-ds-4-specs`, plus the back-office canvas. This document is the
+implementable extract of them.
 
 Where the design and the older specification documents disagree, see
 [design-deltas](design-deltas.md). The design is the newer layer.
@@ -100,42 +102,47 @@ lightens a step, so it stays the darkest surface on screen), the category hues
 (a colour always means the same category), and every status pairing (approved
 never stops being green).
 
-Dark values need one caveat. Unmarked ones were **read** from the design's `PAL`
-object — but from the 2026-08-17 snapshot, i.e. **pre-restyle**. The design says
-both modes moved together, and light's equivalents demonstrably did
-(`#ffffff` → `#EDF3F8`), so treat them as the last published values rather than
-as current. Values marked † are **derived**: they belong to tokens the restyle
-introduced, which have no published dark value at all. The post-restyle `PAL`
-sits past the 256 KiB read cap — see
-[design-deltas.md](design-deltas.md#truncated-in-import).
+**Read from the design's own `PAL` object**, both modes, verbatim — not
+inferred from the mockups. Recovered 2026-08-20 when the canvas was split into
+four readable parts.
+
+Two things to know before using this table:
+
+- **The page is `screenBg2`, not `screenBg`.** `screenBg` stayed white in the
+  restyle; `screenBg2` is the #EDF3F8 tint every screen actually sits on. The
+  Flutter `scaffoldBackgroundColor` points at `screenBg2`.
+- **Dark surfaces sit on hue 235**, not the 250 of the neutral ramp — a shade
+  cooler and bluer than the rest of the scale.
 
 | Token | Light | Dark |
 |---|---|---|
-| `screenBg` | `#EDF3F8` | `oklch(0.17 0.012 250)` |
-| `screenBg2` | `oklch(0.985 0.004 250)` | `oklch(0.14 0.01 250)` |
-| `cardBg` | `#ffffff` | `oklch(0.23 0.014 250)` |
-| `cardBorder` | `oklch(0.91 0.008 250)` | `oklch(0.33 0.014 250)` |
+| `screenBg` | `#ffffff` | `oklch(0.18 0.015 235)` |
+| `screenBg2` | `#EDF3F8` | `oklch(0.145 0.014 235)` |
+| `cardBg` | `#ffffff` | `oklch(0.235 0.016 235)` |
+| `cardBorder` | `oklch(0.91 0.008 250)` | `oklch(0.33 0.016 235)` |
 | `textPrimary` | `#0D2436` | `oklch(0.96 0.004 250)` |
-| `textSecondary` | `#3A5468` | `oklch(0.82 0.01 250)` |
+| `textSecondary` | `oklch(0.32 0.012 250)` | `oklch(0.82 0.01 250)` |
 | `textMuted` | `#5F7387` | `oklch(0.68 0.012 250)` |
 | `textFaint` | `#9CAFBF` | `oklch(0.6 0.012 250)` |
-| `navPillBg` | `#E1EDF5` | `oklch(0.28 0.05 235)` † |
-| `inputBorder` | `oklch(0.82 0.01 250)` | `oklch(0.4 0.014 250)` |
+| `inputBorder` | `#DCE7EF` | `oklch(0.4 0.014 250)` |
 | `inputBg` | `#ffffff` | `oklch(0.23 0.014 250)` |
-| `divider` | `oklch(0.91 0.008 250)` | `oklch(0.33 0.014 250)` |
+| `divider` | `#E9F0F5` | `oklch(0.33 0.014 250)` |
 | `navBg` | `#ffffff` | `oklch(0.2 0.014 250)` |
-| `navMuted` | `#9CAFBF` | `oklch(0.5 0.012 250)` |
+| `navMuted` | `#9CAFBF` | `oklch(0.55 0.012 250)` |
+| `shCard` | `0 4px 14px rgba(20,90,141,0.06)` | `0 4px 14px rgba(0,0,0,0.30)` |
+| `shRaise` | `0 6px 20px rgba(20,90,141,0.07)` | `0 6px 20px rgba(0,0,0,0.34)` |
+| `shNav` | `0 -6px 24px rgba(20,90,141,0.08)` | `0 -6px 24px rgba(0,0,0,0.36)` |
 | `stripe1` | `oklch(0.93 0.008 250)` | `oklch(0.28 0.012 250)` |
 | `stripe2` | `oklch(0.97 0.004 250)` | `oklch(0.24 0.01 250)` |
-| `chipNeutralBg` | `oklch(0.91 0.008 250)` | `oklch(0.3 0.014 250)` |
-| `chipNeutralText` | `oklch(0.4 0.014 250)` | `oklch(0.8 0.01 250)` |
+| `chipNeutralBg` | `#E1EDF5` | `oklch(0.3 0.014 250)` |
+| `chipNeutralText` | `#5F7387` | `oklch(0.8 0.01 250)` |
 | `verifiedBg` | `oklch(0.95 0.03 152)` | `oklch(0.3 0.06 152)` |
-| `verifiedText` | `oklch(0.35 0.1 152)` | `oklch(0.85 0.09 152)` |
+| `verifiedText` | `oklch(0.38 0.11 152)` | `oklch(0.85 0.09 152)` |
 | `pendingBg` | `oklch(0.96 0.045 80)` | `oklch(0.32 0.07 80)` |
 | `pendingText` | `oklch(0.45 0.13 80)` | `oklch(0.88 0.1 80)` |
-| `notUploadedBg` | `oklch(0.91 0.008 250)` | `oklch(0.3 0.014 250)` |
-| `notUploadedText` | `oklch(0.5 0.014 250)` | `oklch(0.75 0.012 250)` |
-| `selectedBg` | `#E1EDF5` | `oklch(0.28 0.05 235)` |
+| `notUploadedBg` | `#E1EDF5` | `oklch(0.3 0.014 250)` |
+| `notUploadedText` | `#5F7387` | `oklch(0.75 0.012 250)` |
+| `selectedBg` | `oklch(0.96 0.02 235)` | `oklch(0.28 0.05 235)` |
 | `sectionAlt` | `oklch(0.97 0.004 250)` | `oklch(0.2 0.012 250)` |
 | `infoBg` | `oklch(0.96 0.02 235)` | `oklch(0.26 0.05 235)` |
 | `infoBorder` | `oklch(0.88 0.03 235)` | `oklch(0.36 0.06 235)` |
@@ -144,8 +151,12 @@ sits past the 256 KiB read cap — see
 | `accentText` | `#145A8D` | `#75BDEB` |
 | `creditColor` | `oklch(0.5 0.13 152)` | `oklch(0.68 0.13 152)` |
 | `subtleBg` | `oklch(0.965 0.006 250)` | `oklch(0.21 0.012 250)` |
-| `dangerBg` | `oklch(0.95 0.045 25)` | `oklch(0.32 0.07 25)` |
-| `dangerText` | `oklch(0.42 0.16 25)` | `oklch(0.88 0.1 25)` |
+| `dangerBg` | `oklch(0.96 0.04 25)` | `oklch(0.32 0.07 25)` |
+| `dangerText` | `oklch(0.48 0.17 25)` | `oklch(0.88 0.1 25)` |
+
+`navPillBg` (`#E1EDF5` light) is **not** in `PAL` — it is an inline literal in
+the canvas, so its dark form is the one derived colour left in
+`AppPalette`. Same for the two gradients below.
 
 Balance card gradient:
 
@@ -333,8 +344,10 @@ were being achieved.
 | `EXPIRED` | Instant. Steps grey out together, no travel | `motion.none` |
 | `CANCELLED` | Instant | `motion.none` |
 
-> The design page lists eleven booking states; the archived copy was truncated
-> after `CANCELLED`. See [design-deltas](design-deltas.md#truncated-in-import).
+> The design carries **eleven** booking states. The full set and its copy live
+> in `design/ipelege-ds-2-customer.dc.html` and land with Phase 2 of
+> [build-order.md](build-order.md) — two of them, `DISPUTED` and `NO_SHOW`, are
+> blocked on product decisions and have no honest copy yet.
 
 ### Code rules
 
@@ -409,10 +422,10 @@ land on the same step with the same documents attached. **That is why the KYC
 draft lives on the server from the moment of upload rather than in the widget
 tree.**
 
-> The design page carries two full specification tables here — *what the system
-> back button does, everywhere* (11 rows) and *what survives going back*
-> (6 rows). Both were lost to the import truncation; see
-> [design-deltas](design-deltas.md#truncated-in-import).
+> **Recovered 2026-08-20.** Both tables — what the system back gesture does, and
+> what survives being killed — are written out under
+> [Navigation and the system back gesture](#navigation-and-the-system-back-gesture)
+> below.
 
 ## Feedback
 
@@ -434,8 +447,8 @@ not rare. Treatment is banded by expected duration.
 Autosave is right for effort and wrong for money. A listing draft should survive
 anything; a top-up amount should survive nothing.
 
-> The detailed haptics, loading-band and saved-state tables were lost to the
-> import truncation; see [design-deltas](design-deltas.md#truncated-in-import).
+> **Recovered 2026-08-20.** The haptics, loading and saving rules are written
+> out under [Motion](#motion) below.
 
 ## Navigation and the system back gesture
 
@@ -529,7 +542,9 @@ growing as states get named". Once every state needing its own layout is counted
 (eleven booking states, five verification states per category, six mode-switch
 conditions, five top-up states) the real inventory is nearer thirty and opening.
 
-**Flutter status** below is this repo, not the design.
+**Flutter status** below is this repo, not the design. The *order* those get
+built in is not a matter of taste — see [build-order.md](build-order.md), which
+is enforced by `app/test/routing/build_order_test.dart`.
 
 | Stage | Screen | In the pull | Flutter |
 |---|---|:--:|:--:|

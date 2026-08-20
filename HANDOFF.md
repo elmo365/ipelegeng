@@ -124,42 +124,33 @@ navigation/motion/feedback, screen inventory with build status); **M
 
 ## Exact next steps to continue
 
-**First, a correction on build order.** The five screens built this session were
-chosen to *validate the resynced tokens* — dashboard and wallet are the design's
-own restyle exemplars, and home/browse/listing is a coherent vertical slice.
-That was right for the resync, but it is **not** the design's stated build
-order, and it has left a real hole: the app has **no way in**. No splash, no
-register, no sign in, no OTP, no auth gate. It boots straight to Home as an
-anonymous browser.
+**The order is now established, not noted.** See
+[`docs/build-order.md`](docs/build-order.md) — it is the canonical sequence with
+dependencies and gates, and it is **enforced by
+`app/test/routing/build_order_test.dart`**, which fails if a route is claimed
+built without being built, or built without being recorded. Do not re-derive the
+order here; read that file and follow it.
 
-The design's own proposed order, from the journey map, is: *close the account
-gap first → then booking status with the payment moment moved → then the stage-7
-loop prompt → then the provider management surface → then account & privacy.*
-Follow that from here.
+Why it exists: the five screens built this session were chosen to *validate the
+resynced tokens*, which was right for the resync but is not the design's build
+order, and it left the app with **no way in** — no splash, register, sign in,
+OTP or auth gate. Noting that in a handoff was not enough, so it became an
+artifact with a test behind it.
 
-1. **Close the account gap** (stage 0–1). Splash, register, sign in, OTP as
-   second factor, biometric unlock with equal-weight passcode fallback, granular
-   consent including the WhatsApp/SMS channels, auth gate, location permission.
-   In `ipelege-ds-2-customer.dc.html`. Two reasons this is genuinely first, not
-   just the design's preference: **the auth gate sits at the booking action**,
-   so booking request depends on it existing; and every screen already built is
-   currently reachable without an account, which is correct for browse and
-   wrong for everything past it.
-2. **Booking request + booking status.** The densest piece: 11 states, carrying
-   the **payment-before-mark-complete** correction (service delivered → customer
-   pays directly → provider marks complete → customer confirms → commission
-   posts).
-3. **Pair the admin side in** where a mobile flow needs it — user's steer, for
-   more thorough testing. First natural pair: KYC submission → admin
-   verification queue → document review.
-4. **Run it on a handset or emulator.** Three handoffs old now, and the whole
-   surface rework has never been seen rendered. Worth doing *before* building
-   ten more screens on tokens nobody has looked at.
-5. Provider management surface: mode switcher, my categories, booking inbox, top
-   up, become a provider, the nine KYC screens.
-6. The six settings screens from part 4, then the stage-7 loop prompt.
-7. Retire `stripe1`/`stripe2`/`info*` from `AppPalette` if a later pull confirms
-   they are gone rather than merely unused.
+**Next action: Phase 0** — run the app on a handset or emulator and check the
+surface treatment in both modes. Everything else gates on it: five screens and
+six components were built against tokens only the widget tester has seen, and
+dark mode was rewritten wholesale when `PAL` was recovered and has never been
+displayed.
+
+Then Phase 1 (the account gap), Phase 2 (booking with the payment moment moved),
+and so on as `build-order.md` sets out. The admin pairings are scheduled in it
+too — Phase 4 pairs KYC with the verification queue, Phase 6 pairs the wallet
+flows with admin finance.
+
+One item with no phase, to pick up opportunistically: retire
+`stripe1`/`stripe2`/`info*` from `AppPalette` if a later pull confirms they are
+gone rather than merely unused on the screens currently readable.
 
 ## Open questions / blockers
 

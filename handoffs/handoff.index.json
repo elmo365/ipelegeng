@@ -9,9 +9,10 @@
       "hash": "e3dfd83",
       "subject": "Provision arm64 VPS stack; resolve ledger grain; add wallet.md"
     },
-    "summary": "Full design resync, then real UI implementation. Took three passes: a first resync that was too thin, two rounds of user pushback that were both correct, and finally a four-way split of the design canvas in Claude Design that made the whole of it readable for the first time. 485 KB recovered against 262 KB truncated. Then built five screens and six components on the corrected tokens, with 97 tests passing.",
+    "summary": "Full design resync, then real UI implementation. Took three passes: a first resync that was too thin, two rounds of user pushback that were both correct, and finally a four-way split of the design canvas in Claude Design that made the whole of it readable for the first time. 485 KB recovered against 262 KB truncated. Then built five screens and six components on the corrected tokens, with 97 tests passing. Build order then established as docs/build-order.md with a test that enforces it, after the user pointed out that noting an order in a handoff is not the same as establishing one.",
     "state": "Design source complete and single-vintage (4 mobile parts + admin, none truncated); every colour read from PAL rather than inferred; 5 of ~30 screens built; no backend; never run on a device",
     "decisions": [
+      "Build order is an artifact with a test behind it, not a handoff note: docs/build-order.md declares the sequence and app/test/routing/build_order_test.dart fails if a route is claimed built without being built, or built without being recorded",
       "Discard rather than merge design snapshots - a half-stale archive is the trap that produced the bad first resync. Cost the old PAL; the split recovered it anyway",
       "Split the canvas into four parts, done in Claude Design - the 256 KiB cap is server-side on get_file with no range or pagination, so the repo cannot initiate it. Sent split-plan.md into the project rather than making the user retype it",
       "Match the design's token names exactly even where mine read better: screenBg2 is the page, screenBg stayed white. Future syncs diff directly",
@@ -26,10 +27,11 @@
       "Navigation/back rules, state restoration, motion table, haptics, loading rules, light/dark rules all recovered and recorded in design-system.md",
       "Five screens: consumer home, category browse, listing detail, provider dashboard, wallet. Six new components incl. surface depths, ledger entry with VAT tie-line, week chart",
       "97 tests pass, flutter analyze clean. The 47-test baseline carried unverified through two handoffs was re-run and confirmed",
-      "Tests caught four real bugs: two 360dp overflows, StatusChip pill blowout, and rentals offering a booking it has no flow for"
+      "Tests caught four real bugs: two 360dp overflows, StatusChip pill blowout, and rentals offering a booking it has no flow for",
+      "Build order established and enforced: docs/build-order.md plus build_order_test.dart. Verified the guard fires by deliberately making a false claim"
     ],
     "notWorking": [
-      "No way into the app - no splash, register, sign in, OTP or auth gate. Boots straight to Home. This is the ordering mistake noted in next steps",
+      "No way into the app - no splash, register, sign in, OTP or auth gate. Boots straight to Home. Now scheduled as Phase 1 in build-order.md rather than left as a note",
       "No Django backend; screens read core/demo_data.dart which is scaffolding to delete",
       "Most screens still placeholders: booking request/status, ride tracking, rate & review, mode switcher, my categories, inbox, top up, become a provider, KYC, six settings screens",
       "Never run on a handset or emulator - carried from two prior handoffs. The surface rework has never been seen rendered",
@@ -45,13 +47,9 @@
       "sed -i '1i import ...' on a Dart file with a library; directive - puts the import above the doc comment and fails to parse"
     ],
     "nextSteps": [
-      "Close the account gap first (splash, register, sign in, OTP, biometric+passcode, consent, auth gate, location) - the design's own stated build order, and the auth gate is a dependency of booking request",
-      "Booking request + booking status: 11 states, carrying the payment-before-mark-complete correction",
-      "Pair the admin side in where a mobile flow needs it - first pair is KYC submission to admin verification queue to document review",
-      "Run it on a handset or emulator before building ten more screens on tokens nobody has looked at",
-      "Provider management surface: mode switcher, my categories, booking inbox, top up, become a provider, nine KYC screens",
-      "Six settings screens from part 4, then the stage-7 loop prompt",
-      "Retire stripe1/stripe2/info* from AppPalette if a later pull confirms they are gone rather than merely unused"
+      "Phase 0 (current gate): run on a handset or emulator and check the surface treatment in both modes. Everything else gates on it - the tokens have only ever been seen by the widget tester, and dark mode was rewritten wholesale when PAL was recovered",
+      "Then follow docs/build-order.md: Phase 1 account gap, Phase 2 booking with the payment moment moved, Phase 3 loop prompt, Phase 4 KYC paired with the admin verification queue, Phase 5 provider management, Phase 6 money ops paired with admin finance, Phase 7 account and privacy",
+      "Do not re-derive the order in a handoff - read build-order.md and update it plus its test together"
     ],
     "blockers": [
       "Already-accepted bookings on category revoke - unchanged, still the code blocker for the admin Revoke action",
