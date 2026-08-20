@@ -160,6 +160,29 @@ abstract final class AppTypography {
     height: 16 / 12.5,
   );
 
+  /// The small-caps label above a form field: `FULL NAME`, `PHONE NUMBER`,
+  /// `CONSENT · V2.1`. It sits above the input rather than floating into the
+  /// border, so it stays readable while the field is being typed into.
+  ///
+  /// The colour is the call site's — `textSecondary` on a card, white at 82%
+  /// on a gradient header.
+  static const fieldLabel = TextStyle(
+    fontFamily: AppFonts.sans,
+    fontSize: 11.5,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.5,
+  );
+
+  /// A section heading inside a screen: `OPTIONAL · CHANGE ANY TIME`,
+  /// `SERVICES`, `RECENT ACTIVITY`. Wider tracking and a step smaller than
+  /// [fieldLabel] — it labels a group, not a control.
+  static const sectionLabel = TextStyle(
+    fontFamily: AppFonts.sans,
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.9,
+  );
+
   /// Applies [color] across a whole [TextTheme]. The palette supplies the
   /// colour; the scale never carries one of its own.
   static TextTheme tinted(TextTheme base, Color color) =>

@@ -85,10 +85,12 @@ class CategoryTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: palette.cardBg,
           borderRadius: Radii.rowAll,
-          // The canvas gives this tile `shCard`, not `shRow` — it is a card
-          // that holds a group, not a row inside one. Corrected 2026-08-20
-          // after Phase 0 put it next to the design on a handset.
-          boxShadow: palette.shadowCard,
+          // `shadowRow`, because the canvas gives this tile `pal.shCard` and
+          // that name maps to *our* shadowRow — see the mapping table in
+          // tokens.dart. The two vocabularies invert, which is exactly the
+          // trap: reading the canvas name as ours makes the tile a step too
+          // deep.
+          boxShadow: palette.shadowRow,
         ),
         child: Material(
           type: MaterialType.transparency,

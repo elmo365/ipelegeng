@@ -17,6 +17,7 @@ library;
 
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../theme/dimens.dart';
 import '../../../theme/tokens.dart';
@@ -24,6 +25,7 @@ import '../../components/info_note.dart';
 import '../../components/money_text.dart';
 import '../../components/status_chip.dart';
 import '../../components/surface.dart';
+import '../entry/auth_gate.dart';
 import 'category_browse_screen.dart';
 
 @immutable
@@ -60,13 +62,20 @@ class ListingDetailData {
   final double? rating;
 }
 
-class ListingDetailScreen extends StatelessWidget {
+class ListingDetailScreen extends ConsumerWidget {
   const ListingDetailScreen({super.key, required this.data});
 
   final ListingDetailData data;
 
+  /// "Kabelo's Plumbing & Repairs" → "Kabelo". The gate says *who* needs the
+  /// number, and a trading name is not a person.
+  static String firstNameOf(String tradingName) {
+    final first = tradingName.trim().split(RegExp(r'\s+')).first;
+    return first.replaceAll(RegExp(r"['’]s$"), '');
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final palette = context.palette;
     final text = Theme.of(context).textTheme;
     final brightness = Theme.of(context).brightness;
@@ -183,7 +192,16 @@ class ListingDetailScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      // UC-4: browsing is free, and the wall is exactly here.
+                      // A visitor who taps this is shown the gate naming the
+                      // provider, then returned to this screen if they decline
+                      // — they never lose their place for refusing.
+                      onPressed: () => requireAccount(
+                        context,
+                        ref,
+                        providerName: data.name,
+                        providerFirstName: firstNameOf(data.name),
+                      ),
                       // Property rentals is pay-per-listing: there is no
                       // booking, no commission and no completion. The tenant
                       // enquires and leaves the app, so offering "Request

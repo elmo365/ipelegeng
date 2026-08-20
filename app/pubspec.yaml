@@ -7,6 +7,10 @@ environment:
   sdk: ^3.11.4
 
 dependencies:
+  # Grapheme-safe first characters, for the sign-in initials. A name is not
+  # guaranteed to be one code unit per letter and `substring(0, 1)` would cut
+  # some of them in half.
+  characters: ^1.4.1
   decimal: ^3.2.6
   flutter:
     sdk: flutter

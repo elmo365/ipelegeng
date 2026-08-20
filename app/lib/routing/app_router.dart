@@ -17,6 +17,13 @@ import '../theme/motion.dart';
 import '../ui/screens/consumer/category_browse_screen.dart';
 import '../ui/screens/consumer/home_screen.dart';
 import '../ui/screens/consumer/listing_detail_screen.dart';
+import '../ui/screens/entry/consent_screen.dart';
+import '../ui/screens/entry/location_screen.dart';
+import '../ui/screens/entry/register_screen.dart';
+import '../ui/screens/entry/sign_in_screen.dart';
+import '../ui/screens/entry/splash_screen.dart';
+import '../ui/screens/entry/unlock_screen.dart';
+import '../ui/screens/entry/verify_screen.dart';
 import '../ui/screens/placeholder_screen.dart';
 import '../ui/screens/provider/dashboard_screen.dart';
 import '../ui/screens/provider/wallet_screen.dart';
@@ -26,12 +33,54 @@ import 'routes.dart';
 
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
-GoRouter createRouter({String initialLocation = Routes.home}) {
+/// [initialLocation] defaults to the splash, because a cold start with no
+/// account is the normal case. Tests that are about the shell rather than the
+/// entry flow pass [Routes.home] instead.
+GoRouter createRouter({String initialLocation = Routes.splash}) {
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: initialLocation,
     restorationScopeId: 'app',
     routes: [
+      // Entry sits outside both shells. There is no tab bar until there is an
+      // account, and a flow that could be escaped by tapping a tab would not
+      // be a gate.
+      GoRoute(
+        path: Routes.splash,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const SplashScreen()),
+      ),
+      GoRoute(
+        path: Routes.register,
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: Routes.signIn,
+        builder: (context, state) => const SignInScreen(),
+      ),
+      // Verify, consent and unlock are replaces rather than pushes: each one
+      // discards what came before it, so back cannot re-enter a flow that
+      // would send a second code.
+      GoRoute(
+        path: Routes.verify,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const VerifyScreen()),
+      ),
+      GoRoute(
+        path: Routes.consent,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const ConsentScreen()),
+      ),
+      GoRoute(
+        path: Routes.unlock,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const UnlockScreen()),
+      ),
+      GoRoute(
+        path: Routes.location,
+        pageBuilder: (context, state) =>
+            _replacingPage(state, const LocationScreen()),
+      ),
       _shell(AppMode.consumer, [
         _branch(
           Routes.home,
@@ -138,6 +187,19 @@ Page<void> _lateralPage(GoRouterState state, Widget child) {
     reverseTransitionDuration: Motion.exit,
     child: child,
     transitionsBuilder: PageMotion.lateral,
+  );
+}
+
+/// A step that discards the one before it: OTP, consent, unlock, location. It
+/// rises and fades rather than sliding in from the edge, because sliding reads
+/// as something you can back out of and these cannot be backed out of.
+Page<void> _replacingPage(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Motion.page,
+    reverseTransitionDuration: Motion.exit,
+    child: child,
+    transitionsBuilder: PageMotion.replace,
   );
 }
 

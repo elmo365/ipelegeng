@@ -93,6 +93,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.dangerText,
     required this.balanceCardGradient,
     required this.heroGradient,
+    required this.entryGradient,
+    required this.splashGradient,
     required this.shadowRow,
     required this.shadowCard,
     required this.shadowHero,
@@ -154,6 +156,24 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// The provider dashboard hero. "Blue as a field, not as trim" — a real
   /// gradient carrying its own actions, rather than a link colour.
   final Gradient heroGradient;
+
+  /// The header band on register, sign in and OTP: the same three hero stops
+  /// as [heroGradient], but radial from the top right, and squared off at the
+  /// top so it reads as the top of the page rather than as a floating card.
+  ///
+  /// An inline literal in the canvas rather than a `PAL` token, like
+  /// [navPillBg] — recorded here as the literal it is. The dark form takes the
+  /// dark hero's stops, so the two stay in step.
+  final Gradient entryGradient;
+
+  /// First open. Darker than [entryGradient] and it lands on navy rather than
+  /// on the hero's deep blue, because the splash is the one screen with no
+  /// surface on it at all.
+  ///
+  /// Identical in both themes on purpose. Like the balance card, it is already
+  /// dark in light mode, and re-darkening it in dark mode would only cost
+  /// contrast against the white lockup it carries.
+  final Gradient splashGradient;
 
   /// The three surface depths, blue-tinted. These replace borders; a card
   /// gets a shadow or a border, never both.
@@ -219,6 +239,22 @@ class AppPalette extends ThemeExtension<AppPalette> {
       end: Alignment.bottomRight,
       colors: [Brand.heroLight, Brand.heroMid, Brand.heroDeep],
       stops: [0.0, 0.52, 1.0],
+    ),
+    // `radial-gradient(130% 110% at 80% -10%, …)`. CSS measures the centre
+    // from the top left as a percentage; Flutter measures it from the middle
+    // in half-widths, so 80%/-10% becomes (0.6, -1.2).
+    entryGradient: RadialGradient(
+      center: Alignment(0.6, -1.2),
+      radius: 1.3,
+      colors: [Brand.heroLight, Brand.heroMid, Brand.heroDeep],
+      stops: [0.0, 0.45, 1.0],
+    ),
+    // `radial-gradient(130% 100% at 78% -8%, #1E7BB5, #0F4874 42%, #061326)`.
+    splashGradient: RadialGradient(
+      center: Alignment(0.56, -1.16),
+      radius: 1.3,
+      colors: [Brand.heroLight, Color(0xFF0F4874), Brand.navy],
+      stops: [0.0, 0.42, 1.0],
     ),
     shadowRow: _shRowLight,
     shadowCard: _shCardLight,
@@ -286,6 +322,19 @@ class AppPalette extends ThemeExtension<AppPalette> {
       end: Alignment.bottomRight,
       colors: [Color(0xFF1B4B7A), Color(0xFF123A5C), Color(0xFF0A2B45)],
       stops: [0.0, 0.52, 1.0],
+    ),
+    entryGradient: RadialGradient(
+      center: Alignment(0.6, -1.2),
+      radius: 1.3,
+      colors: [Color(0xFF1B4B7A), Color(0xFF123A5C), Color(0xFF0A2B45)],
+      stops: [0.0, 0.45, 1.0],
+    ),
+    // Deliberately the same as light — see the field's doc comment.
+    splashGradient: RadialGradient(
+      center: Alignment(0.56, -1.16),
+      radius: 1.3,
+      colors: [Brand.heroLight, Color(0xFF0F4874), Brand.navy],
+      stops: [0.0, 0.42, 1.0],
     ),
     shadowRow: _shRowDark,
     shadowCard: _shCardDark,

@@ -329,9 +329,14 @@ on that text at all; ours had `maxLines: 1`. Now two lines, with the grid's
 real IBM Plex face rather than the test font, which draws every glyph a full em
 wide and would have passed a string twice its true width.
 
-**Fixed — the category tile carried the wrong shadow depth.** The canvas gives
-it `shCard`; we had `shRow`. Tiles read flatter than the design, which is
-precisely the complaint that caused the restyle in §8.
+**Not a drift, and worth writing down because it read like one.** The canvas
+gives the category tile `box-shadow: pal.shCard`, and we render `shadowRow`.
+That looks wrong and is right: the two vocabularies invert. `pal.shCard` is the
+*common surface* shadow at `0 4px 14px` and maps to our `shadowRow`;
+`pal.shRaise` is the deeper one at `0 6px 20px` and maps to our `shadowCard`.
+The mapping table lives at the top of the shadow block in `tokens.dart`. Reading
+a canvas shadow name as if it were ours puts every surface one step too deep —
+which is what happened here for one commit before the table was re-read.
 
 **Recorded, not fixed — the tile's off-grid literals.** The canvas draws it at
 `border-radius:20px`, `padding:14px`, a `38×38` icon plate with a `10px` gap,

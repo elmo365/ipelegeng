@@ -27,7 +27,20 @@ import 'package:ipelege/ui/screens/placeholder_screen.dart';
 
 /// Routes with a real screen behind them. Keep in step with the "Where things
 /// stand" section of docs/build-order.md.
-const _built = <String>{Routes.home, Routes.dashboard, Routes.wallet};
+const _built = <String>{
+  // Phase 1 — the account gap.
+  Routes.splash,
+  Routes.register,
+  Routes.signIn,
+  Routes.verify,
+  Routes.consent,
+  Routes.unlock,
+  Routes.location,
+  // Built during the resync, to validate the tokens.
+  Routes.home,
+  Routes.dashboard,
+  Routes.wallet,
+};
 
 /// Routes still on `PlaceholderScreen`. Deliberate: the navigation graph stays
 /// complete and testable while screens land one at a time.
@@ -123,17 +136,26 @@ void main() {
       );
     });
 
-    test('Phase 1 has not been skipped silently', () {
-      // The account gap has no route of its own yet — it lands ahead of the
-      // shell. This is a reminder rather than a check: when Phase 1 starts,
-      // add its routes to Routes and to one of the sets above, so the entry
-      // path becomes as trackable as everything else.
+    test('every entry route is built — Phase 1 is all or nothing', () {
+      // A half-built entry flow is worse than none: it strands someone
+      // between a register screen and a verify screen that does not exist.
       expect(
-        _built.contains(Routes.home),
-        isTrue,
+        Routes.entry.toSet().difference(_built),
+        isEmpty,
+        reason: 'an entry route with no screen behind it is a dead end',
+      );
+    });
+
+    test('the app opens on the entry flow, not inside the shell', () {
+      // The defect Phase 1 existed to fix: the app booted straight to Home
+      // with no splash, register, sign in or OTP anywhere. If this default
+      // ever goes back to a tab root, the account gap has reopened.
+      expect(
+        createRouter().routeInformationProvider.value.uri.path,
+        Routes.splash,
         reason:
-            'home is reachable with no account, which is only correct '
-            'while browse is the only thing built',
+            'createRouter() no longer starts at the splash, so a cold start '
+            'skips the account gap again',
       );
     });
   });

@@ -7,6 +7,38 @@
 library;
 
 abstract final class Routes {
+  // Entry. These sit outside both shells: there is no tab bar until there is
+  // an account, and the flow must not be escapable by tapping a tab.
+  static const splash = '/welcome';
+  static const register = '/register';
+  static const signIn = '/sign-in';
+
+  /// OTP. Reached from register and from sign in alike — both send a code,
+  /// because there is no password to skip it with.
+  static const verify = '/verify';
+
+  /// Consent capture. A route rather than a step inside OTP, because a
+  /// superseded version has to be able to send an already-signed-in user here
+  /// on its own.
+  static const consent = '/consent';
+
+  /// Biometric unlock with the passcode fallback. Only reachable from a
+  /// session that was already active on this device.
+  static const unlock = '/unlock';
+
+  static const location = '/location';
+
+  /// Every entry route, for the guard in the router and the build-order test.
+  static const entry = <String>[
+    splash,
+    register,
+    signIn,
+    verify,
+    consent,
+    unlock,
+    location,
+  ];
+
   // Consumer tabs.
   static const home = '/home';
   static const bookings = '/bookings';

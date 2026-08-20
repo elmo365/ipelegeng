@@ -40,10 +40,11 @@ Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
 - **Fixed:** the supply count was ellipsised on every thin category
   (*"New in Gaborone · 6 plum…"*), hiding the number the tile exists to state.
-- **Fixed:** the category tile carried `shRow` where the canvas gives it
-  `shCard`, so tiles read flatter than the design.
 - **Recorded:** the tile's off-grid literals (20 px radius, 14 px padding,
   38 px plate) against our token scale. ≤ 2 dp, deliberately not tokenised.
+- **Recorded:** the canvas and this repo use inverted shadow vocabularies —
+  `pal.shCard` is our `shadowRow`, `pal.shRaise` is our `shadowCard`. Read the
+  mapping table in `tokens.dart` before "correcting" a surface depth.
 
 **And one thing the screenshots made obvious that no screen review would have:**
 the app has no identity at all. Stock Flutter launcher icon, a white window
@@ -77,7 +78,7 @@ that Phase 1 is finished.
 
 ---
 
-## Phase 1 · The account gap — stage 0–1
+## Phase 1 · The account gap — **built 2026-08-20**, artwork outstanding
 
 Splash · Register · Sign in · OTP · Biometric unlock with passcode fallback ·
 Consent capture · Auth gate · Location permission
@@ -102,12 +103,42 @@ goes back through phone + OTP. Passcode is a full card of equal weight, not fine
 print, because broken or absent sensors are common on the target hardware.
 
 **Blocked within this phase:** splash, register and sign in all render the
-lockup, and the artwork does not exist here yet (Phase 0.5). Build the flows
-with the mark's slot empty; the phase is not *done* until it is filled.
+lockup, and the artwork does not exist here yet (Phase 0.5). The flows are
+built with the mark's slot held by `BrandLockup`, which sets the name as type
+and says in its own doc comment that it is not the logo.
 
 **Done when:** a cold install can register, verify, consent, and reach Home; a
 returning user can sign in; a visitor can still browse without an account and is
 stopped at the booking action.
+
+### What landed
+
+Seven routes, all outside both shells so a tab cannot escape the flow:
+`/welcome`, `/register`, `/sign-in`, `/verify`, `/consent`, `/unlock`,
+`/location`. The auth gate is deliberately **not** a route — it is a sheet over
+the listing, because refusing it must not cost the visitor their place.
+
+`core/session.dart` holds the rules as states rather than as habits: OTP is
+unskippable because nothing reaches `active` without passing through
+`confirmingNumber`; `canBook` is false on a superseded consent version, so
+re-consent is a state and not a prompt someone remembers to show; `lock()` does
+nothing to a session that was never active, so biometry can only ever *unlock*.
+
+Verified on a Pixel 9a in both modes. Two bugs the widget tests caught that a
+reading would not have:
+
+- The gate was pushed onto the tab's Navigator, whose pages go_router manages
+  declaratively. Dismissing it re-synced the router and **took the listing down
+  with it** — a visitor who declined lost the page they were looking at. It now
+  uses the root navigator.
+- `EntryHeader` sat in a `Column`, which centres on the cross axis, so the
+  gradient band was only as wide as its own text. Invisible on register with its
+  two-line subtitle; obvious on verify with its four words.
+
+**Still open in this phase:** biometry and the passcode are wired to the session
+but not to the platform — both buttons call `unlock()` and no `local_auth`
+prompt is shown yet. The screen, the states and the fallback's visual weight are
+right; the sensor is not connected.
 
 ---
 
@@ -240,12 +271,19 @@ management at scale, and empty/offline states across the journey.
 
 ## Where things stand
 
-Built: consumer home · category browse · listing detail · provider dashboard ·
-wallet. Six shared components. **114 tests**, `flutter analyze` clean, and all
-five screens seen rendered on a device in both modes.
+**Entry (Phase 1):** splash · register · sign in · OTP · consent · unlock ·
+location, plus the auth gate as a sheet.
+
+**Built earlier, to validate the resynced tokens:** consumer home · category
+browse · listing detail · provider dashboard · wallet.
+
+Twelve shared components. **147 tests**, `flutter analyze` clean, and every
+built screen seen rendered on a device in both modes.
 
 Everything else renders `PlaceholderScreen`, which is deliberate — the
 navigation graph stays complete and testable while screens land one at a time.
 
-**Next action: Phase 1**, the account gap. Phase 0 is closed; Phase 0.5 is
-blocked on an artwork export and runs alongside rather than in front.
+**Next action: Phase 2**, booking with the payment moment moved. Phase 0 is
+closed. Phase 0.5 is blocked on an artwork export and runs alongside rather
+than in front; Phase 1 is built but is not *finished* until the lockup and the
+biometric prompt land.
