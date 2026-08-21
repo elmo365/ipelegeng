@@ -663,9 +663,11 @@ management at scale, and empty/offline states across the journey.
 button — `Icons.call` in the provider row, inert — and every screen and rule
 behind it is missing: what it does, when it is live, the in-call and incoming
 surfaces, and what a dispute can see afterwards. The technology options are
-worked through in [`calling.md`](calling.md), which recommends the system
-dialer for launch and WebRTC on the existing VPS as the upgrade, and explains
-why Matrix is the wrong shape. The design work is in
+worked through in [`calling.md`](calling.md). **Both routes are planned** —
+an in-app call and a phone call, because inDrive and the other ride apps in
+this market offer both and a provider comparing them will notice. The dialer
+ships first and stays as the fallback; WebRTC on the existing VPS is the parity
+feature. Matrix is the wrong shape and the doc says why. The design work is in
 [`../design/CORRECTIONS.md`](../design/CORRECTIONS.md) §5, and it should be
 done **with** the incoming-ride surface, because a call and a ride request need
 the same lock-screen treatment.

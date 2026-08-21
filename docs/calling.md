@@ -7,11 +7,19 @@ Short answers, then the reasoning:
 
 - **Matrix is overkill.** You would run a homeserver, a federation surface and
   a second identity model to get one feature this app needs.
-- **Ship the dialer first.** It is what the design already assumes, costs
-  nothing, and works on every handset in the market.
-- **WebRTC is the right upgrade when one is justified**, and the two hard parts
-  are already in place — a VPS for signalling and TURN, and FCM to wake a
-  handset whose app is closed.
+- **Build both a phone call and an in-app call.** Decided on competitive
+  parity — inDrive and the other ride apps in this market offer both, and a
+  provider comparing them will notice. See the recommendation below.
+- **The dialer ships first and stays as the fallback.** It costs nothing and
+  works with no data at all.
+- **WebRTC is the parity feature**, and the two hard parts are already in
+  place — a VPS for signalling and TURN, and FCM to wake a handset whose app is
+  closed.
+
+> The sections below argue in-app calling on **privacy** grounds and find that
+> case weak, because the design gives numbers away in `ACCEPTED`. That analysis
+> stands and is kept as written. The decision was made on a different and
+> stronger basis, and the recommendation section is where it lands.
 
 ---
 
@@ -117,14 +125,51 @@ own WebSocket on the VPS plus WebRTC**, not somebody else's federation.
 
 ---
 
-## Recommendation
+## Recommendation — **revised 2026-08-21: build both**
+
+> *"Apps like inDrive allow phone call and in-app call, so we can't lose out to
+> them."*
+
+That settles it, and it changes the justification rather than just the answer.
+The case for in-app calling above was argued on **privacy**, and privacy is
+weak here because the design gives numbers away in `ACCEPTED`. **Competitive
+parity is a different argument and a much stronger one** — inDrive, Bolt and
+Uber all offer both, in this market, and a provider comparing the two apps
+side by side will notice one of them cannot call without spending airtime.
+
+So in-app calling moves from *"if it proves it matters"* to **planned**, and
+the phone call stays alongside it rather than being replaced.
 
 | When | Do |
 |---|---|
-| **Phase 5**, when the booking flow is real | Wire the existing call button to `tel:`. Two lines, no infrastructure. |
-| **When calling proves it matters** — or when airtime cost becomes a complaint | `flutter_webrtc` + coturn on the VPS, signalled over the same socket the app will already need, woken by the FCM path built for ride dispatch. |
-| **Only if the design takes back "Kabelo has your number"** | Number masking, and price it per minute first. |
+| **Phase 5**, when the booking flow is real | Wire the existing call button to `tel:`. Two lines, no infrastructure, and it is the fallback forever — a call that works with no data is worth keeping. |
+| **Phase 5–6, planned rather than conditional** | `flutter_webrtc` + coturn on the VPS, signalled over the socket the app already needs, woken by the FCM path built for ride dispatch. This is the parity feature. |
+| **If the design takes back "Kabelo has your number"** | Number masking on the *phone* leg. Price it per minute first; the in-app leg needs no masking because no number is exchanged. |
 | **Never, on current requirements** | Matrix. |
+
+### Both, and what that means for the UI
+
+Two call routes is not one button with a fallback — it is a **choice the user
+makes**, and the design has to say which is which. The pattern the competition
+uses is worth copying rather than reinventing:
+
+- **In-app call is the default.** It costs the caller data rather than airtime,
+  and it is the one that works without a number being dialled.
+- **The phone call is the escape hatch**, one tap further in, for when data is
+  bad or the other party's app is closed and unreachable.
+
+That ordering also happens to be the cheap-to-the-user ordering, which is the
+right default in this market.
+
+### What "both" costs that "one" does not
+
+- Two failure modes to design, not one: an in-app call that cannot connect has
+  to offer the phone call, and it has to do that **without** looking like the
+  app is broken.
+- The in-app leg needs the callee's app reachable. That is the FCM
+  full-screen-intent path from `device-permissions.md` §2 — already planned for
+  ride dispatch, and now load-bearing for a second feature.
+- `RECORD_AUDIO`, asked for at the first in-app call and never at install.
 
 ---
 
@@ -146,9 +191,11 @@ The UI does not exist. Listed in
 
 ## Open questions
 
-- Does the design want number privacy back? Everything above hinges on it, and
-  it is currently given away in one line of `ACCEPTED` copy that may not have
-  been weighed as a privacy decision.
+- Does the design want number privacy back? **Narrower now that both routes
+  are being built**: the in-app leg exchanges no number, so privacy only
+  affects whether the *phone* leg dials a real number or a masked one. The
+  `ACCEPTED` copy — "Kabelo has your number" — is still a privacy promise made
+  in passing, and it should be a decision rather than a leftover.
 - Whether messaging and calling ship together. If they do, the transport
   decision is one decision rather than two.
 - Whether call metadata is needed for disputes, which is a compliance question

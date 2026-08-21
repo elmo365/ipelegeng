@@ -142,16 +142,19 @@ missing is every screen and rule around it.
 **One thing the design has already decided, possibly without weighing it.**
 The `ACCEPTED` state's body reads *"Today at 14:00, at Plot 4521, Block 8.
 **Kabelo has your number.**"* That gives away number privacy in a single line
-of copy — and number privacy is the usual reason a marketplace builds in-app
-calling at all. **If that was a deliberate decision it should be stated as one;
-if it was not, it is the first thing to revisit**, because everything below
-hinges on it. The options and costs are worked through in
-[`../docs/calling.md`](../docs/calling.md).
+of copy. It now affects less than it did — the in-app leg exchanges no number
+at all — but it still decides whether the *phone* leg dials a real number or a
+masked one, and it should be a decision rather than a leftover. The options and
+costs are worked through in [`../docs/calling.md`](../docs/calling.md).
 
 **What the design needs to add:**
 
-- **What the button does.** Dial out through the phone app, or open an in-app
-  call screen. These are different products with different costs.
+- **Both routes, and which is the default.** Decided 2026-08-21: the app offers
+  an **in-app call and a phone call**, because inDrive and the other ride apps
+  in this market offer both and a provider comparing them will notice. The
+  in-app call should be the default — it costs the caller data rather than
+  airtime — with the phone call one tap further in as the escape hatch. The
+  design has to draw that choice; it is not one button with a fallback.
 - **When it is live.** Presumably `ACCEPTED` through `COMPLETED`. The design
   has never said, and a call button on a `DECLINED` booking is wrong.
 - The **in-call screen**, if calling is in-app: who is on the line, mute,
