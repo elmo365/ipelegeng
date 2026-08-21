@@ -3,14 +3,14 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-21T14:06:00+02:00",
+    "saved": "2026-08-21T19:40:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "8f894c4",
-      "subject": "Point the gate at the real platform; fix the glyph it caught"
+      "hash": "d76096c",
+      "subject": "Adopt element-by-element UI ticks; fix the three things a glance missed"
     },
-    "summary": "Ran Phase 0's gate on everything built since 2026-08-20, both halves, and made it a runnable script rather than an act of will. The motion pass found the transition table consumed by four places and no screen and built it. The colour pass ran 28 screens in both modes on a device: the palette holds exactly, and three interactive controls were invisible at rest. Then found the gate itself was photographing fakes, pointed it at the real platform, and that verified the no-biometry branch on a device and caught a hardcoded fingerprint glyph over passcode-only copy. 254 tests to 291, analyze clean. Pushed.",
-    "state": "Phases 1-3 complete and now seen rendered in both modes; Phase 0 closed except the biometric sensor path; no backend; four brand cuts still over the fetch cap",
+    "summary": "Ran Phase 0's gate on everything built since 2026-08-20, both halves, and made it a runnable script. Paired a Galaxy S24 over wireless adb and closed Phase 1: both biometric branches, a real prompt, a real fingerprint reopening a locked session. Specified the permission surface and built Phase 3.5 after finding dark mode was finished and unreachable. Then adopted element-by-element UI ticks after a whole-screen review passed a flat-white wordmark that was plainly visible; the first tick found three departures on one screen. 254 tests to 305.",
+    "state": "Phases 0-3.5 complete and seen rendered on a handset in both modes; biometrics verified end to end; dark mode reachable; no backend; four brand cuts still over the fetch cap",
     "decisions": [
       "'Medium haptic' is a strength the app deliberately does not have. Haptics names three uses and no strengths, so ACCEPTED and COMPLETED fire decision() - whose own definition is these two moments under their other name. No fourth haptic was added",
       "The empty-room rule wins over demo completeness: all three bookingCompleted loop pairs point at thin categories, so that placement cannot be photographed and making it reachable would mean fabricating supply",
@@ -19,25 +19,37 @@
       "The gate reaches screens by overriding routerProvider, not by tapping through the app - a gate that must complete a nine-step journey to photograph the ninth screen fails at step two and shows nothing",
       "Every animation is gated on having arrived. Motion explains a change; one that fires when nothing happened is decoration",
       "A picture is copy: the unlock hero glyph was the only element not obeying the no-sensor rule - 50dp of fingerprint over 'Use your device passcode to continue'",
-      "The gate must override what main() overrides or it photographs stubs. The session store is the deliberate exception - a prefs-backed one would carry a shot's session into the next"
+      "The gate must override what main() overrides or it photographs stubs. The session store is the deliberate exception - a prefs-backed one would carry a shot's session into the next",
+      "A special permission cannot be set early and defaulted on: SYSTEM_ALERT_WINDOW has no API to grant it and declaring it before the feature exists is a Play Store liability. Keep-screen-on is the opposite - no permission at all, so the preference was front-loaded",
+      "Notifications stay off the Preferences screen despite the canvas putting them there - they are consent records under FR-1.10 and splitting one DPA trail across two stores to save a phase would be the wrong shortcut",
+      "A UI tick is earned per element, not per screen - enumerate the artboard first or the screenshot decides what gets checked. Adopted after a glance passed a visible defect",
+      "A seam's fake must be more permissive than the real thing, never less, so no test can pass because the fake rejected what production would allow",
+      "Launch OTP on Firebase Auth phone rather than an aggregator - the free quota covers early volume and it skips a commercial negotiation that is a lead-time item. WhatsApp is the lever worth pushing hardest in Botswana, and the app already collects consent for it"
     ],
     "working": [
       "Phase 0 closed on everything up to 2026-08-21: 28 screens compared against the canvas in both modes, palette holds on every surface, plate, chip and gradient",
       "The booking state change moves as one event - chip plate, dot, label ink, accent rule and six step bars on one duration passed down rather than repeated. Endings are instant",
       "The wallet balance counts on change and does nothing on load, enforced structurally",
       "The three invisible controls are visible, confirmed on device after the fix",
-      "The no-biometry branch is verified against the real platform: the emulator has a sensor with nothing enrolled, which is the design's 'biometry unavailable -> passcode' case, and the screen came back correct",
+      "The biometric path is verified end to end on a Galaxy S24: both availability branches, a real system prompt, and a real fingerprint carrying a locked session back to active with the same name on the far side",
       "The rentals to movers handoff sheet has been seen rendered for the first time",
-      "291 tests, flutter analyze clean, the gate runs green end to end across 56 shots"
+      "305 tests, flutter analyze clean, the gate runs green across 58 shots on emulator and handset",
+      "Dark mode is reachable - Phase 3.5 shipped the settings spine, so the theme can be changed from inside the app and survives a restart"
     ],
     "notWorking": [
-      "The SUCCESSFUL biometric prompt has never been raised. The no-sensor branch is verified on a device; raising a real prompt needs a device credential and an enrolled print, which changes the emulator's state and is the user's call. Last item outstanding from Phase 1",
+      "Profile photos do not exist anywhere in the design - the Account artboard renders initials and that fallback is the only state drawn. First entry in design/CORRECTIONS.md",
       "No backend: a sent request never becomes a booking, a review is dropped, DemoOtpVerifier accepts any four digits, ten of eleven booking actions are inert",
       "Three brand cuts and one logo still exceed the 256 KiB fetch cap - the dark ones compress larger than the light ones, which all landed",
       "No picker behind the booking request's WHEN card - scheduling granularity still open",
-      "The loop prompt's completed-booking placement renders nowhere in the demo, correctly"
+      "The loop prompt's completed-booking placement renders nowhere in the demo, correctly",
+      "Nothing reads keepScreenOnDuringRides yet - stored and defaulting on; the ride screens are Phase 5. Deliberate, not an oversight",
+      "The splash has no logo - the artboard stacks mark-dark.png at 88px above the wordmark and the build renders the type stand-in and no pin. Sharpest cost of the fetch-cap blocker",
+      "The OTP tests do not test OTP: DemoOtpVerifier accepts any four digits, so the rules around the code are tested and the code is not. Every stub is now tabled in test-strategy.md",
+      "Only the splash has had a real element-by-element UI tick. The other 28 screens have been looked at, which is explicitly not the same thing"
     ],
     "doNotRepeat": [
+      "A sleeping screen kills an on-device gate and names nothing useful: PixelCopy throws \"Window doesn't have a backing surface!\", the app takes SIGKILL, the driver says \"Service has disappeared\". NO screenshots survive - the driver flushes at the end. 'adb shell svc power stayon true' only holds while charging",
+      "A widget test pumping a screen needs AppTheme, not a bare MaterialApp - the palette is a ThemeExtension and context.palette throws a null check without it",
       "An AnimatedSwitcher's outgoing child animates on the controller it was built with. Flipping duration from zero to 300ms at the change leaves the outgoing half at zero so it vanishes instead of crossfading - and every property assertion still passes. Instantness must come from unmounting the switcher",
       "'Has it changed' is not 'is it different from where it started' - gating on state.key != _openedAt reads as not-arrived for any return to a prior state. It is a latch",
       "A second pumpWidget in one test reuses the element tree, so the screen still reports having arrived. Split the test",
@@ -46,9 +58,11 @@
       "Carried: a heredoc for a large Dart file dies with unexpected EOF (use Write); bulk string-replacing call shapes changes arity; a policy written only into the shipping store while tests run against the in-memory one; local_auth 3.x is not 2.x; stripping <script> when flattening a canvas; transcribing a binary out of a tool result; Get-Content on a source file; CrossAxisAlignment.stretch on a Row inside a ListView; a modal on a tab's Navigator; a here-string for git commit -m"
     ],
     "nextSteps": [
-      "Raise a real biometric prompt: the emulator needs a device credential and an enrolled print (set a PIN, then Settings > Security > Fingerprint with 'adb emu finger touch 1'). It changes the emulator's state, so it wants a decision rather than an assumption",
       "Phase 4: becoming a provider paired with the admin queue. Where the backend starts - Django on /staff/*, PROVIDER_CATEGORY, ADMIN_ACTION, DOCUMENT_ACCESS. Postgres, Redis, MinIO and Caddy already running on the Azure arm64 box",
-      "Re-run the gate after Phase 4's screens land and add them to _shots - the list is the gate's coverage, and a screen not in it is a screen nobody has looked at"
+      "Phase 4: becoming a provider paired with the admin queue. Where the backend starts - Django on /staff/*, PROVIDER_CATEGORY, ADMIN_ACTION, DOCUMENT_ACCESS. Postgres, Redis, MinIO and Caddy already running on the Azure arm64 box",
+      "Tick the other 28 screens element by element against their artboards in both modes. The splash alone produced three findings; app/build/gate/ holds the shots",
+      "Re-run the gate after Phase 4's screens land and add them to _shots - the list is the gate's coverage, and a screen not in it is a screen nobody has looked at",
+      "Send design/CORRECTIONS.md to the design side: profile photos, the keep-screen-on preference row, and how an incoming ride reaches a driver who is not in the app"
     ],
     "blockers": [
       "BLOCKED, and only the user can clear it: four brand files exceed the 256 KiB DesignSync.get_file cap and truncate silently. They must be exported from the design side",
