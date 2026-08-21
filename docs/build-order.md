@@ -518,6 +518,57 @@ without anyone having to guess which strings were ours.
 
 ---
 
+## Phase 3.5 · The settings spine — **pulled forward from Phase 7**
+
+Preferences (Appearance, and the preference store behind it)
+
+Design: `ipelege-ds-4-specs.dc.html`, the artboard labelled `Settings` — whose
+own title is *Preferences*. Its rows are **Appearance** (Light / Dark /
+System), **Notifications** (SMS / WhatsApp / Push) and **Data** (Location,
+downloads).
+
+**Why this jumped the queue, and it is not the reason it was first raised.**
+The ask was for somewhere to put "keep the screen on during a ride" without
+being forced into Phase 7. Looking for that turned up something worse:
+
+> **Dark mode is finished and no user can reach it.** Both themes, the whole
+> palette, `themeModeProvider` — all built, all verified on two devices, and
+> the only control that drives them is a row on a screen that renders
+> `PlaceholderScreen`. The app ships a completed feature nobody can turn on.
+
+That is the strongest argument in this file for pulling work forward, and it
+was invisible until someone asked where a preference would live.
+
+**What is in scope, deliberately narrow:**
+
+- `core/settings.dart` — the store, persisted the way `session_store.dart` is,
+  writing through a single mutator so a new preference cannot be added and
+  silently not saved.
+- **Appearance**, wired to the existing `themeModeProvider`. This is the row
+  that unblocks dark mode.
+- **Keep the screen on during a ride**, stored and defaulted **on**. Nothing
+  reads it yet — the ride screens are Phase 5 — and that is fine: the point is
+  that Phase 5 finds a preference already there rather than a Phase 7 detour.
+  See [`device-permissions.md`](device-permissions.md) §1.
+
+**What is *not* in scope, and stays in Phase 7:** Account, Security, Data &
+storage, deletion. Those are the DPA-heavy screens — deletion has to keep the
+financial ledger intact while removing personal data — and they need their own
+confirmation copy and their own care. Pulling the spine forward is not an
+excuse to pull the compliance surface forward with it.
+
+**Not in scope either: any manifest permission.** `SYSTEM_ALERT_WINDOW` and
+friends cannot be "set early and defaulted on" — they are special permissions
+with no API to grant them, and declaring them before the feature exists is a
+Play Store liability. The manifest entry lands in the phase that uses it. The
+full reasoning is in [`device-permissions.md`](device-permissions.md) §2b.
+
+**Done when:** a user can switch the app to dark from inside the app and it
+survives a restart, and `keepScreenOnDuringRides` is readable by Phase 5
+without touching Phase 7.
+
+---
+
 ## Phase 4 · Becoming a provider, paired with the admin queue
 
 **Mobile:** Become a provider · per-category KYC (nine) · Verification status
@@ -576,8 +627,12 @@ has no exit without someone deciding it. Neither half is testable alone.
 
 ## Phase 7 · Account and privacy — stage 6
 
-Account · Preferences · Security · Biometric enrolment · Notifications ·
-Data & storage
+Account · Security · Notifications · Data & storage
+
+**Shrunk on 2026-08-21.** Biometric enrolment landed in Phase 1, and
+Preferences' spine was pulled forward to Phase 3.5 because dark mode was
+finished and unreachable without it. What is left here is the part that was
+always the reason this phase exists — the compliance surface.
 
 Design: `ipelege-ds-4-specs.dc.html`.
 
