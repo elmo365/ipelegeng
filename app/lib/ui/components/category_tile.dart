@@ -14,8 +14,8 @@ library;
 import 'package:flutter/material.dart';
 
 import '../../theme/dimens.dart';
-import '../../theme/motion.dart';
 import '../../theme/tokens.dart';
+import 'enter_in_place.dart';
 
 /// How a category is doing, per city — as the customer sees it.
 ///
@@ -238,26 +238,16 @@ class CategoryGrid extends StatelessWidget {
 }
 
 /// A tile that has just become available — the one place a category animates.
-/// It rises [Motion.travel] and fades; it never pulses, and nothing loops.
+///
+/// A name for the moment rather than for the mechanism: the rise-and-fade
+/// itself is [EnterInPlace], shared with the booking screen's provider row and
+/// pay panel, because "anything entering in place" is a token-level rule and
+/// three screens should not each own a copy of it.
 class CategoryTileEntrance extends StatelessWidget {
   const CategoryTileEntrance({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: Motion.of(context, Motion.enter),
-      curve: Motion.curve,
-      builder: (context, t, child) => Opacity(
-        opacity: t,
-        child: Transform.translate(
-          offset: Offset(0, Motion.travel * (1 - t)),
-          child: child,
-        ),
-      ),
-      child: child,
-    );
-  }
+  Widget build(BuildContext context) => EnterInPlace(child: child);
 }

@@ -582,6 +582,79 @@ and two things on it were wrong:
 
 ---
 
+## 17. Running Phase 0's motion pass — the tokens were right, nothing used them
+
+Phase 0's gate was widened on 2026-08-20 to require a motion pass, after the
+colour-only version missed that every duration in `theme/motion.dart` had been
+implemented from a stale `## Motion` block. Those numbers were then corrected.
+
+**Running the pass on 2026-08-21 found the other half of the same failure.** The
+corrected tokens were load-bearing in exactly four places — the router's page
+transitions, the button tap ripple, the sheet controllers and one category
+tile — and **nowhere else**. There was not one `AnimatedContainer`,
+`AnimatedSwitcher` or `TweenAnimationBuilder` on any screen. The transition
+table's two most-specified rows were unimplemented:
+
+| Row | Design | What the app did |
+|---|---|---|
+| Booking state change · 300 ms | Chip colour and step bar animate **together**, so the change reads as one event. An eleven-row per-state table follows it. | Nothing moved. Every state cut. |
+| Wallet balance · 400 ms | The figure counts to the new amount. "Money changing deserves to be noticed." | The figure was replaced. |
+
+Both are now built, and `app/test/ui/motion_test.dart` pins them. The rows the
+table names for screens that do not exist yet — the incoming-ride sheet and its
+countdown, verification status — are untouched and stay that way until Phase 4
+and Phase 5 reach them.
+
+**The lesson is the same one Phase 0 already recorded once, one level down.**
+Correcting a token is not implementing it. A gate that reads `motion.dart` and
+finds the right numbers has checked the dictionary, not the sentence.
+
+### 17.1 "Medium haptic" is a strength the app deliberately does not have
+
+The per-state table marks two states with a haptic: `ACCEPTED` — *"provider row
+rises 12 dp into place, medium haptic"* — and `COMPLETED` — *"one medium
+haptic, no confetti"*. There is no medium.
+
+`core/haptics.dart` exposes exactly three, and they are named after **what they
+mean**, not how strong they are: `decision()`, `incomingRide()`, `error()`. The
+class has no general-purpose `buzz()` on purpose, because the design's own
+haptics rule is that "a phone that buzzes at everything gets muted — and then
+the three that mattered are gone too."
+
+Resolved in favour of the meanings, not the strengths: `decision()`'s own
+definition is *"accepting or declining a request; confirming a booking is
+done"*, which is these two moments under their other name. Both states fire
+`Haptics.decision()`. **A fourth haptic was not added**, because the two
+sections are not in conflict about behaviour — the motion table is describing
+the same buzz in the vocabulary of intensity, which is the vocabulary the
+haptics section explicitly refuses.
+
+### 17.2 An ending greys the steps out by removing them
+
+`EXPIRED` says *"Steps grey out together, no travel"*, and the built screen
+hides the step bar entirely on any ending rather than drawing it greyed —
+"a bar with no progress on it reads as progress lost". Recorded rather than
+changed: the hiding decision predates this pass and is defended in the screen's
+own doc comment, and removal satisfies the part of the row that carries the
+meaning, which is *no travel*. If a later canvas draws the greyed bar, this is
+the line to change.
+
+### 17.3 Two Flutter traps this pass walked into, both fixed
+
+Kept because both produce motion that looks implemented and is not:
+
+- **An `AnimatedSwitcher`'s outgoing child animates on the controller it was
+  built with.** Flipping its `duration` from zero to 300 ms at the moment of
+  the change gives the *incoming* half the new duration and leaves the outgoing
+  half at zero — so it vanishes instead of crossfading, and the crossfade tests
+  green on every assertion about the widget's properties. Instantness has to
+  come from unmounting the switcher, not from zeroing it.
+- **"Has it changed" is not "is it different from where it started".** Gating
+  an arrival animation on `state.key != _openedAt` reads as *not arrived* for
+  any booking that returns to a state it has already been in. It is a latch.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

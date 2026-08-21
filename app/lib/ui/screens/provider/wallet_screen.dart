@@ -149,7 +149,11 @@ class _BalanceCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: Space.x2),
-          MoneyText(balance, size: MoneySize.large, onDarkSurface: true),
+          // Counts to the new figure over 400 ms when a fee posts or a
+          // reversal is confirmed, and does nothing at all on load — see
+          // [MoneyCounter]. "Money changing deserves to be noticed"; money
+          // sitting still does not.
+          MoneyCounter(balance, onDarkSurface: true),
           const SizedBox(height: Space.x3),
           // The disclaimer is on the card, not in a footnote. This is the
           // whole basis on which the design defends the word "wallet".

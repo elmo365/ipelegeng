@@ -19,15 +19,18 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/booking.dart';
+import '../../../core/haptics.dart';
 import '../../../core/loop_prompt.dart';
 import '../../../theme/dimens.dart';
+import '../../../theme/motion.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/typography.dart';
+import '../../components/enter_in_place.dart';
 import '../../components/loop_prompt_card.dart';
 import '../../components/money_text.dart';
 import '../../components/screen_header.dart';
 
-class BookingStatusScreen extends StatelessWidget {
+class BookingStatusScreen extends StatefulWidget {
   const BookingStatusScreen({
     super.key,
     required this.state,
@@ -65,34 +68,97 @@ class BookingStatusScreen extends StatelessWidget {
 
   final VoidCallback? onLoopPrompt;
 
+  @override
+  State<BookingStatusScreen> createState() => _BookingStatusScreenState();
+}
+
+/// State exists here for one reason: **motion must distinguish arriving at a
+/// state from being opened at one.**
+///
+/// The design's per-state table is a table of *transitions* — "step 2 fills",
+/// "the provider row rises into place", "one medium haptic". Replaying any of
+/// that every time the screen is built would turn an explanation into a
+/// decoration, and would buzz a phone for news it delivered an hour ago. So
+/// every animation on this screen is gated on [_arrived], and a screen opened
+/// at `COMPLETED` is simply complete.
+class _BookingStatusScreenState extends State<BookingStatusScreen> {
+  /// True once the booking has moved under us — set in [didUpdateWidget] and
+  /// never cleared.
+  ///
+  /// Deliberately a latch rather than `state.key != <the one we opened at>`:
+  /// the question every animation here asks is "did something just happen",
+  /// and comparing against the opening state answers a different one. The two
+  /// only diverge on a booking that returns to a state it has already been in,
+  /// which no transition currently does and which a comparison would silently
+  /// get wrong the day one does.
+  bool _arrived = false;
+
   /// The one state a prompt may appear on.
   bool get _showsLoopPrompt =>
-      loopPrompt != null && onLoopPrompt != null && state.key == 'COMPLETED';
+      widget.loopPrompt != null &&
+      widget.onLoopPrompt != null &&
+      widget.state.key == 'COMPLETED';
+
+  @override
+  void didUpdateWidget(covariant BookingStatusScreen old) {
+    super.didUpdateWidget(old);
+    if (old.state.key == widget.state.key) return;
+    _arrived = true;
+
+    // The design marks exactly two states with a haptic — `ACCEPTED` and
+    // `COMPLETED` — and calls both "medium". There is no medium: [Haptics]
+    // names three uses and no strengths, deliberately, because "a phone that
+    // buzzes at everything gets muted". `decision()` is the one it means:
+    // its own doc covers "accepting a request; confirming a booking is done",
+    // which is these two moments under their other name. Recorded as a
+    // vocabulary mismatch in docs/design-deltas.md §17 rather than resolved by
+    // adding a fourth haptic the design forbids.
+    if (widget.state.key == 'ACCEPTED' || widget.state.key == 'COMPLETED') {
+      Haptics.decision();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final brightness = Theme.of(context).brightness;
+    final state = widget.state;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            ScreenHeader(title: 'Your booking', category: category),
+            ScreenHeader(title: 'Your booking', category: widget.category),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
                 children: [
-                  _StatusCard(state: state),
+                  _StatusCard(state: state, animate: _arrived),
                   if (state.showsPayPanel) ...[
                     const SizedBox(height: Space.x3),
-                    _PayPanel(providerFirstName: providerFirstName),
+                    // "The pay panel slides up 12 dp" — the highest-attention
+                    // moment in the flow, and the only card that arrives.
+                    EnterInPlace(
+                      key: ValueKey('pay-${state.key}'),
+                      enabled: _arrived,
+                      child: _PayPanel(
+                        providerFirstName: widget.providerFirstName,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: Space.x3),
-                  _ProviderRow(
-                    category: category,
-                    providerName: providerName,
-                    brightness: brightness,
+                  // "Provider row rises 12 dp into place" — on `ACCEPTED` and
+                  // nowhere else. The row is on screen in every state; what
+                  // changes at acceptance is that it now names someone who
+                  // agreed, and that is the arrival worth marking.
+                  EnterInPlace(
+                    key: ValueKey('provider-${state.key}'),
+                    enabled: _arrived && state.key == 'ACCEPTED',
+                    child: _ProviderRow(
+                      category: widget.category,
+                      providerName: widget.providerName,
+                      brightness: brightness,
+                    ),
                   ),
                   if (state.note != null) ...[
                     const SizedBox(height: Space.x3),
@@ -102,17 +168,20 @@ class BookingStatusScreen extends StatelessWidget {
                   // about this job, and this is the next one.
                   if (_showsLoopPrompt) ...[
                     const SizedBox(height: Space.x4),
-                    LoopPromptCard(pair: loopPrompt!, onTap: onLoopPrompt!),
+                    LoopPromptCard(
+                      pair: widget.loopPrompt!,
+                      onTap: widget.onLoopPrompt!,
+                    ),
                   ],
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(18, Space.x4, 18, 22),
-              child: _Action(
+              child: _ActionSwitcher(
                 state: state,
                 palette: palette,
-                onPressed: onAction,
+                onPressed: widget.onAction,
               ),
             ),
           ],
@@ -125,15 +194,34 @@ class BookingStatusScreen extends StatelessWidget {
 /// Chip, step bar, heading, body — with an accent rule down the left edge in
 /// the state's own tone, so the state is legible before a word is read.
 class _StatusCard extends StatelessWidget {
-  const _StatusCard({required this.state});
+  const _StatusCard({required this.state, required this.animate});
 
   final BookingState state;
+
+  /// False on the screen's first build — see [_BookingStatusScreenState].
+  final bool animate;
+
+  /// **One duration, shared by the chip and the bar.**
+  ///
+  /// The design does not ask for two 300 ms animations, it asks for the chip
+  /// colour and the step bar to animate *together* "so the change reads as one
+  /// event" — and two durations, however equal in number, are two events the
+  /// moment either one is edited. Passing the value down is the enforcement.
+  ///
+  /// An ending is instant. "Forward progress animates; every ending is
+  /// instant" — a state that reverses or fails must not travel across the
+  /// screen as though something were being achieved.
+  Duration _change(BuildContext context) => Motion.of(
+    context,
+    animate && !state.isEnding ? Motion.stateChange : Motion.none,
+  );
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final text = Theme.of(context).textTheme;
     final dot = state.tone.dot(palette);
+    final change = _change(context);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -147,7 +235,14 @@ class _StatusCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(width: 4, color: dot),
+              // The accent rule is the state's tone at full height, so it
+              // moves with the chip rather than after it.
+              AnimatedContainer(
+                duration: change,
+                curve: Motion.curve,
+                width: 4,
+                color: dot,
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(18),
@@ -155,12 +250,12 @@ class _StatusCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _Chip(state: state),
+                      _Chip(state: state, duration: change),
                       const SizedBox(height: 14),
                       // Hidden on an ending rather than drawn empty: a bar with
                       // no progress on it reads as progress lost.
                       if (!state.isEnding) ...[
-                        BookingStepBar(step: state.step),
+                        BookingStepBar(step: state.step, duration: change),
                         const SizedBox(height: 14),
                       ],
                       Text(
@@ -194,16 +289,22 @@ class _StatusCard extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.state});
+  const _Chip({required this.state, required this.duration});
 
   final BookingState state;
+
+  /// Shared with the step bar by [_StatusCard]. See there for why it is passed
+  /// rather than looked up.
+  final Duration duration;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final text = Theme.of(context).textTheme;
 
-    return Container(
+    return AnimatedContainer(
+      duration: duration,
+      curve: Motion.curve,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
       decoration: BoxDecoration(
         color: state.tone.background(palette),
@@ -214,7 +315,9 @@ class _Chip extends StatelessWidget {
         children: [
           // A hue and a glyph-equivalent: the dot never carries the meaning on
           // its own, the label beside it does.
-          Container(
+          AnimatedContainer(
+            duration: duration,
+            curve: Motion.curve,
             width: 8,
             height: 8,
             decoration: BoxDecoration(
@@ -223,13 +326,23 @@ class _Chip extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Space.x2),
-          Text(
-            state.chip,
-            style: text.labelLarge?.copyWith(
+          // "Chip crossfades pending → ok" — `pending` and `ok` are
+          // [BookingTone]s, so what the design asks to crossfade is the
+          // **tone**: plate, dot and label ink together, on the one clock the
+          // step bar is also on. The word itself changes with the frame. It
+          // was briefly built as an [AnimatedSwitcher] over the label, which
+          // reads as the chip dissolving rather than re-toning — and which
+          // does not survive the duration flipping from zero, because the
+          // outgoing entry keeps the controller it was created with.
+          AnimatedDefaultTextStyle(
+            duration: duration,
+            curve: Motion.curve,
+            style: (text.labelLarge ?? const TextStyle()).copyWith(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: state.tone.foreground(palette),
             ),
+            child: Text(state.chip),
           ),
         ],
       ),
@@ -239,9 +352,18 @@ class _Chip extends StatelessWidget {
 
 /// Six bars. The one you are on is wide; the ones behind it are filled.
 class BookingStepBar extends StatelessWidget {
-  const BookingStepBar({super.key, required this.step});
+  const BookingStepBar({
+    super.key,
+    required this.step,
+    this.duration = Duration.zero,
+  });
 
   final int step;
+
+  /// How long a step takes to fill. Defaults to instant, so a bar rendered
+  /// outside a state change never animates by accident; [_StatusCard] passes
+  /// the chip's own duration so the two move as one event.
+  final Duration duration;
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +379,9 @@ class BookingStepBar extends StatelessWidget {
         children: [
           for (var n = 1; n <= BookingState.steps; n++) ...[
             if (n > 1) const SizedBox(width: 6),
-            Container(
+            AnimatedContainer(
+              duration: duration,
+              curve: Motion.curve,
               width: n == step ? 22 : 8,
               height: 5,
               decoration: BoxDecoration(
@@ -521,9 +645,76 @@ class _NoteCard extends StatelessWidget {
   }
 }
 
+/// The action swaps rather than cutting, and on one state it swaps **late**.
+///
+/// Two rows of the design's table live here. `PENDING_CONFIRMATION` "swaps to
+/// the confirm pair", which is a crossfade. `COMPLETED` is sequenced: the bar
+/// completes, *then* the rating action fades in [_ratingDelay] later — two
+/// events in that order, not one longer one, because the booking closing and
+/// the request to rate it are different things being said.
+///
+/// Every ending swaps instantly. There is nothing being achieved to animate,
+/// and an action that fades in after a decline reads as a consolation.
+class _ActionSwitcher extends StatelessWidget {
+  const _ActionSwitcher({
+    required this.state,
+    required this.palette,
+    required this.onPressed,
+  });
+
+  final BookingState state;
+  final AppPalette palette;
+  final VoidCallback? onPressed;
+
+  /// The design's own figure. Held as a delay in front of the transition
+  /// rather than folded into a longer duration, so the gap survives anyone
+  /// later retuning [Motion.enter].
+  static const _ratingDelay = Duration(milliseconds: 120);
+
+  @override
+  Widget build(BuildContext context) {
+    // An ending returns the bare action, which **unmounts the switcher** —
+    // and unmounting it is what makes the swap instant. Gating on a zero
+    // duration instead would not: an [AnimatedSwitcher]'s outgoing entry
+    // animates on the controller it was built with, so a duration that
+    // changes between builds applies to the wrong half of the crossfade.
+    //
+    // There is no first-build guard here for the same structural reason there
+    // does not need to be: a switcher never animates its first child.
+    if (state.isEnding) {
+      return _Action(state: state, palette: palette, onPressed: onPressed);
+    }
+
+    final sequenced = state.key == 'COMPLETED';
+    final total = sequenced ? Motion.enter + _ratingDelay : Motion.enter;
+
+    return AnimatedSwitcher(
+      duration: Motion.of(context, total),
+      // The interval is computed from the constant, never from the reduced
+      // duration: reduce-motion sends that to zero and a fraction of zero is
+      // not a number.
+      switchInCurve: sequenced
+          ? Interval(
+              _ratingDelay.inMilliseconds / total.inMilliseconds,
+              1,
+              curve: Motion.curve,
+            )
+          : Motion.curve,
+      switchOutCurve: Motion.curveOut,
+      child: _Action(
+        key: ValueKey(state.key),
+        state: state,
+        palette: palette,
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
 /// One action, drawn three ways. Never two primaries.
 class _Action extends StatelessWidget {
   const _Action({
+    super.key,
     required this.state,
     required this.palette,
     required this.onPressed,

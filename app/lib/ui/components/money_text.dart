@@ -11,6 +11,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/money.dart';
+import '../../theme/motion.dart';
 import '../../theme/tokens.dart';
 import '../../theme/typography.dart';
 
@@ -82,5 +83,59 @@ class MoneyText extends StatelessWidget {
     final abs = amount.abs().toStringAsFixed(2);
     if (!signed || amount.sign == 0) return '$abs Pula';
     return amount.sign < 0 ? 'minus $abs Pula' : 'plus $abs Pula';
+  }
+}
+
+/// A figure that counts to a new amount.
+///
+/// **Never on load.** The first build renders [amount] outright; only a change
+/// animates, over [Motion.count]. The design gives the reason in its own
+/// words — "a figure that animates every time you look at it reads as a live
+/// feed" — and the wallet balance is a meter that moves when a fee posts, not
+/// a ticker. The rule is enforced structurally rather than by remembering it:
+/// the tween begins at the amount the widget was *born* holding, so on the
+/// first frame begin and end are equal and there is nothing to animate.
+///
+/// The interpolated frames go through [Money.format] like every other figure,
+/// at the two places the ledger holds. The last frame is the [Decimal] itself,
+/// so a counter can never land on a rounded approximation of the balance.
+class MoneyCounter extends StatefulWidget {
+  const MoneyCounter(
+    this.amount, {
+    super.key,
+    this.size = MoneySize.large,
+    this.color,
+    this.onDarkSurface = false,
+  });
+
+  final Decimal amount;
+  final MoneySize size;
+  final Color? color;
+  final bool onDarkSurface;
+
+  @override
+  State<MoneyCounter> createState() => _MoneyCounterState();
+}
+
+class _MoneyCounterState extends State<MoneyCounter> {
+  /// The amount this widget was mounted with. It is the tween's `begin` and it
+  /// is never updated: [TweenAnimationBuilder] takes `begin` only on the first
+  /// build and animates from the *current* value thereafter, which is also
+  /// what makes an interrupted count resume rather than jump.
+  late final double _openedAt = widget.amount.toDouble();
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: _openedAt, end: widget.amount.toDouble()),
+      duration: Motion.of(context, Motion.count),
+      curve: Motion.curve,
+      builder: (context, value, _) => MoneyText(
+        Decimal.parse(value.toStringAsFixed(2)),
+        size: widget.size,
+        color: widget.color,
+        onDarkSurface: widget.onDarkSurface,
+      ),
+    );
   }
 }

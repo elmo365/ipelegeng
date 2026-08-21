@@ -80,6 +80,30 @@ the raised nav sheet all read as designed.
 > **Phase 0 now also requires a motion pass**, not just a colour pass: every row
 > of the transition table checked against what the app actually does.
 
+**The motion pass ran on 2026-08-21, and found the other half of the same
+failure.** The corrected durations were consumed by the router, the button
+ripple, the two sheets and one category tile — and by nothing else. No screen
+held a single `AnimatedContainer`, `AnimatedSwitcher` or
+`TweenAnimationBuilder`, so the transition table's two most-specified rows —
+the 300 ms booking state change with its eleven-row per-state table, and the
+400 ms wallet count — were simply absent. Correcting a token is not
+implementing it.
+
+Both are built now, and `app/test/ui/motion_test.dart` pins the rules rather
+than the numbers: chip and step bar on **one** duration, forward progress
+animates and every ending is instant, a screen opened *at* a state does not
+replay reaching it or buzz for it, the balance counts only when it changes, and
+reduce-motion collapses to zero rather than shortening. Three findings came out
+of it and are written up in [`design-deltas.md`](design-deltas.md) §17: the
+design's "medium haptic" names a strength `core/haptics.dart` deliberately does
+not have, an ending greys its steps out by removing them, and two Flutter traps
+that produce motion which looks implemented and is not.
+
+**Still owed on this phase:** the colour half, on everything built since
+2026-08-20 — booking request, the eleven booking states, rate & review, the
+loop prompt, biometric enrolment, consent, unlock and the entry flow — on a
+Pixel in both modes. None of it has been seen rendered.
+
 Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
 - **Fixed:** the supply count was ellipsised on every thin category
