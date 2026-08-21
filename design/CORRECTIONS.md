@@ -184,10 +184,12 @@ from — so nothing is broken today. **The artboard is now wrong**, and it will
 be built from again.
 
 **What the design needs to change:** six boxes on `1 · ONBOARDING & OTP`, and
-anywhere else the code is drawn or described as four digits. Worth checking the
-spacing while it is open: six boxes at the current width may not fit the gutter
-on a 360 dp handset, which is a layout question the four-box version never had
-to answer.
+anywhere else the code is drawn or described as four digits.
+
+**The layout holds** — checked rather than assumed. Six boxes were rendered at
+1080 px and sit within the gutter with even margins and no clipping, so this is
+a redraw and not a rethink. The concern was raised here before it was tested
+and is corrected rather than left standing.
 
 **If this is unwelcome**, the lever is the sender rather than the screen: an
 SMS aggregator sending our own message would let us choose the length again.
