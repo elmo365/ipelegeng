@@ -774,6 +774,51 @@ machine's state that is the user's to make, not this session's. What is
 verified is the branch that matters most on the target hardware, where broken
 and absent sensors are common.
 
+### 18.5 The last unverified branch, closed on real hardware
+
+A Galaxy S24 (Android 16, three enrolled prints) was paired over wireless adb
+on 2026-08-21 and the gate run against it. That closes the one thing the
+emulator could not answer, and it closed it in **both** directions:
+
+| | Emulator · 0 prints | S24 · 3 prints |
+|---|---|---|
+| Hero glyph | `dialpad` | `fingerprint` |
+| Copy | "…device passcode to continue" | "…fingerprint to continue" |
+| Primary action | Enter device passcode | **Use fingerprint** |
+
+Same build, same code path, opposite answers from `PlatformBiometrics
+.availability()`. §18.4's glyph fix is verified from both sides rather than
+only from the one that was broken.
+
+Then `integration_test/biometric_test.dart` raised a **real system prompt** and
+a **real fingerprint** carried a locked session back to `active`. It is a
+separate target from the gate on purpose: a gate is unattended, and this one
+waits thirty seconds for a person to touch a sensor. It signs in properly and
+*then* locks, because `lock()` deliberately does nothing to a session that was
+never active — starting from a fabricated locked state would test a state the
+app cannot reach. It also asserts the name that comes back is the name that
+went in, because biometry **unlocks**; it never authenticates, and the session
+on the far side must be the one that was already there.
+
+Every branch of `core/biometrics.dart` has now run against a real platform.
+
+### 18.6 Two things that cost a run, both worth knowing
+
+**A sleeping screen kills an on-device gate, and says nothing useful about it.**
+The first S24 run died at shot 18 when the handset hit its thirty-second
+timeout: `PixelCopy` throws `IllegalArgumentException: Window doesn't have a
+backing surface!`, the app takes SIGKILL, and the driver reports `Service has
+disappeared`. Three symptoms, none naming the cause, and **zero screenshots
+survive** — the driver flushes at the end, so a run that dies at shot 55 leaves
+exactly as much evidence as one that dies at shot 1. `adb shell svc power
+stayon true` only holds while the handset is charging; otherwise raise the
+timeout or keep touching the screen.
+
+**Device runs are debug builds, always.** Already the default, and now written
+out in the run commands so nobody adds `--release` to make it faster: the
+driver attaches to the Dart VM service, which a release build does not have.
+It would not fail informatively — it would fail to start.
+
 ---
 
 ## Import fidelity

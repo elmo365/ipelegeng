@@ -156,12 +156,28 @@ element that was not conditional — a hardcoded 50 dp fingerprint glyph sitting
 directly over the words "Use your device passcode to continue". A picture is
 copy. Fixed, and pinned by a test verified to fail without the fix.
 
-**Phase 0 is closed on everything built up to 2026-08-21.** What is still owed
-is narrower and named: the **successful** biometric path. Raising a real prompt
-needs a device credential and an enrolled print, and enrolling one means
-setting a PIN and driving the emulator's Settings UI — a change to the
-machine's state that is the user's to make. The branch that matters most on the
-target hardware, where broken and absent sensors are common, is verified.
+**Then a real handset was paired, and the last branch closed.** A Galaxy S24
+(Android 16, three enrolled prints) joined over wireless adb, and the gate run
+against it produced the opposite answer to the emulator from the same code:
+fingerprint glyph, fingerprint copy, **Use fingerprint** as the primary. The
+conditional is verified from both sides, not just the broken one.
+
+`app/integration_test/biometric_test.dart` then raised a **real system prompt**
+and a **real fingerprint** carried a locked session back to `active`. It is a
+separate target from the gate because a gate is unattended and this waits for a
+person to touch a sensor. Every branch of `core/biometrics.dart` has now run
+against a real platform. Written up in
+[`design-deltas.md`](design-deltas.md) §18.5.
+
+**Phase 0 is closed, and so is Phase 1** — apart from the four brand cuts that
+exceed the fetch cap, which only the design side can clear.
+
+**Two things that cost a run, before anyone repeats them** (§18.6): a sleeping
+screen kills an on-device gate with three symptoms that name nothing —
+`Window doesn't have a backing surface!`, SIGKILL, `Service has disappeared` —
+and **no screenshots survive**, because the driver flushes at the end. And
+device runs are **debug** builds, always: the driver attaches to the Dart VM
+service, which a release build does not have.
 
 Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
@@ -642,8 +658,7 @@ built it; the colour pass found three interactive controls invisible at rest
 and fixed them with a token. Both are written up in
 [`design-deltas.md`](design-deltas.md) §17 and §18.
 
-The one thing left is the **successful** biometric prompt. The no-sensor branch
-is now verified against the real platform on a device — the emulator has a
-sensor with nothing enrolled, which is precisely that case — but no prompt has
-ever been raised, because enrolling a print means setting a device PIN and
-driving Settings. That is the last item outstanding from Phase 1.
+Phase 1 is closed too. The biometric path was verified end to end on a Galaxy
+S24 on 2026-08-21 — both availability branches, a real system prompt, and a
+real fingerprint reopening a genuinely locked session. What remains of Phase 1
+is only the four brand cuts over the fetch cap, which this repo cannot clear.

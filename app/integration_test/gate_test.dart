@@ -15,9 +15,23 @@
 /// Run it:
 ///
 /// ```
-/// flutter drive --driver=test_driver/integration_test.dart \
-///   --target=integration_test/gate_test.dart -d emulator-5554
+/// flutter drive --debug --driver=test_driver/integration_test.dart \
+///   --target=integration_test/gate_test.dart -d <device-id>
 /// ```
+///
+/// **`--debug`, always.** It is already the default, and it is written out
+/// anyway so nobody adds `--release` later to make it faster: the driver
+/// attaches to the Dart VM service, which does not exist in a release build,
+/// so the run would not fail informatively — it would fail to start.
+///
+/// **On a real handset, stop the screen going to sleep first.** A full run is
+/// about ninety seconds and a phone on a thirty-second timeout will lock in
+/// the middle of it. `PixelCopy` then throws
+/// `IllegalArgumentException: Window doesn't have a backing surface!`, the app
+/// takes SIGKILL, and the driver reports `Service has disappeared` — three
+/// symptoms, none of which names the actual cause. `adb shell svc power stayon
+/// true` fixes it **only while the handset is charging**; otherwise raise the
+/// timeout in Settings, or keep touching the screen.
 ///
 /// **This renders real screens on a real device.** It asserts almost nothing,
 /// on purpose — what it produces is evidence for a human comparison against the
