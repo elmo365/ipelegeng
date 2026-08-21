@@ -129,6 +129,10 @@ class FirebaseOtpVerifier implements OtpVerifier {
       await _auth.signInWithCredential(
         PhoneAuthProvider.credential(verificationId: id, smsCode: code),
       );
+      // **Success is logged too, not only failure.** Logging one side leaves
+      // "it worked" and "nothing was attempted" looking identical from the
+      // outside, which is the same blind spot verificationFailed had.
+      debugPrint('otp: confirm accepted');
       return true;
     } on FirebaseAuthException catch (e) {
       debugPrint('otp: confirm rejected code=${e.code}');
