@@ -659,6 +659,17 @@ Also unbuilt because undesigned, not blocked: customer↔provider messaging
 (referenced from several screens, no thread UI exists), provider listing
 management at scale, and empty/offline states across the journey.
 
+**Calling** joins that list. The booking status screen already draws the
+button — `Icons.call` in the provider row, inert — and every screen and rule
+behind it is missing: what it does, when it is live, the in-call and incoming
+surfaces, and what a dispute can see afterwards. The technology options are
+worked through in [`calling.md`](calling.md), which recommends the system
+dialer for launch and WebRTC on the existing VPS as the upgrade, and explains
+why Matrix is the wrong shape. The design work is in
+[`../design/CORRECTIONS.md`](../design/CORRECTIONS.md) §5, and it should be
+done **with** the incoming-ride surface, because a call and a ride request need
+the same lock-screen treatment.
+
 ---
 
 ## Where things stand

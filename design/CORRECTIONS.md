@@ -130,7 +130,46 @@ artboard is what needs correcting, before it is built from.
 
 ---
 
-## 5. Carried — already known, still outstanding
+## 5. Calling has a button and nothing behind it
+
+**Raised 2026-08-21: once a service is chosen and both sides have accepted,
+they need to be able to talk.**
+
+The booking status screen already draws the affordance — `Icons.call` in the
+provider row — and it is one of the ten actions with nowhere to go. What is
+missing is every screen and rule around it.
+
+**One thing the design has already decided, possibly without weighing it.**
+The `ACCEPTED` state's body reads *"Today at 14:00, at Plot 4521, Block 8.
+**Kabelo has your number.**"* That gives away number privacy in a single line
+of copy — and number privacy is the usual reason a marketplace builds in-app
+calling at all. **If that was a deliberate decision it should be stated as one;
+if it was not, it is the first thing to revisit**, because everything below
+hinges on it. The options and costs are worked through in
+[`../docs/calling.md`](../docs/calling.md).
+
+**What the design needs to add:**
+
+- **What the button does.** Dial out through the phone app, or open an in-app
+  call screen. These are different products with different costs.
+- **When it is live.** Presumably `ACCEPTED` through `COMPLETED`. The design
+  has never said, and a call button on a `DECLINED` booking is wrong.
+- The **in-call screen**, if calling is in-app: who is on the line, mute,
+  speaker, end, and which booking it belongs to.
+- The **incoming call screen**, including over the lock screen. This is the
+  same full-screen surface an incoming ride request needs — see §3 — so the
+  two should be designed together rather than twice.
+- The **microphone permission** priming, if in-app.
+- What a **dispute** can see afterwards. A call nobody can evidence is worth
+  less to `DISPUTED` than one with a timestamp and a duration.
+
+**Related, and still open from before:** customer↔provider **messaging** is
+referenced from several screens and has no thread UI anywhere. If messaging and
+calling ship together the transport is one decision instead of two.
+
+---
+
+## 6. Carried — already known, still outstanding
 
 | | |
 |---|---|

@@ -137,6 +137,12 @@ being used.
   tapping it goes to the on-duty screen. Going off duty stops the service the
   same second.
 
+**One surface, two payloads.** An incoming *call* between a customer and a
+provider is the same problem as an incoming ride request: a handset whose app
+is closed has to be woken and shown something full-screen. Whatever is built
+here serves both, and [`calling.md`](calling.md) assumes it — which is also why
+the two should be **designed** together rather than twice.
+
 **Decision: build A + C, and treat B as a per-driver fallback offered only
 after A is unavailable.** It is the combination with the lowest review risk and
 the least battery cost, and it is the one that degrades into something useful
@@ -198,6 +204,7 @@ that is currently sitting behind a placeholder — see Phase 3.5 in
 | KYC documents | Camera / photo picker | At the KYC upload step | Photo picker needs no permission on modern Android; prefer it |
 | Full-screen dispatch | `USE_FULL_SCREEN_INTENT` | Going on duty | Heads-up banner + ringtone |
 | Overlay dispatch | `SYSTEM_ALERT_WINDOW` | Only if the above is restricted | Option A's banner |
+| In-app calling | `RECORD_AUDIO` | At the first call, not at install | The call cannot be placed; fall back to the dialer. See [`calling.md`](calling.md) |
 
 **Nothing here is requested at first launch.** Every row is asked at the moment
 its reason is visible on screen, which is both the DPA-friendly reading and the
