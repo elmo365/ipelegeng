@@ -2,7 +2,7 @@
 
 **Saved:** Friday 21 August 2026, 14:06 (+02:00)
 **Branch:** main
-**Last commit:** 89aa2f6 Run Phase 0's colour gate; fix three controls nobody could see
+**Last commit:** 8f894c4 Point the gate at the real platform; fix the glyph it caught
 
 ## What I was working on
 
@@ -29,7 +29,7 @@ catch either, because artboards draw controls in their chosen state.
 
 ## Files changed this session
 
-Two commits, 599d16e and 89aa2f6.
+Three commits: 599d16e, 89aa2f6, 8f894c4.
 
 **The motion pass**
 
@@ -61,6 +61,16 @@ Two commits, 599d16e and 89aa2f6.
 - **M** `app/pubspec.yaml` / `.lock` — `integration_test` from the SDK.
 - **M** `docs/design-deltas.md` §17 and §18; `docs/build-order.md` Phase 0.
 
+**Pointing the gate at the real platform**
+
+- **M** `app/integration_test/gate_test.dart` — applies `main()`'s
+  `biometricsProvider` override, so the unlock screen is photographed answering
+  the handset rather than a stub.
+- **M** `app/lib/ui/screens/entry/unlock_screen.dart` — the hero glyph obeys the
+  same rule the copy and buttons already did.
+- **M** `app/test/ui/unlock_test.dart` — pins it; verified to fail without the
+  fix.
+
 ## What is working
 
 - **Phase 0 is closed on everything built up to 2026-08-21.** The palette was
@@ -80,13 +90,22 @@ Two commits, 599d16e and 89aa2f6.
   modes after the fix, not just in arithmetic.
 - **The rentals → movers handoff sheet has been seen rendered**, for the first
   time. It is the only one of stage 7's two placements that can be.
-- 254 tests → **290**. `flutter analyze` clean. The gate runs green end to end.
+- **The no-biometry branch is verified against the real platform.** The
+  emulator has a fingerprint sensor with nothing enrolled and no device
+  credential — precisely the design's *"biometry unavailable → passcode"* case
+  — and the screen came back correct: no fingerprint button, no copy naming
+  one, **Enter device passcode** promoted to the primary.
+- 254 tests → **291**. `flutter analyze` clean. The gate runs green end to end,
+  56 shots.
 
 ## What is NOT working yet
 
-- **The biometric sensor path has never run on real hardware.** It builds, and
-  it is unit-tested behind a fake, but no prompt has ever been raised. The gate
-  cannot cover it. This is the last item outstanding from Phase 1.
+- **The *successful* biometric prompt has never been raised.** The no-sensor
+  branch is now verified on a device, but raising a real prompt needs a device
+  credential and an enrolled print — and enrolling one means setting a PIN and
+  driving the emulator's Settings UI, which is a change to the machine's state
+  that is the user's to make, not this session's. Last item outstanding from
+  Phase 1.
 - **No backend.** A sent request never becomes a booking, a submitted review is
   returned to the caller and dropped, and `DemoOtpVerifier` accepts any four
   digits. Ten of eleven booking actions are inert.
@@ -124,6 +143,12 @@ Two commits, 599d16e and 89aa2f6.
   photograph the ninth screen fails at step two and shows nothing.
 - **Every animation is gated on having arrived.** Motion explains a change; one
   that fires when nothing happened is decoration.
+- **A picture is copy.** The unlock screen's hero glyph was the only element on
+  it that did not obey the no-sensor rule — 50 dp of fingerprint over the words
+  "Use your device passcode to continue". It is `Icons.dialpad` there now.
+- **The gate must override what `main()` overrides**, or it photographs stubs.
+  The session store is the deliberate exception: a prefs-backed one would carry
+  a shot's session into the next shot.
 
 ## Things I tried that did NOT work - do not repeat these
 
@@ -156,9 +181,12 @@ Two commits, 599d16e and 89aa2f6.
 
 ## Exact next steps to continue
 
-1. **Verify biometric unlock on real hardware.** An Android emulator can raise
-   a real prompt — `adb emu finger touch 1` — so this may not need a handset.
-   It is the last thing Phase 1 owes.
+1. **Raise a real biometric prompt.** The no-sensor branch is done; the
+   successful one needs the emulator to have a device credential and an
+   enrolled print (set a PIN, then Settings → Security → Fingerprint with
+   `adb emu finger touch 1` to answer the sensor). It changes the emulator's
+   state, so it wants a decision rather than an assumption. Last thing Phase 1
+   owes.
 2. **Phase 4: becoming a provider, paired with the admin queue.** This is where
    the backend starts and it is a much larger step than anything before it: a
    Django project on `/staff/*`, the `PROVIDER_CATEGORY`, `ADMIN_ACTION` and
