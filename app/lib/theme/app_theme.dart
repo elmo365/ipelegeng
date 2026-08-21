@@ -368,7 +368,10 @@ abstract final class AppTheme {
               ? Brand.deep
               : palette.chipNeutralBg,
         ),
-        trackOutlineColor: WidgetStatePropertyAll(palette.inputBorder),
+        // A switch that is off is still a control. See
+        // [AppPalette.controlOutline] — `inputBorder` left the two consent
+        // toggles as ghosts on the dark card.
+        trackOutlineColor: WidgetStatePropertyAll(palette.controlOutline),
       ),
 
       iconTheme: IconThemeData(color: palette.textSecondary, size: 24),

@@ -655,6 +655,85 @@ Kept because both produce motion that looks implemented and is not:
 
 ---
 
+## 18. Running Phase 0's colour gate — three invisible controls
+
+The colour half of the gate ran on 2026-08-21 against everything built since
+2026-08-20: 28 screens, light and dark, on a Pixel emulator. The palette holds
+— every surface, plate and chip reads as the canvas specifies, and the dark
+mode that most of these screens had never been rendered in is correct.
+
+**What it found is a class of bug no widget test can see, and no artboard
+comparison would have caught either**, because the artboards show controls in
+their *chosen* state. Three interactive controls were drawn with hairline
+tokens, and at rest they were effectively invisible:
+
+| Control | Was | Against | Contrast |
+|---|---|---|---|
+| An empty rating star | `divider` | the card | **1.4:1** dark |
+| The **required** consent tick, unticked | `inputBorder` | the card | **1.8:1** dark |
+| A notification switch, off | `inputBorder` | the row | **1.8:1** dark |
+
+WCAG 1.4.11 puts the floor for a non-text UI component at **3:1**. Light mode
+was no better: five pale grey stars on a white card.
+
+The rating screen is the sharpest case. The five stars are the only input on
+it, and the screen's own copy is *"Your rating is the only signal a new
+provider has"* — a control that cannot be seen collects nothing, on the screen
+that carries the product's entire trust argument. The consent tick is the most
+serious: a control the DPA requires, on a screen that cannot be passed without
+it.
+
+### 18.1 The fix is a token, because the bug was one
+
+`AppPalette.controlOutline` — *the resting outline of an interactive control* —
+now sits beside `inputBorder` and `divider` and is the answer to a different
+question. Those two draw hairlines, and a hairline is supposed to recede; this
+draws the affordance, and an affordance nobody can see is not one.
+
+**No new colour was invented.** `controlOutline` is `textMuted`'s value in both
+palettes — the canvas's own — which clears the floor at 4.9:1 light and 5.8:1
+dark. Inventing a hex the design never specified to fix a contrast bug would
+have traded one silent drift for another.
+
+`app/test/theme/contrast_test.dart` holds it, and holds the *other* half of the
+rule too: `divider` must stay **under** 3:1 against a card. Fixing contrast by
+darkening the hairline would have given every card on every screen a visible
+border and undone the design's no-borders-only-tinted-shadow treatment. Both
+directions are now pinned, along with the text floors and one test that fails
+outright if `controlOutline` is ever set back to `divider` or `inputBorder`.
+
+### 18.2 The loop prompt's second placement cannot be photographed, and should not be
+
+The gate could not capture the cross-category prompt on a completed booking.
+The reason is not a bug and was worth confirming rather than assuming: all
+three `bookingCompleted` pairs — `movers → plumbing`, `catering → hire`,
+`hire → catering` — point at categories the demo marks `thin`, so the
+empty-room rule withholds every one of them. `Demo.bookingCategory` is
+plumbing, which is not a *source* in any pair either.
+
+So the placement is unreachable in the demo twice over, and **making it
+reachable would mean fabricating supply that does not exist** — prompting
+someone into an empty room, which is the one thing stage 7's rules exist to
+prevent. The gate photographs the placement that *is* reachable instead: the
+rental enquiry → movers handoff sheet, which fires against 21 real trucks.
+Recorded here so the absence is not read later as a regression.
+
+### 18.3 The gate is a script now
+
+`app/integration_test/gate_test.dart` walks every screen in both modes on a
+real device and writes a PNG per artboard. It reaches each screen by overriding
+`routerProvider` rather than by tapping through the app, because a gate that
+has to complete a nine-step journey to photograph the ninth screen fails at
+step two and shows nothing.
+
+This matters more than the findings. Phase 0 has now failed twice in the same
+shape — skipped entirely before the first five screens shipped, then run too
+narrowly and missing every motion token — and both times the root cause was
+that running it was a manual act of will. See [`build-order.md`](build-order.md)
+Phase 0 for the command.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

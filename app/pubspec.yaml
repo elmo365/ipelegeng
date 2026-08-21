@@ -26,6 +26,10 @@ dev_dependencies:
   crypto: ^3.0.6
   flutter_test:
     sdk: flutter
+  # Phase 0's gate runs on a handset, not in the widget tester. See
+  # integration_test/gate_test.dart and docs/build-order.md Phase 0.
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
 
 flutter:

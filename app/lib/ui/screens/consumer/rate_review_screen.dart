@@ -233,6 +233,12 @@ class _JobRow extends StatelessWidget {
 /// literal would put deep navy on a dark card and the rating would be close to
 /// invisible. This reads the palette instead — identical to the canvas in
 /// light, legible in dark. Recorded in docs/design-deltas.md.
+///
+/// **The empty star had the same problem and nobody had looked at it.** It was
+/// drawn in `pal.divider`, a hairline token, which put the screen's only
+/// control at 1.4:1 against the card in dark and barely better in light — five
+/// stars you cannot see are not a rating input. It is [AppPalette.controlOutline]
+/// now, and `test/theme/contrast_test.dart` keeps it legible. §18.
 class _Stars extends StatelessWidget {
   const _Stars({required this.rating, required this.onChanged});
 
@@ -264,7 +270,7 @@ class _Stars extends StatelessWidget {
                   child: Icon(
                     Icons.star,
                     size: 36,
-                    color: n <= rating ? palette.accentText : palette.divider,
+                    color: n <= rating ? palette.accentText : palette.controlOutline,
                   ),
                 ),
               ),

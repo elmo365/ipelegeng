@@ -65,6 +65,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.textMuted,
     required this.textFaint,
     required this.inputBorder,
+    required this.controlOutline,
     required this.inputBg,
     required this.divider,
     required this.navBg,
@@ -117,6 +118,25 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color textMuted;
   final Color textFaint;
   final Color inputBorder;
+
+  /// The resting outline of an **interactive control** — an unticked checkbox,
+  /// an empty rating star, a switch that is off.
+  ///
+  /// A separate token from [inputBorder] and [divider] because it answers a
+  /// different question. Those two draw hairlines, and a hairline is *supposed*
+  /// to recede; this draws the affordance itself, and an affordance nobody can
+  /// see is not one. WCAG 1.4.11 puts the floor at **3:1 against the surface
+  /// behind it**, and `app/test/theme/contrast_test.dart` holds every palette
+  /// to it.
+  ///
+  /// Phase 0's colour gate found all three of those controls drawn in
+  /// [divider] or [inputBorder] and effectively invisible — the rating stars at
+  /// 1.4:1 in dark, the consent screen's **required** tick at 1.8:1. No new
+  /// colour was invented to fix it: this is [textMuted], which is the canvas's
+  /// own and clears the floor with room in both modes. See
+  /// docs/design-deltas.md §18.
+  final Color controlOutline;
+
   final Color inputBg;
   final Color divider;
   final Color navBg;
@@ -201,6 +221,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     textMuted: Color(0xFF5F7387),
     textFaint: Color(0xFF9CAFBF),
     inputBorder: Color(0xFFDCE7EF),
+    controlOutline: Color(0xFF5F7387),
     inputBg: Color(0xFFFFFFFF),
     divider: Color(0xFFE9F0F5),
     navBg: Color(0xFFFFFFFF),
@@ -285,6 +306,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     textMuted: Color(0xFF9399A0),
     textFaint: Color(0xFF7B8187),
     inputBorder: Color(0xFF42484F),
+    controlOutline: Color(0xFF9399A0),
     inputBg: Color(0xFF181E23),
     divider: Color(0xFF30363C),
     navBg: Color(0xFF11171C),

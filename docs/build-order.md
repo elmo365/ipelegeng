@@ -99,10 +99,51 @@ design's "medium haptic" names a strength `core/haptics.dart` deliberately does
 not have, an ending greys its steps out by removing them, and two Flutter traps
 that produce motion which looks implemented and is not.
 
-**Still owed on this phase:** the colour half, on everything built since
-2026-08-20 — booking request, the eleven booking states, rate & review, the
-loop prompt, biometric enrolment, consent, unlock and the entry flow — on a
-Pixel in both modes. None of it has been seen rendered.
+**The gate is now a script rather than a ritual**, which is the lesson both of
+its failures were really about — a gate nobody can re-run is a gate that gets
+skipped, and this one has now been skipped once and run too narrowly once.
+`app/integration_test/gate_test.dart` walks every screen built since
+2026-08-20, in light and in dark, on a real device, and writes one PNG per
+artboard into `app/build/gate/`:
+
+```
+cd app
+flutter drive --driver=test_driver/integration_test.dart   --target=integration_test/gate_test.dart -d <device-id>
+```
+
+It reaches each screen by overriding `routerProvider` — the seam the widget
+tests already use — rather than by tapping through the app, because a gate that
+has to complete a nine-step journey to photograph the ninth screen fails at
+step two and shows nothing. It asserts almost nothing on purpose: what it
+produces is **evidence for a comparison against the artboards**, and every rule
+that can be asserted instead lives in `app/test/`, where it runs in a second.
+
+**The colour half then ran, on 2026-08-21 — 28 screens, both modes.** The
+palette holds: every surface, plate and chip reads as the canvas specifies, and
+the dark mode most of these screens had never been rendered in is correct.
+
+What it found is a class of bug neither a widget test nor an artboard
+comparison can catch, because artboards draw controls in their *chosen* state:
+**three interactive controls were invisible at rest.** An empty rating star at
+1.4:1 against the card in dark, the **required** consent tick at 1.8:1, and the
+notification switches with it — all drawn in hairline tokens against WCAG
+1.4.11's 3:1 floor. The rating screen is the sharpest case, since its five
+stars are its only input and its own copy calls the rating "the only signal a
+new provider has".
+
+Fixed with a token rather than three patches — `AppPalette.controlOutline`,
+carrying `textMuted`'s existing value so no colour the design never specified
+entered the app — and pinned in both directions by
+`app/test/theme/contrast_test.dart`: a control must clear 3:1, and `divider`
+must stay *under* it, because "fixing" contrast by darkening the hairline would
+give every card a visible border and undo the design's shadow-not-borders
+treatment. Written up in [`design-deltas.md`](design-deltas.md) §18, along with
+why the loop prompt's completed-booking placement cannot be photographed and
+should not be made to be.
+
+**Phase 0 is closed on everything built up to 2026-08-21.** What is still owed
+is narrower and named: the biometric sensor path, which builds and is
+unit-tested behind a fake but has never run against real hardware.
 
 Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
@@ -576,8 +617,13 @@ Phase 3 is built: the prompt, its four suppression rules and both placements.
 The dispute *flow* stays blocked because the design has not drawn it — the
 `DISPUTED` state itself is built.
 
-**Before Phase 4, run Phase 0's gate on what has landed since it last ran.**
-Booking request, rate & review, the rentals listing and both loop placements
-have never been seen on a device. Phase 0 requires a colour *and* motion pass in
-both modes, and it exists because the one time it was skipped the app shipped
-five screens with a stock Flutter icon.
+**Phase 0's gate ran on 2026-08-21, both halves, and is a script now** —
+`app/integration_test/gate_test.dart`, 28 screens in both modes on a real
+device. The motion pass found the transition table implemented nowhere and
+built it; the colour pass found three interactive controls invisible at rest
+and fixed them with a token. Both are written up in
+[`design-deltas.md`](design-deltas.md) §17 and §18.
+
+The one thing the gate cannot cover is the **biometric sensor path**: it
+builds, and it is unit-tested behind a fake, but no prompt has ever been raised
+on real hardware. That is the last item outstanding from Phase 1.

@@ -260,7 +260,10 @@ class _Tick extends StatelessWidget {
         color: value ? palette.accentText : Colors.transparent,
         borderRadius: const BorderRadius.all(Radius.circular(6)),
         border: Border.all(
-          color: value ? palette.accentText : palette.inputBorder,
+          // Unticked, this is the affordance itself and not a hairline around
+          // one — see [AppPalette.controlOutline]. It was `inputBorder`, which
+          // put the **required** consent tick at 1.8:1 in dark mode.
+          color: value ? palette.accentText : palette.controlOutline,
           width: 1.5,
         ),
       ),
