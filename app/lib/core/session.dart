@@ -140,8 +140,17 @@ enum SessionStage {
 }
 
 class Session {
-  /// Four boxes on the artboard.
-  static const codeLength = 4;
+  /// How many digits a code has. **The single source of truth** — the verify
+  /// screen draws this many boxes rather than carrying its own number, which
+  /// it did until 2026-08-21 and which is exactly how two constants drift.
+  ///
+  /// **Six, not the artboard's four.** Firebase Auth sends a six-digit code
+  /// and the length is not configurable, so this is not a preference the
+  /// design gets to hold: a four-box screen cannot accept the code that
+  /// arrives. Recorded in docs/design-deltas.md §21 and raised with the design
+  /// in design/CORRECTIONS.md — the artboard draws four boxes and needs to
+  /// draw six.
+  static const codeLength = 6;
 
   /// The N in "locked after N attempts". The design names the state but not
   /// the number, so this is the repo's, recorded in design-deltas.md as an

@@ -938,6 +938,49 @@ is.
 
 ---
 
+## 21. The OTP is six digits, because the sender decides that
+
+The artboard draws **four** boxes on the verify screen, and the build drew four
+to match. Firebase Auth sends a **six**-digit code and the length is not
+configurable — there is no setting, on any plan.
+
+So this is not a departure that was weighed against the design. **A four-box
+screen cannot accept the code that arrives**, and the platform is not
+negotiable, so the design has to move. `Session.codeLength` is 6, the verify
+screen draws six boxes because it derives from that constant, and
+[`../design/CORRECTIONS.md`](../design/CORRECTIONS.md) carries the artboard
+change.
+
+If the sender is ever replaced — an SMS aggregator sending our own message
+would let us choose — four becomes possible again. Until then it is six.
+
+### 21.1 Two constants that meant the same thing
+
+Worth recording because it is the kind of duplication that survives review:
+`Session.codeLength` and `VerifyScreen.codeLength` were **both** `4`, declared
+independently, one commented *"Four boxes on the artboard"* and the other
+*"The design draws four boxes"*. Nothing kept them equal.
+
+The screen's is now an alias for the session's. Two constants that mean the
+same thing are two constants that will eventually disagree, and the disagreement
+would have been silent: the screen would draw six boxes while the verifier
+accepted four characters, or the reverse.
+
+### 21.2 How the test failed, which was worse than failing
+
+Changing the constant broke one widget test, and it broke it **misleadingly**.
+The test asserted that the *consent checkbox* gates the submit button, and it
+typed a literal `'1234'` to make the code complete first. At six digits that
+literal no longer completes the code — so the button was still disabled, the
+assertion still passed on the surface, and what actually failed was the
+follow-up expecting the "required consent above" message.
+
+A test that fails for the wrong reason is worse than one that fails, because
+the failure points at consent when the cause is length. The literal is now
+`'1' * Session.codeLength`, derived from the same constant as everything else.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

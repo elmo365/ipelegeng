@@ -33,8 +33,10 @@ import '../../components/entry_header.dart';
 class VerifyScreen extends ConsumerStatefulWidget {
   const VerifyScreen({super.key});
 
-  /// The design draws four boxes.
-  static const codeLength = 4;
+  /// Deliberately an alias rather than its own number: two constants that
+  /// mean the same thing are two constants that will disagree. See
+  /// [Session.codeLength] for why it is six and not the artboard's four.
+  static const codeLength = Session.codeLength;
 
   /// `0:42` on the canvas. Long enough that a slow SMS arrives before the
   /// resend is offered, short enough that a lost one is not a dead end.

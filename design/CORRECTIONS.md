@@ -145,7 +145,8 @@ The `ACCEPTED` state's body reads *"Today at 14:00, at Plot 4521, Block 8.
 of copy. It now affects less than it did — the in-app leg exchanges no number
 at all — but it still decides whether the *phone* leg dials a real number or a
 masked one, and it should be a decision rather than a leftover. The options and
-costs are worked through in [`../docs/calling.md`](../docs/calling.md).
+costs are worked through in
+[`../docs/architecture.md`](../docs/architecture.md#calling--two-routes-and-why-not-matrix).
 
 **What the design needs to add:**
 
@@ -172,7 +173,29 @@ calling ship together the transport is one decision instead of two.
 
 ---
 
-## 6. Carried — already known, still outstanding
+## 6. The verify screen draws four boxes; the code is six digits
+
+**Forced 2026-08-21.** Firebase Auth sends a six-digit code and the length is
+not configurable on any plan. The artboard draws four boxes, and a four-box
+screen cannot accept the code that arrives.
+
+The build has moved to six — `Session.codeLength`, which the screen derives
+from — so nothing is broken today. **The artboard is now wrong**, and it will
+be built from again.
+
+**What the design needs to change:** six boxes on `1 · ONBOARDING & OTP`, and
+anywhere else the code is drawn or described as four digits. Worth checking the
+spacing while it is open: six boxes at the current width may not fit the gutter
+on a 360 dp handset, which is a layout question the four-box version never had
+to answer.
+
+**If this is unwelcome**, the lever is the sender rather than the screen: an
+SMS aggregator sending our own message would let us choose the length again.
+That trade is written up in [`../docs/sms-otp.md`](../docs/sms-otp.md).
+
+---
+
+## 7. Carried — already known, still outstanding
 
 | | |
 |---|---|

@@ -121,7 +121,14 @@ void main() {
 
       // A complete code with no consent must not proceed. This is FR-1.10:
       // consent is captured at account creation, not asked for afterwards.
-      await tester.enterText(find.byType(TextField).first, '1234');
+      // Derived, not typed: a literal here broke the moment the code went
+      // from four digits to six, and it broke by disabling the button for the
+      // *wrong reason* — an incomplete code rather than missing consent —
+      // which is a test that fails without telling you what changed.
+      await tester.enterText(
+        find.byType(TextField).first,
+        '1' * Session.codeLength,
+      );
       await tester.pumpAndSettle();
       expect(
         tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,

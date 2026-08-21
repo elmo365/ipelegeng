@@ -97,6 +97,7 @@ a small team far more than it returns.
 | Card handling | Redirect to gateway | NFR-7 — no PCI scope |
 | Channel syndication | Async worker, queue-backed | Must never block listing publication. A Meta outage degrades reach, not core function |
 | Messaging | WhatsApp Business Platform with SMS fallback | Providers already live on WhatsApp; utility/auth templates are cheap. SMS remains the fallback, not the default |
+| Calling | **Both routes: the system dialer, and in-app WebRTC** — see below | inDrive and the other ride apps in this market offer both, and a provider comparing them will notice one that cannot call without spending airtime |
 
 ### Backend — decided
 
@@ -230,6 +231,68 @@ in their entirety:
   [data residency](compliance.md) will *force* a migration to Botswana-resident
   hosting before launch, choosing a database you cannot migrate off is choosing
   to rebuild later.
+
+### Calling — two routes, and why not Matrix
+
+Once a booking is accepted, customer and provider have to be able to talk. The
+booking status screen already draws the affordance — `Icons.call` in the
+provider row — and it has never had anything behind it.
+
+**Both routes ship.** Not one with a fallback: a choice, with an order.
+
+- **In-app call is the default.** It costs the caller *data* rather than
+  airtime, which is the cheaper commodity for most users here, and no number is
+  exchanged to place it.
+- **The system dialer is one tap further in**, and stays forever. A call that
+  works with no data at all is worth keeping, and it is the escape hatch when
+  the other party's app is unreachable.
+
+The decision was made on **competitive parity**, and it is worth being precise
+about that because the more obvious argument does not hold here. The usual
+reason a marketplace builds in-app calling is number privacy — and this design
+gives numbers away explicitly, in the `ACCEPTED` state's own copy: *"Kabelo has
+your number."* So privacy is not the justification. Parity is: inDrive, Bolt and
+Uber all offer both in this market.
+
+**The in-app leg is WebRTC on the infrastructure that already exists.**
+`flutter_webrtc` in the app, signalling over the socket the app needs anyway,
+STUN for address discovery, and **coturn** on the VPS as the relay for the
+minority of calls where NAT traversal fails. Media is DTLS-SRTP — mandatory in
+WebRTC — so a 1:1 peer-to-peer call is end-to-end encrypted with no server in
+the media path.
+
+Waking the callee is **not a separate problem**: an incoming call and an
+incoming ride request are the same problem with different payloads, and the FCM
+high-priority plus full-screen-intent path in
+[`device-permissions.md`](device-permissions.md) §2 serves both. That surface is
+therefore load-bearing for two features and should be designed once.
+
+**An SFU is not needed** for 1:1 audio. LiveKit, self-hosted, is the reasonable
+middle option if the edge cases — ringing, busy, a killed app, reconnection —
+prove more tedious than expected; the cost is that routing through an SFU makes
+media hop-by-hop rather than end-to-end unless E2EE is switched on explicitly.
+
+**Matrix is the wrong shape**, and for the same reason Firebase is above.
+Adopting it means running Synapse or Dendrite, operating a federation surface,
+and carrying a **second identity system** — Matrix users and rooms — alongside
+the Postgres accounts that hold the wallet and the KYC documents. It is
+tempting because customer↔provider messaging is also undelivered and Matrix
+would give both at once. That is not enough to justify a homeserver to run,
+patch and back up forever. If messaging and calling should share a transport,
+the answer is this app's own socket plus WebRTC, not somebody else's
+federation.
+
+**Number masking** — a platform number that bridges both parties, as Twilio
+Proxy or an MNO would provide — is the only option that restores number privacy
+while keeping a familiar phone call, and the only one with a per-minute cost.
+It applies to the *dialer* leg only; the in-app leg exchanges no number. Not
+planned, and it turns on whether the design takes back the promise in
+`ACCEPTED`.
+
+**Call metadata and disputes.** A call nobody can evidence is worth less to a
+`DISPUTED` booking than one with a timestamp and a duration. Recording
+*content* is a different question entirely and a compliance one — see
+[`compliance.md`](compliance.md) before anything about a call is stored.
 
 ### The actual plan — free now, compliant later
 
