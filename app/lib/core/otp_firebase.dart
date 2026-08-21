@@ -45,6 +45,7 @@ library;
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import 'session.dart';
 
@@ -91,8 +92,18 @@ class FirebaseOtpVerifier implements OtpVerifier {
           // code is still on its way to the field they are looking at.
         }
       },
-      verificationFailed: (e) => sent.complete(_readFailure(e)),
+      verificationFailed: (e) {
+        // **Log the platform's own words before collapsing them.**
+        // [_readFailure] maps a rich exception onto four enum values, which is
+        // right for the screen and useless for diagnosis: the first version of
+        // this shipped without the line below, and a real failure on a real
+        // handset surfaced as "could not send a code" with nothing anywhere
+        // saying why. A seam that discards the cause is not observable.
+        debugPrint('otp: verificationFailed code=${e.code} message=${e.message}');
+        sent.complete(_readFailure(e));
+      },
       codeSent: (verificationId, resendToken) {
+        debugPrint('otp: codeSent, verificationId received');
         _verificationId = verificationId;
         _resendToken = resendToken;
         sent.complete(OtpSendOutcome.sent);
@@ -119,7 +130,8 @@ class FirebaseOtpVerifier implements OtpVerifier {
         PhoneAuthProvider.credential(verificationId: id, smsCode: code),
       );
       return true;
-    } on FirebaseAuthException {
+    } on FirebaseAuthException catch (e) {
+      debugPrint('otp: confirm rejected code=${e.code}');
       // Wrong code, expired code, or a session that has moved on. All three
       // are "not this code" from the screen's point of view, and the attempt
       // counter in `session.dart` is what decides when that becomes a lockout.
