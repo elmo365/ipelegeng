@@ -12,8 +12,10 @@ library;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/booking.dart';
 import '../core/demo_data.dart';
 import '../theme/motion.dart';
+import '../ui/screens/consumer/booking_status_screen.dart';
 import '../ui/screens/consumer/category_browse_screen.dart';
 import '../ui/screens/consumer/home_screen.dart';
 import '../ui/screens/consumer/listing_detail_screen.dart';
@@ -113,7 +115,24 @@ GoRouter createRouter({String initialLocation = Routes.splash}) {
         _branch(
           Routes.bookings,
           'Bookings',
-          children: const [_Sub(Routes.booking, 'Booking')],
+          children: [
+            _Sub(
+              Routes.booking,
+              'Booking',
+              // `?state=` picks which of the eleven to show. Without a backend
+              // there is nothing to advance the state machine, and the design's
+              // own artboard exposes the same switch — a row of state tabs
+              // above the phone — for exactly this reason.
+              builder: (context, state) => BookingStatusScreen(
+                state: BookingState.byKey(
+                  state.uri.queryParameters['state'] ?? 'REQUESTED',
+                ),
+                category: Demo.bookingCategory,
+                providerName: Demo.bookingProviderName,
+                providerFirstName: Demo.bookingProviderFirstName,
+              ),
+            ),
+          ],
         ),
         _branch(Routes.messages, 'Messages'),
         _branch(Routes.account, 'Account'),

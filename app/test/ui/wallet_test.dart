@@ -66,10 +66,7 @@ void main() {
         matching: find.byType(LedgerEntry),
       );
       expect(topUp, findsOneWidget);
-      expect(
-        tester.widget<LedgerEntry>(topUp).vat,
-        isNull,
-      );
+      expect(tester.widget<LedgerEntry>(topUp).vat, isNull);
     });
   });
 

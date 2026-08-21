@@ -247,8 +247,28 @@ posts*. Earlier mockups had the provider marking complete first. The pay-directl
 moment gets the hero treatment because it is the one thing that must not be
 misread.
 
-**Not in this phase, and deliberately:** `DISPUTED` and `NO_SHOW` have no honest
-copy yet — see Blocked below.
+**All eleven states are in this phase, including `DISPUTED` and `NO_SHOW`.**
+
+That is a correction. This file previously deferred those two on the grounds
+that they "have no honest copy yet". They do: the canvas carries a `BSTATES`
+array in its `<script>` block with all eleven states written out — chip, tone,
+step, heading, body, action, action kind — and it marks the unsettled ones
+itself rather than omitting them:
+
+| State | The design's own note |
+|---|---|
+| `CANCELLED` | *Cancellation rules are not settled — this copy is provisional* |
+| `NO_SHOW` | *No fee rule exists yet — provisional copy* |
+| `DISPUTED` | *Dispute handling is undesigned in the spec — provisional* |
+
+So the design's position is not "do not build these", it is **"build them and
+show the note"**. A booking that reaches `NO_SHOW` with no screen behind it is
+worse than one that says what is known and admits what is not. The note ships
+as part of the state, and it comes out when the product decision lands.
+
+The reason this was got wrong is worth recording: the `<script>` block was
+being stripped before the canvas was read, so the eleven states looked absent
+when they were merely somewhere I was deleting.
 
 **Done when:** all 11 states render with their own copy, tone and single primary
 action, and the payment step sits at position 4.
@@ -343,15 +363,14 @@ which needs its own confirmation copy.
 
 ## Blocked — not scheduled, and not to be started
 
-The design is explicit that these have **no honest copy** until a product
-decision lands, and writing placeholder copy for them is worse than leaving them
-out:
+Genuinely blocked — as opposed to merely unsettled. The distinction matters and
+this list previously blurred it: a state whose copy the design has **written and
+marked provisional** is buildable today, and only a screen the design has not
+drawn at all is blocked.
 
 | Blocked | Waiting on |
 |---|---|
-| `DISPUTED` booking state, dispute flow (UC-13) | Dispute turnaround time — screens promise contact but name no timeframe |
-| `NO_SHOW` booking state | No-show consequence for providers — what happens, and after how many |
-| Cancellation fee copy | Late-cancellation fee amount — percentage, flat, or first-occurrence waiver |
+| The dispute **flow** (UC-13) — raising one, and what follows | Dispute turnaround time — screens promise contact but name no timeframe. The `DISPUTED` *state* is built; the flow that reaches it is undesigned. |
 | Admin **Revoke** action | What happens to already-accepted bookings when a category is revoked |
 | Per-category commission display | Whether trades and rentals differ from the ride 8% |
 
@@ -363,19 +382,29 @@ management at scale, and empty/offline states across the journey.
 
 ## Where things stand
 
-**Entry (Phase 1):** splash · register · sign in · OTP · consent · unlock ·
-location, plus the auth gate as a sheet.
+**Brand (Phase 1):** launcher icon at five densities · adaptive icon with a
+monochrome layer · splash icon in both modes · notification icon · the in-app
+size ladder.
+
+**Entry:** splash · register · sign in · OTP (with its wrong-code and
+locked states) · consent · biometric enrolment · unlock · location, plus the
+auth gate as a sheet.
+
+**Booking (Phase 2):** booking status, **all eleven states**, with the payment
+moment at step 4.
 
 **Built earlier, to validate the resynced tokens:** consumer home · category
 browse · listing detail · provider dashboard · wallet.
 
-Twelve shared components. **147 tests**, `flutter analyze` clean, and every
+Fourteen shared components. **177 tests**, `flutter analyze` clean, and every
 built screen seen rendered on a device in both modes.
 
 Everything else renders `PlaceholderScreen`, which is deliberate — the
 navigation graph stays complete and testable while screens land one at a time.
 
-**Next action: Phase 2**, booking with the payment moment moved. Phase 0 is
-closed. Phase 0.5 is blocked on an artwork export and runs alongside rather
-than in front; Phase 1 is built but is not *finished* until the lockup and the
-biometric prompt land.
+**Next action: Phase 3**, the loop prompt in stage 7.
+
+Phase 0 is closed. Phase 1 (brand) is done except the four cuts that exceed the
+fetch cap. Phase 2's status screen is built; the **booking request** screen and
+**rate & review** still belong to it, and the dispute *flow* stays blocked
+because the design has not drawn it — the `DISPUTED` state itself is built.

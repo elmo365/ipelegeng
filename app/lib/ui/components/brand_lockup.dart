@@ -130,9 +130,8 @@ class BrandLockup extends StatelessWidget {
 
     return switch (BrandCut.forWidth(width)) {
       BrandCut.mark => BrandMark(size: width),
-      BrandCut.horizontal || BrandCut.full => BrandLockupHorizontal(
-        width: width,
-      ),
+      BrandCut.horizontal ||
+      BrandCut.full => BrandLockupHorizontal(width: width),
     };
   }
 }

@@ -114,8 +114,9 @@ void main() {
       );
     });
 
-    testWidgets('the required consent gates the code, not the other way round',
-        (tester) async {
+    testWidgets('the required consent gates the code, not the other way round', (
+      tester,
+    ) async {
       final container = await pumpAt(tester, Routes.verify);
 
       // A complete code with no consent must not proceed. This is FR-1.10:
@@ -123,9 +124,7 @@ void main() {
       await tester.enterText(find.byType(TextField).first, '1234');
       await tester.pumpAndSettle();
       expect(
-        tester
-            .widget<ElevatedButton>(find.byType(ElevatedButton))
-            .onPressed,
+        tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,
         isNull,
         reason: 'verified without agreeing to anything',
       );
@@ -204,9 +203,7 @@ void main() {
   });
 
   group('a returning user', () {
-    testWidgets('signs in with a number and still gets a code', (
-      tester,
-    ) async {
+    testWidgets('signs in with a number and still gets a code', (tester) async {
       final container = await pumpAt(tester, Routes.signIn);
       expect(find.byType(SignInScreen), findsOneWidget);
 

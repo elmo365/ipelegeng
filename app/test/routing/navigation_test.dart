@@ -57,10 +57,7 @@ void main() {
     // route has to be found inside it. That the route is visible here at all
     // is the design's point: a returning user must not have to tap
     // "Get started" to find it.
-    expect(
-      find.textContaining('Sign in', findRichText: true),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Sign in', findRichText: true), findsOneWidget);
   });
 
   testWidgets('the consumer shell carries four tabs', (tester) async {

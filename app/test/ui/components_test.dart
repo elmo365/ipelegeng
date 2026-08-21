@@ -15,7 +15,10 @@ import 'package:ipelege/ui/components/status_chip.dart';
 void main() {
   Future<void> pump(WidgetTester tester, Widget child, ThemeData theme) =>
       tester.pumpWidget(
-        MaterialApp(theme: theme, home: Scaffold(body: Center(child: child))),
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(body: Center(child: child)),
+        ),
       );
 
   final themes = {
@@ -70,9 +73,7 @@ void main() {
         );
       });
 
-      testWidgets('$name status chips pair a hue with a glyph', (
-        tester,
-      ) async {
+      testWidgets('$name status chips pair a hue with a glyph', (tester) async {
         // "Status never depends on colour alone" — the design states this as
         // a rule, and it is also what keeps the chip legible to a
         // colour-blind user.

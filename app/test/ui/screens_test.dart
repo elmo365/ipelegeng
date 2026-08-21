@@ -57,10 +57,7 @@ void main() {
       // Seven bars, today emphasised, plus the delta pill.
       expect(find.byType(WeekChart), findsOneWidget);
       expect(find.byType(DeltaPill), findsOneWidget);
-      expect(
-        tester.widget<WeekChart>(find.byType(WeekChart)).values.length,
-        7,
-      );
+      expect(tester.widget<WeekChart>(find.byType(WeekChart)).values.length, 7);
     });
 
     testWidgets('never renders "provider" as one status', (tester) async {

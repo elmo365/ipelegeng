@@ -127,6 +127,14 @@ abstract final class Demo {
     );
   }
 
+  /// The booking the status screen renders. One provider, one category; the
+  /// *state* is what varies, and it is picked by the route so all eleven are
+  /// reachable without a backend — the design's own artboard works the same
+  /// way, with a row of state tabs above the phone.
+  static const bookingProviderName = "Kabelo’s Plumbing & Repairs";
+  static const bookingProviderFirstName = 'Kabelo';
+  static const bookingCategory = Categories.plumbing;
+
   static final listing = ListingDetailData(
     name: 'Kabelo’s Plumbing & Repairs',
     category: Categories.plumbing,

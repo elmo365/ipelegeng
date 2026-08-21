@@ -136,19 +136,21 @@ void main() {
       expect(read(c).name, 'Kabo Mothibi');
     });
 
-    test('signing out leaves nothing behind — the next entry is a full OTP',
-        () {
-      final c = container();
-      act(c)
-        ..requestCode(name: 'Kabo Mothibi', phone: '+267 71 234 567')
-        ..confirmCode()
-        ..agree()
-        ..signOut();
+    test(
+      'signing out leaves nothing behind — the next entry is a full OTP',
+      () {
+        final c = container();
+        act(c)
+          ..requestCode(name: 'Kabo Mothibi', phone: '+267 71 234 567')
+          ..confirmCode()
+          ..agree()
+          ..signOut();
 
-      expect(read(c).stage, SessionStage.none);
-      expect(read(c).name, isNull);
-      expect(read(c).consentVersion, isNull);
-    });
+        expect(read(c).stage, SessionStage.none);
+        expect(read(c).name, isNull);
+        expect(read(c).consentVersion, isNull);
+      },
+    );
   });
 
   group('initials', () {

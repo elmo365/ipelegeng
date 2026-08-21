@@ -62,9 +62,9 @@ void main() {
       for (final dir in const ['drawable', 'drawable-v21']) {
         // Comments stripped: these files explain the stock value they replaced,
         // and naming it in prose is not the same as painting it.
-        final xml = File('$_res/$dir/launch_background.xml')
-            .readAsStringSync()
-            .replaceAll(RegExp(r'<!--[\s\S]*?-->'), '');
+        final xml = File(
+          '$_res/$dir/launch_background.xml',
+        ).readAsStringSync().replaceAll(RegExp(r'<!--[\s\S]*?-->'), '');
         expect(
           xml,
           contains('@color/ipelegeLaunchBg'),
@@ -73,7 +73,8 @@ void main() {
         expect(
           xml,
           isNot(contains('?android:colorBackground')),
-          reason: '$dir/launch_background.xml is back on the stock theme colour',
+          reason:
+              '$dir/launch_background.xml is back on the stock theme colour',
         );
       }
     });
@@ -124,8 +125,9 @@ void main() {
         );
       }
 
-      final xml = File('$_res/mipmap-anydpi-v26/ic_launcher.xml')
-          .readAsStringSync();
+      final xml = File(
+        '$_res/mipmap-anydpi-v26/ic_launcher.xml',
+      ).readAsStringSync();
       expect(xml, contains('ic_launcher_foreground'));
       expect(xml, contains('@color/ipelegeIconBg'));
     });
@@ -137,10 +139,9 @@ void main() {
     // transcribed rather than decoded, which is how mark-icon.png was lost.
     test('every asset identity.md names exists and is a readable PNG', () {
       final doc = File(_identityDoc).readAsStringSync();
-      final named = RegExp(r'`([a-z0-9-]+\.png)`')
-          .allMatches(doc)
-          .map((m) => m.group(1)!)
-          .toSet();
+      final named = RegExp(
+        r'`([a-z0-9-]+\.png)`',
+      ).allMatches(doc).map((m) => m.group(1)!).toSet();
 
       expect(
         named,
