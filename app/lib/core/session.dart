@@ -62,15 +62,58 @@ enum OtpOutcome { accepted, wrongCode, locked }
 /// against, so [DemoOtpVerifier] accepts any complete code — but the wrong-code
 /// and locked paths are real, and this is the seam the API call lands in rather
 /// than a hook that exists only for tests.
-abstract interface class OtpVerifier {
-  bool isCorrect(String code);
+/// What happened when a code was asked for.
+enum OtpSendOutcome {
+  sent,
+
+  /// The platform rejected the number itself. Distinct from *not delivered*:
+  /// there is something to fix on this screen.
+  invalidNumber,
+
+  /// Rate-limited — by us, by the platform, or by the network.
+  tooManyRequests,
+
+  /// No sender reachable. Offline, misconfigured, or quota exhausted.
+  unavailable,
 }
 
+/// The seam between the app and whatever actually sends a code.
+///
+/// Both halves are async because a real one is: sending crosses a network and
+/// confirming may too. [DemoOtpVerifier] keeps the whole entry flow testable
+/// without either.
+abstract interface class OtpVerifier {
+  /// Ask for a code to be sent to [phone].
+  ///
+  /// [onAutoVerified] fires only where the **platform reads the SMS itself**.
+  /// On Android that is real — Firebase's auto-retrieval completes without the
+  /// user typing anything, which is why the verify screen must be able to move
+  /// on without a tap. On iOS nothing calls this: the code is offered to the
+  /// field by `AutofillHints.oneTimeCode` and the user still taps.
+  Future<OtpSendOutcome> send(String phone, {void Function()? onAutoVerified});
+
+  /// Whether a typed code is the one that was sent.
+  Future<bool> isCorrect(String code);
+}
+
+/// The default, and the only one until a sender is configured: **sends
+/// nothing** and accepts any complete code.
+///
+/// This is deliberately permissive, which is the safe direction for a fake —
+/// no test can pass *because* the fake rejected something the real sender
+/// would allow. See docs/test-strategy.md, "What a green suite does not mean".
 class DemoOtpVerifier implements OtpVerifier {
   const DemoOtpVerifier();
 
   @override
-  bool isCorrect(String code) => code.length == Session.codeLength;
+  Future<OtpSendOutcome> send(
+    String phone, {
+    void Function()? onAutoVerified,
+  }) async => OtpSendOutcome.sent;
+
+  @override
+  Future<bool> isCorrect(String code) async =>
+      code.length == Session.codeLength;
 }
 
 final otpVerifierProvider = Provider<OtpVerifier>(
@@ -269,10 +312,10 @@ class SessionController extends Notifier<Session> {
   ///
   /// A resend does **not** restore attempts: the limit is on guessing, and
   /// letting a resend reset it would make it decorative.
-  OtpOutcome submitCode(String code, OtpVerifier verifier) {
+  Future<OtpOutcome> submitCode(String code, OtpVerifier verifier) async {
     if (state.codeLocked) return OtpOutcome.locked;
 
-    if (verifier.isCorrect(code)) {
+    if (await verifier.isCorrect(code)) {
       confirmCode();
       return OtpOutcome.accepted;
     }

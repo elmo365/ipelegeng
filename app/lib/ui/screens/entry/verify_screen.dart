@@ -91,10 +91,14 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
   bool get _ready =>
       _complete && _agreed && !ref.read(sessionProvider).codeLocked;
 
-  void _submit() {
-    final outcome = ref
+  Future<void> _submit() async {
+    final outcome = await ref
         .read(sessionProvider.notifier)
         .submitCode(_code.text, ref.read(otpVerifierProvider));
+
+    // The await crosses a network with a real sender, and the screen can be
+    // gone by the time it returns.
+    if (!mounted) return;
 
     switch (outcome) {
       case OtpOutcome.accepted:

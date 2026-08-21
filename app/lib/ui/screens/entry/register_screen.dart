@@ -12,6 +12,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/haptics.dart';
 import '../../../core/phone.dart';
 import '../../../core/session.dart';
 import '../../../routing/navigation.dart';
@@ -49,17 +50,53 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
-  bool get _ready =>
-      _name.text.trim().isNotEmpty && Phone.isPlausible(_phone.text);
+  bool _busy = false;
 
-  void _continue() {
-    ref
-        .read(sessionProvider.notifier)
-        .requestCode(
-          name: _name.text.trim(),
-          phone: Phone.normalise(_phone.text),
+  /// Why the last send did not happen. Null when nothing has failed.
+  String? _error;
+
+  bool get _ready =>
+      _name.text.trim().isNotEmpty && Phone.isPlausible(_phone.text) && !_busy;
+
+  /// A real send, and the screen only moves on if one happened. See the same
+  /// method on the sign-in screen for why: this used to navigate to "Confirm
+  /// your number" whether or not a code existed.
+  Future<void> _continue() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    final phone = Phone.normalise(_phone.text);
+    final outcome = await ref.read(otpVerifierProvider).send(phone);
+
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    switch (outcome) {
+      case OtpSendOutcome.sent:
+        ref
+            .read(sessionProvider.notifier)
+            .requestCode(name: _name.text.trim(), phone: phone);
+        context.goReplacing(Routes.verify);
+      case OtpSendOutcome.invalidNumber:
+        setState(() => _error = Phone.requirement);
+      case OtpSendOutcome.tooManyRequests:
+        Haptics.error();
+        setState(
+          () => _error =
+              'Too many codes requested for this number. Wait a few minutes '
+              'and try again.',
         );
-    context.goReplacing(Routes.verify);
+      case OtpSendOutcome.unavailable:
+        Haptics.error();
+        setState(
+          () => _error =
+              'Could not send a code just now. Check your connection and try '
+              'again.',
+        );
+    }
   }
 
   @override
@@ -100,8 +137,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   hint: Phone.placeholder,
                   keyboardType: TextInputType.phone,
                   mono: true,
-                  hintIcon: Icons.sms,
-                  note: "We'll text a code to confirm this number",
+                  // The promise while the number is fine; **why the button is
+                  // dead** once it is not. One slot, because two lines under
+                  // one field is noise and the validation is the more urgent
+                  // of the two.
+                  hintIcon: (_error ?? Phone.noteFor(_phone.text)) == null
+                      ? Icons.sms
+                      : Icons.info_outline,
+                  note:
+                      _error ??
+                      Phone.noteFor(_phone.text) ??
+                      "We'll text a code to confirm this number",
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) {
                     if (_ready) _continue();

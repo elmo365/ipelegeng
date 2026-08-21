@@ -15,6 +15,7 @@ import 'firebase_options.dart';
 import 'core/biometrics.dart';
 import 'core/session.dart';
 import 'core/session_store.dart';
+import 'core/otp_firebase.dart';
 import 'core/settings.dart';
 import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
@@ -36,10 +37,12 @@ Future<void> main() async {
   // A failure here must not take the app down. Firebase is how a booking
   // update *arrives*; it is not how the app *runs*, and browse, search and the
   // whole entry flow work without it.
+  var firebaseReady = false;
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    firebaseReady = true;
   } on FirebaseException catch (e) {
     debugPrint('Firebase unavailable, continuing without push: ${e.code}');
   }
@@ -55,6 +58,16 @@ Future<void> main() async {
         // test never needs a platform channel — the same shape the session
         // store and the OTP verifier use.
         biometricsProvider.overrideWithValue(PlatformBiometrics()),
+        // The real sender, overridden here and nowhere else — the same shape
+        // the session store and the biometrics seam use. A widget test keeps
+        // DemoOtpVerifier and never touches a network.
+        //
+        // **Only when Firebase actually came up.** Without it, every send
+        // would fail and nobody could get past the first screen; the stub at
+        // least lets the app be used while the sender is being sorted out.
+        if (firebaseReady) otpVerifierProvider.overrideWith(
+          (ref) => FirebaseOtpVerifier(),
+        ),
       ],
       child: const IpelegeApp(),
     ),

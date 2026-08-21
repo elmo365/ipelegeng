@@ -12,6 +12,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/haptics.dart';
 import '../../../core/phone.dart';
 import '../../../core/session.dart';
 import '../../../routing/navigation.dart';
@@ -45,13 +46,53 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     super.dispose();
   }
 
-  bool get _ready => Phone.isPlausible(_phone.text);
+  bool _busy = false;
 
-  void _send() {
-    ref
-        .read(sessionProvider.notifier)
-        .requestCode(phone: Phone.normalise(_phone.text));
-    context.goReplacing(Routes.verify);
+  /// Why the last send did not happen. Null when nothing has failed — an
+  /// error that outlives its cause is worse than none.
+  String? _error;
+
+  bool get _ready => Phone.isPlausible(_phone.text) && !_busy;
+
+  /// Nothing here used to ask for a code — the screen set the session's state
+  /// and navigated, and with a stub verifier that looked identical to working.
+  /// It is a real send now, and **the screen only moves on if one happened**:
+  /// a "Confirm your number" screen above a code that was never sent is the
+  /// worst version of this failing.
+  Future<void> _send() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    final phone = Phone.normalise(_phone.text);
+    final outcome = await ref.read(otpVerifierProvider).send(phone);
+
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    switch (outcome) {
+      case OtpSendOutcome.sent:
+        ref.read(sessionProvider.notifier).requestCode(phone: phone);
+        context.goReplacing(Routes.verify);
+      case OtpSendOutcome.invalidNumber:
+        setState(() => _error = Phone.requirement);
+      case OtpSendOutcome.tooManyRequests:
+        Haptics.error();
+        setState(
+          () => _error =
+              'Too many codes requested for this number. Wait a few minutes '
+              'and try again.',
+        );
+      case OtpSendOutcome.unavailable:
+        Haptics.error();
+        setState(
+          () => _error =
+              'Could not send a code just now. Check your connection and try '
+              'again.',
+        );
+    }
   }
 
   @override
@@ -116,6 +157,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   keyboardType: TextInputType.phone,
                   mono: true,
                   autofocus: true,
+                  // Says why the button is dead, instead of leaving the user
+                  // to guess. Null while the field is empty — nothing is
+                  // wrong yet.
+                  // The field's own requirement while typing; whatever the
+                  // send actually failed with once one has been tried.
+                  note: _error ?? Phone.noteFor(_phone.text),
+                  hintIcon: Icons.info_outline,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) {
                     if (_ready) _send();
@@ -131,7 +179,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               child: Column(
                 children: [
                   PrimaryAction(
-                    label: 'Send code',
+                    label: _busy ? 'Sending…' : 'Send code',
                     icon: Icons.sms,
                     onPressed: _ready ? _send : null,
                   ),

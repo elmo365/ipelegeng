@@ -30,6 +30,21 @@ abstract final class Phone {
     return d.length == 8 && d.startsWith('7');
   }
 
+  /// What to say when [isPlausible] is false and the field is not empty.
+  ///
+  /// A disabled button is not feedback. Sign-in and register both gate their
+  /// action on [isPlausible], and until 2026-08-21 neither said why — the
+  /// button simply sat greyed and tapping it did nothing, which reads as a
+  /// broken app rather than as an unfinished number. Held here so the two
+  /// screens cannot drift into saying it differently.
+  static const requirement = 'A Botswana mobile number: 8 digits starting '
+      'with 7. The +267 is optional.';
+
+  /// The note to show under a phone field, or null when there is nothing to
+  /// say — an empty field is not yet wrong.
+  static String? noteFor(String input) =>
+      input.trim().isEmpty || isPlausible(input) ? null : requirement;
+
   /// `+267 71 234 567`. Returns the input untouched if it is not plausible, so
   /// nothing silently mangles a number it did not understand.
   static String normalise(String input) {
