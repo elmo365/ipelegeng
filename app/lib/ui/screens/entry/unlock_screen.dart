@@ -130,7 +130,14 @@ class _UnlockScreenState extends ConsumerState<UnlockScreen> {
                           boxShadow: palette.shadowCard,
                         ),
                         child: Icon(
-                          Icons.fingerprint,
+                          // The glyph is the loudest instruction on this
+                          // screen and it has to obey the same rule as the
+                          // copy and the buttons. Phase 0's gate caught it
+                          // hardcoded: on the emulator's no-enrolment path
+                          // every word and every button correctly said
+                          // *passcode*, above a 50 dp fingerprint. See
+                          // docs/design-deltas.md §18.4.
+                          biometricsOffered ? Icons.fingerprint : Icons.dialpad,
                           size: 50,
                           color: palette.accentText,
                         ),

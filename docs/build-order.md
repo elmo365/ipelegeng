@@ -141,9 +141,27 @@ treatment. Written up in [`design-deltas.md`](design-deltas.md) §18, along with
 why the loop prompt's completed-booking placement cannot be photographed and
 should not be made to be.
 
+**The gate was then found to be photographing fakes, and fixed.** The first two
+runs pumped `IpelegeApp` with only the router overridden, so the unlock screen
+answered `AlwaysAllowBiometrics` — a gate that runs on a device to see what the
+device does, and asks a stub instead. It now applies the same
+`biometricsProvider` override `main()` does.
+
+That verified a branch that had never run against the real platform. The
+emulator has a fingerprint sensor with **no enrolled print and no device
+credential**, which is exactly the design's *"biometry unavailable → passcode"*
+case, and the screen came back correct: no fingerprint button, no copy naming
+one, **Enter device passcode** promoted to the primary. It also caught the one
+element that was not conditional — a hardcoded 50 dp fingerprint glyph sitting
+directly over the words "Use your device passcode to continue". A picture is
+copy. Fixed, and pinned by a test verified to fail without the fix.
+
 **Phase 0 is closed on everything built up to 2026-08-21.** What is still owed
-is narrower and named: the biometric sensor path, which builds and is
-unit-tested behind a fake but has never run against real hardware.
+is narrower and named: the **successful** biometric path. Raising a real prompt
+needs a device credential and an enrolled print, and enrolling one means
+setting a PIN and driving the emulator's Settings UI — a change to the
+machine's state that is the user's to make. The branch that matters most on the
+target hardware, where broken and absent sensors are common, is verified.
 
 Three drifts, all written up in [`design-deltas.md`](design-deltas.md) §13:
 
@@ -624,6 +642,8 @@ built it; the colour pass found three interactive controls invisible at rest
 and fixed them with a token. Both are written up in
 [`design-deltas.md`](design-deltas.md) §17 and §18.
 
-The one thing the gate cannot cover is the **biometric sensor path**: it
-builds, and it is unit-tested behind a fake, but no prompt has ever been raised
-on real hardware. That is the last item outstanding from Phase 1.
+The one thing left is the **successful** biometric prompt. The no-sensor branch
+is now verified against the real platform on a device — the emulator has a
+sensor with nothing enrolled, which is precisely that case — but no prompt has
+ever been raised, because enrolling a print means setting a device PIN and
+driving Settings. That is the last item outstanding from Phase 1.

@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:ipelege/core/biometrics.dart';
 import 'package:ipelege/core/booking.dart';
 import 'package:ipelege/core/demo_data.dart';
 import 'package:ipelege/core/session.dart';
@@ -170,6 +171,17 @@ void main() {
             routerProvider.overrideWithValue(
               createRouter(initialLocation: shot.location),
             ),
+            // **The same override `main()` applies.** Without it the gate
+            // photographs [AlwaysAllowBiometrics], the default a widget test
+            // wants, and the unlock screen would show a fingerprint button
+            // this handset may not be able to honour. The point of running on
+            // a device is to see what the device does.
+            //
+            // The session store is deliberately *not* overridden: a shot must
+            // start from the state its `session` callback sets, and a
+            // prefs-backed store would carry the previous shot's session into
+            // the next one.
+            biometricsProvider.overrideWithValue(PlatformBiometrics()),
           ],
         );
         container.read(themeModeProvider.notifier).select(mode);

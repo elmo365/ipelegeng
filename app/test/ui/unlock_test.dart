@@ -190,6 +190,22 @@ void main() {
       );
     });
 
+    testWidgets('and is not shown a fingerprint either', (tester) async {
+      // The copy and the buttons were conditional from the start; the 50 dp
+      // glyph above them was not, and Phase 0's colour gate caught it on the
+      // emulator's no-enrolment path. A picture of a fingerprint over the
+      // words "use your device passcode" is the same bug as the copy, drawn
+      // larger — it is what makes someone think the app is broken rather than
+      // their phone. See docs/design-deltas.md §18.4.
+      await pumpLocked(
+        tester,
+        FakeBiometrics(available: BiometricAvailability.unsupported),
+      );
+
+      expect(find.byIcon(Icons.fingerprint), findsNothing);
+      expect(find.byIcon(Icons.dialpad), findsWidgets);
+    });
+
     testWidgets('the passcode still gets all the way in', (tester) async {
       final biometrics = FakeBiometrics(
         available: BiometricAvailability.unsupported,

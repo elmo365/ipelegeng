@@ -732,6 +732,48 @@ narrowly and missing every motion token — and both times the root cause was
 that running it was a manual act of will. See [`build-order.md`](build-order.md)
 Phase 0 for the command.
 
+### 18.4 The gate was photographing fakes, and what fixing that found
+
+The first two runs pumped `IpelegeApp` with only `routerProvider` overridden —
+so they got `biometricsProvider`'s default, `AlwaysAllowBiometrics`, and the
+unlock screen was photographed answering a fake. A gate that runs on a device
+in order to see what the device does, and then asks a stub instead, is only
+half a gate.
+
+It now applies the same `biometricsProvider` override `main()` does. The
+session store is deliberately **not** overridden: each shot must start from the
+state its own callback sets, and a prefs-backed store would carry one shot's
+session into the next.
+
+**That immediately verified a branch that had never run against the real
+platform.** The emulator reports `android.hardware.fingerprint` and a
+`FingerprintProvider`, with `"count":0` — a sensor, no enrolled print, no
+device credential — which is exactly the design's *"biometry unavailable or
+refused → passcode"* case. `PlatformBiometrics.availability()` returned
+unusable, and the screen came back correct: no fingerprint button, no copy
+naming a fingerprint, **Enter device passcode** promoted to the primary and
+drawn filled, "Sign in as someone else" beneath it.
+
+**And it caught the one thing that was not conditional.** The copy and both
+buttons obeyed the rule from the day they were written. The 104 dp hero plate
+above them did not — it was a hardcoded `Icons.fingerprint`, 50 dp of it, sitting
+directly over the words *"Use your device passcode to continue."*
+
+That is the same bug as the copy would have been, drawn larger. The screen's
+own comment already states the reason it must not happen: *"Telling someone to
+use a fingerprint on a handset with no sensor is the kind of copy that makes
+people think the app is broken rather than their phone."* A picture is copy.
+The glyph is now `Icons.dialpad` on the passcode-only layout, matching the
+button under it, and `test/ui/unlock_test.dart` pins it — verified to fail
+without the fix, not merely to pass with it.
+
+**What is still owed:** the *successful* biometric path. Raising a real prompt
+needs a device credential and an enrolled print, and enrolling one means
+setting a PIN and driving the emulator's Settings UI — a change to the
+machine's state that is the user's to make, not this session's. What is
+verified is the branch that matters most on the target hardware, where broken
+and absent sensors are common.
+
 ---
 
 ## Import fidelity
