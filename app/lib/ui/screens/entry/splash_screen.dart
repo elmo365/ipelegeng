@@ -109,7 +109,10 @@ class _PromiseOnDark extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Brand.sky),
+          // [Brand.skyPale], not [Brand.sky]: the canvas uses #9FD4F5 here and
+          // nowhere else, because over the entry gradient the ordinary sky
+          // does not separate from the ground behind it.
+          Icon(icon, size: 20, color: Brand.skyPale),
           const SizedBox(width: 11),
           Expanded(
             child: Text(

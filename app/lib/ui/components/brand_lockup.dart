@@ -111,18 +111,39 @@ class BrandLockup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (onDark) {
-      return ExcludeSemantics(
-        child: Semantics(
-          label: 'Ipelege',
-          child: Text(
-            'ipelege',
-            style: TextStyle(
-              fontFamily: AppFonts.sans,
-              fontSize: width * 0.24,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -width * 0.005,
-              color: Brand.white,
+      final style = TextStyle(
+        fontFamily: AppFonts.sans,
+        fontSize: width * 0.24,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -width * 0.005,
+        color: Brand.white,
+      );
+
+      // `Semantics` **outside** `ExcludeSemantics`, not the other way round.
+      // Inverted, the exclusion swallows the label with the text and the
+      // lockup reaches a screen reader with no name at all — which is how it
+      // shipped until a test asked for the name and did not get one.
+      return Semantics(
+        label: 'Ipelege',
+        child: ExcludeSemantics(
+          // **The `i` is [Brand.sky], not white.** This is type standing in for
+          // artwork, but it is not licence to drop the one relationship the
+          // canvas singles out: *"the mark keeps its ripple rings at every size
+          // and the wordmark keeps the blue i — the earlier set had been
+          // assembled from different exports and dropped both."*
+          //
+          // Shipping a flat white wordmark would repeat by hand exactly the
+          // mistake this repo has a whole document about. Two spans rather than
+          // two Texts, so the kerning between `i` and `p` is the font's rather
+          // than a gap between widgets.
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: 'i', style: style.copyWith(color: Brand.sky)),
+                TextSpan(text: 'pelege', style: style),
+              ],
             ),
+            style: style,
           ),
         ),
       );

@@ -40,6 +40,41 @@ the Play Store icon size — the design exported for the platform deliberately.
 `adaptive-foreground.png` is the same mark, transparent, at 432 px, so the app
 takes its mark from that instead.
 
+## The type fallback keeps the blue *i*
+
+**Corrected 2026-08-21, after the splash was looked at on a handset.**
+
+Where the dark artwork is still stuck behind the fetch cap, `BrandLockup` sets
+the name as type. That is honest — type standing in for artwork is obviously
+type — but the first version of it shipped `ipelege` in **flat white**, and
+that is not honest, it is lossy. The canvas is explicit about what a wordmark
+must not lose:
+
+> Every asset above is cut from the one supplied lockup, so the mark keeps its
+> ripple rings at every size and **the wordmark keeps the blue *i*** — the
+> earlier set had been assembled from different exports and dropped both.
+
+A flat white wordmark drops the blue *i*, which is one of exactly two things
+this document already exists to stop happening. The fallback now sets the `i`
+in `Brand.sky` (`#75BDEB`) and `pelege` in white, matching the canvas's dark
+wordmark. On a light ground nothing changed: the real artwork carries it.
+
+Two details worth keeping:
+
+- **Two `TextSpan`s, not two `Text`s**, so the kerning between `i` and `p` is
+  the typeface's rather than a gap between widgets.
+- **`Semantics` outside `ExcludeSemantics`.** They were nested the other way
+  round, so the exclusion swallowed the label along with the text and the
+  lockup reached a screen reader with **no name at all**. It shipped that way
+  and was only found when a test asked for the name and did not get one.
+
+Both are pinned in `app/test/identity/identity_test.dart`.
+
+**This does not make the fallback a substitute for the artwork.** It is still
+type, the dark cuts are still blocked, and the entry below still stands.
+
+---
+
 ## What cannot be fetched, and why
 
 `DesignSync.get_file` is **capped at 256 KiB**, and it truncates rather than

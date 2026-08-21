@@ -17,8 +17,10 @@ library;
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ipelege/theme/tokens.dart';
+import 'package:ipelege/ui/components/brand_lockup.dart';
 
 /// Tests run with the working directory at the Flutter package root.
 const _res = 'android/app/src/main/res';
@@ -34,6 +36,7 @@ String? _colorResource(String path, String name) {
 }
 
 void main() {
+  _wordmark();
   group('the launch window matches the palette', () {
     test('light is screenBg2, not white', () {
       expect(
@@ -182,4 +185,57 @@ bool _endsWithIend(List<int> bytes) {
     if (tail[i] != iend[i]) return false;
   }
   return true;
+}
+
+/// The wordmark's blue *i*.
+///
+/// The Foundations canvas names this as one of exactly two things an earlier
+/// brand set lost: *"the mark keeps its ripple rings at every size and the
+/// wordmark keeps the blue i — the earlier set had been assembled from
+/// different exports and dropped both."*
+///
+/// On a light ground the real artwork carries it. On a dark ground the artwork
+/// is still stuck behind the 256 KiB fetch cap, so [BrandLockup] sets the name
+/// as type — and the first version of that fallback shipped it flat white,
+/// dropping the blue *i* exactly as the earlier set had. Type standing in for
+/// artwork is honest; type that quietly loses a brand relationship is not.
+void _wordmark() {
+  group('the dark wordmark keeps its blue i', () {
+    testWidgets('the i is Brand.sky and the rest is white', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            backgroundColor: Brand.navy,
+            body: Center(child: BrandLockup(width: 200, onDark: true)),
+          ),
+        ),
+      );
+
+      final spans =
+          (tester.widget<Text>(find.byType(Text)).textSpan! as TextSpan)
+              .children!
+              .cast<TextSpan>();
+
+      expect(spans.map((s) => s.text), ['i', 'pelege']);
+      expect(spans.first.style?.color, Brand.sky);
+      expect(spans.last.style?.color, Brand.white);
+    });
+
+    testWidgets('and still reads as one word to a screen reader', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Center(child: BrandLockup(width: 200, onDark: true)),
+          ),
+        ),
+      );
+
+      // Two spans are a typographic detail, not two words.
+      expect(find.bySemanticsLabel('Ipelege'), findsOneWidget);
+      handle.dispose();
+    });
+  });
 }

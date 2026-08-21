@@ -16,6 +16,17 @@ import 'package:flutter/material.dart';
 /// Brand colours. Fixed across both themes.
 abstract final class Brand {
   static const sky = Color(0xFF75BDEB);
+
+  /// A paler sky, for a **glyph sitting on the hero gradient** — the splash
+  /// cards are its only use in the whole canvas, and all four occurrences are
+  /// there.
+  ///
+  /// Not interchangeable with [sky]. Over a 10% white plate on the entry
+  /// gradient, [sky] sits too close to the ground behind it; this is the value
+  /// the design picked instead. Found by comparing the splash artboard to its
+  /// screenshot element by element — a whole-screen glance had passed it twice.
+  /// See docs/test-strategy.md, "UI ticks".
+  static const skyPale = Color(0xFF9FD4F5);
   static const deep = Color(0xFF145A8D); // primary
   static const ink = Color(0xFF111111);
   static const white = Color(0xFFFFFFFF);

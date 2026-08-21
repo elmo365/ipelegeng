@@ -821,6 +821,63 @@ It would not fail informatively — it would fail to start.
 
 ---
 
+## 19. The first real UI tick, and the three things a glance had passed
+
+A **UI tick** — enumerate the artboard's elements first, then compare each one
+against the screenshot, verdict per element — was adopted on 2026-08-21 after a
+whole-screen review of the splash passed a defect that was plainly visible in
+the image. The procedure is in
+[`test-strategy.md`](test-strategy.md#ui-ticks--comparing-a-screenshot-to-its-artboard-element-by-element).
+
+The first tick run under it was that same splash screen, dark, on a Galaxy S24.
+It found **three** departures where the glance had found none.
+
+| # | Element | Artboard | Was built | |
+|---|---|---|---|---|
+| 1 | Wordmark colour | light-blue `i`, white `pelege` | flat white | **fixed** |
+| 2 | Card glyph tint | `#9FD4F5` | `Brand.sky` `#75BDEB` | **fixed** |
+| 3 | The mark | `mark-dark.png`, 88 px, above the wordmark | absent entirely | **blocked** |
+
+### 19.1 The wordmark had lost its blue *i*
+
+The one relationship the canvas singles out as what an earlier brand set
+destroyed — *"the wordmark keeps the blue i — the earlier set had been
+assembled from different exports and dropped both"* — and the type fallback
+shipped it flat white. Written up in [`identity.md`](identity.md); the fix is
+two `TextSpan`s so the kerning stays the typeface's.
+
+Fixing it surfaced a second bug in the same widget: `ExcludeSemantics` was
+wrapping `Semantics`, so the exclusion swallowed the label along with the text
+and **the lockup reached a screen reader with no name at all**. It shipped that
+way, and was found only because a test asked for the name and did not get one.
+
+### 19.2 The splash glyphs are a paler blue than the app's accent
+
+The canvas paints the three card icons `#9FD4F5`, and **all four occurrences of
+that value in all five canvases are on this one screen.** It is not a stray
+literal: over a 10% white plate on the entry gradient, `Brand.sky` sits too
+close to the ground behind it. Now `Brand.skyPale`, with the role in its doc
+comment rather than the shade.
+
+This is the kind of thing only enumeration finds. Both colours are light blue
+on a dark blue ground; nothing about the screenshot looks wrong.
+
+### 19.3 The splash is missing the mark, not just the wordmark
+
+The artboard stacks **two** brand elements: `mark-dark.png` at 88 px, a 20 px
+gap, then `wordmark-dark-new.png` at 176 px. The build renders the wordmark
+stand-in and **no pin at all** — so the splash is short an element, not merely
+showing type where artwork belongs.
+
+Recorded rather than fixed, because `mark-dark.png` is one of the four cuts
+that exceed the 256 KiB fetch cap and it cannot be drawn without inventing it.
+It is the sharpest illustration of what that blocker actually costs: the first
+screen of the app is missing the logo. Listed in
+[`../design/CORRECTIONS.md`](../design/CORRECTIONS.md) with the other blocked
+cuts.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

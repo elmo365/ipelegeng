@@ -101,7 +101,17 @@ recorded where it belongs; collected here so none is lost.
       uniqueness on the unverified column anyway, or the phase 1 migration
       inherits every duplicate created in the meantime.
 - [ ] Whether phase 1 phone verification uses Firebase Auth's free quota or a
-      local SMS aggregator
+      local SMS aggregator — **the routes, and what each costs, are written up
+      in [`sms-otp.md`](sms-otp.md)**, along with the finding that matters more
+      than the per-message price: the design asks for an OTP on *every fresh
+      login*, which makes SMS a recurring per-user cost rather than a one-time
+      one
+- [ ] Whether **flash-call** verification replaces or supplements SMS. Much
+      cheaper in this kind of market, and it changes a screen — so it is a
+      design decision as well as a cost one
+- [ ] **Sender ID registration** with the networks or BOCRA, if bulk SMS in
+      Botswana requires it. A lead-time item rather than a code one, so it has
+      to be checked before a launch date is set
 - [ ] The design's OTP screens and "SMS code on every new device" rule do not
       apply in phase 0 — the register screen needs a variant, and the design
       project should be told

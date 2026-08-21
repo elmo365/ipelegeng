@@ -256,6 +256,117 @@ them as one — particularly the `replace` cases, where back must not re-enter a
 flow and post a second deduction. That is a money bug reachable with a hardware
 gesture.
 
+## What a green suite does not mean
+
+**Raised on 2026-08-21: "the SMS code you test is not accurate, because there
+is no backend for it — the OTP is just a dummy."** Correct, and the point
+generalises. Several seams in this app ship a real implementation and default
+to a fake, so that a widget test never needs a platform channel or a network.
+That is a good pattern and it has a specific cost: **a passing test proves the
+rule, not the thing.**
+
+This section names every stub and says exactly what it hides, so nobody reads
+`All tests passed` as a claim the feature works.
+
+| Seam | Fake | What the tests DO prove | What they do NOT |
+|---|---|---|---|
+| `OtpVerifier` | `DemoOtpVerifier` — `isCorrect` is `code.length == 4` | The state machine: OTP is unskippable, attempts are limited, resend cools down, back is blocked mid-round-trip, a wrong code is handled | **That any code is right or wrong.** No SMS is sent, none is received, and every four-digit string is accepted |
+| `Biometrics` | `AlwaysAllowBiometrics` | The screen's branching, the refusal path, that biometry only ever *unlocks* | ~~Whether the platform agrees~~ — **closed 2026-08-21** on a Galaxy S24: both availability branches, a real prompt, a real fingerprint |
+| `SessionStore` | `InMemorySessionStore` | What is kept and what is dropped, and that a reopen never lands on `active` | Nothing much — both implementations share one `write`, deliberately, after a bug where they did not |
+| `SettingsStore` | `InMemorySettingsStore` | That a set preference is written, and survives a relaunch | Nothing much — same shared-write shape |
+| Everything server-side | `Demo` | That screens render the data they are given | **That a booking exists.** A sent request becomes nothing, a submitted review is dropped, no money moves |
+
+### The rule this produces
+
+**A seam's fake must be more permissive than the real thing, never less.**
+`DemoOtpVerifier` accepting everything is safe in that direction: no test can
+pass *because* the fake rejected something the real one would allow. A fake
+that was stricter than production would hide real failures behind green.
+
+### The one that proved the cost
+
+`AlwaysAllowBiometrics` said `ready` to everything, so every test passed and
+**one entire branch of the shipped code had never run**. It took a real handset
+to find that the emulator — a sensor with nothing enrolled — takes the
+*other* path, and that the passcode-only layout still had a hardcoded
+fingerprint glyph over copy telling the user to use a passcode.
+
+Nothing in the suite could have caught it. That is the shape of every row above
+that is still open, and the OTP row is the largest of them.
+
+### What closes the OTP row
+
+Real delivery, which is Phase 4 territory at the earliest — the backend does
+not exist yet. Until then `DemoOtpVerifier` stays, and this table is the honest
+statement of what the entry flow's green tests are worth: **the rules around
+the code are tested; the code is not.**
+
+---
+
+## UI ticks — comparing a screenshot to its artboard, element by element
+
+**A tick is earned per element, not per screen.** For every screen that is
+built: take the gate's screenshot, open the artboard it came from, and compare
+**each element in turn**, writing down the verdict for each. A screen is not
+ticked because it "looks right".
+
+**This rule exists because of a specific failure, on 2026-08-21.** The splash
+screen was photographed on two devices and reviewed. The reviewer — me — read
+the shot, noted that light and dark were byte-identical, correctly explained
+*why* that was right, and called the screen correct.
+
+The wordmark on it was flat white. The canvas requires a **light-blue `i`** and
+white `pelege`, and says so in the one sentence in the whole design that names
+what a wordmark must not lose: *"the wordmark keeps the blue i — the earlier
+set had been assembled from different exports and dropped both."* The repo has
+an entire document, [`identity.md`](identity.md), whose purpose is stopping
+exactly that.
+
+It was not missed for lack of evidence. The screenshot was on screen, at full
+size, and the defect is plainly visible in it. **It was missed because the
+screen was reviewed as a whole rather than element by element** — the eye
+confirmed a gestalt it already expected. The user caught it by looking at the
+same image.
+
+That is the failure mode this section exists to prevent, and no amount of
+"look more carefully" fixes it. Only enumeration does.
+
+### The procedure
+
+1. **List the elements from the artboard first**, before looking at the
+   screenshot. Working the other way round means the screenshot decides what
+   you check, and anything it is missing is invisible.
+2. For each element, compare **shape, colour, type, spacing and copy**
+   separately. Copy is compared **character by character** where the design
+   wrote it — the booking states and the loop prompt are verbatim strings.
+3. **Write the verdict per element**, not per screen. "Matches", "differs —
+   recorded as delta §n", or "differs — bug, fixed in <commit>".
+4. Do it **in both modes**. The dark cut of an asset is different artwork, not
+   a tint, and the two most recent brand bugs were both dark-only.
+5. Anything that differs goes to [`design-deltas.md`](design-deltas.md) if the
+   departure is deliberate, or to a fix if it is not. Nothing is left as a
+   remembered observation.
+
+### What does not count as a tick
+
+- "Looks right" / "renders correctly" / "matches the canvas" for a whole
+  screen.
+- A comparison made from memory of the artboard rather than with it open.
+- A light-mode check standing in for both modes.
+- A screenshot taken but not actually opened.
+
+### Why the automated tests do not replace this
+
+They pin what can be stated as a rule — contrast floors, motion durations,
+verbatim copy, which routes render. They cannot tell you the wordmark lost a
+colour, because nobody had written down that it must not. **The tick is where
+new rules come from**: every one of `contrast_test.dart`,
+`motion_test.dart` and the wordmark assertions in `identity_test.dart` exists
+because a human comparison found something first, and each was then written
+down so it never has to be found by eye again.
+
+---
+
 ## Performance and device reality
 
 The market is Android 8+, 1–2 GB RAM, 3G, binary under 30 MB. That is a
