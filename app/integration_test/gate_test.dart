@@ -53,10 +53,10 @@ import 'package:ipelege/core/biometrics.dart';
 import 'package:ipelege/core/booking.dart';
 import 'package:ipelege/core/demo_data.dart';
 import 'package:ipelege/core/session.dart';
+import 'package:ipelege/core/settings.dart';
 import 'package:ipelege/main.dart';
 import 'package:ipelege/routing/app_router.dart';
 import 'package:ipelege/routing/routes.dart';
-import 'package:ipelege/theme/theme_mode.dart';
 
 /// One artboard to photograph.
 @immutable
@@ -145,6 +145,10 @@ final _shots = <Shot>[
     },
   ),
 
+  // Phase 3.5 · the settings spine. The screen that finally makes the dark
+  // mode every other shot is taken in reachable from inside the app.
+  const Shot('32b-preferences', Routes.preferences, session: Shot.signedIn),
+
   // The provider side, unchanged since Phase 0 but re-shot so the dark mode
   // this gate has never compared is on the record.
   const Shot('33-provider-home', Routes.dashboard, session: Shot.signedIn),
@@ -198,7 +202,7 @@ void main() {
             biometricsProvider.overrideWithValue(PlatformBiometrics()),
           ],
         );
-        container.read(themeModeProvider.notifier).select(mode);
+        container.read(settingsProvider.notifier).selectTheme(mode);
         shot.session(container.read(sessionProvider.notifier));
 
         await tester.pumpWidget(

@@ -34,6 +34,7 @@ import '../ui/screens/entry/verify_screen.dart';
 import '../ui/screens/placeholder_screen.dart';
 import '../ui/screens/provider/dashboard_screen.dart';
 import '../ui/screens/provider/wallet_screen.dart';
+import '../ui/screens/settings/preferences_screen.dart';
 import '../ui/shell/app_shell.dart';
 import 'nav_tabs.dart';
 import 'navigation.dart';
@@ -217,7 +218,17 @@ GoRouter createRouter({
           ],
         ),
         _branch(Routes.messages, 'Messages'),
-        _branch(Routes.account, 'Account'),
+        _branch(
+          Routes.account,
+          'Account',
+          children: [
+            _Sub(
+              Routes.preferences,
+              'Preferences',
+              builder: (context, state) => const PreferencesScreen(),
+            ),
+          ],
+        ),
       ]),
       _shell(AppMode.provider, [
         _branch(

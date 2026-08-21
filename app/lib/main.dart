@@ -12,9 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/biometrics.dart';
 import 'core/session.dart';
 import 'core/session_store.dart';
+import 'core/settings.dart';
 import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
-import 'theme/theme_mode.dart';
 
 Future<void> main() async {
   // Resolved before the first frame so every read and write afterwards is
@@ -28,6 +28,7 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         sessionStoreProvider.overrideWithValue(PrefsSessionStore(prefs)),
+        settingsStoreProvider.overrideWithValue(PrefsSettingsStore(prefs)),
         // The real sensor. The default is AlwaysAllowBiometrics so a widget
         // test never needs a platform channel — the same shape the session
         // store and the OTP verifier use.
@@ -58,7 +59,9 @@ class IpelegeApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ref.watch(themeModeProvider),
+      // Narrowed with `select`, so changing an unrelated preference does not
+      // rebuild the whole app.
+      themeMode: ref.watch(settingsProvider.select((s) => s.themeMode)),
       routerConfig: ref.watch(routerProvider),
     );
   }

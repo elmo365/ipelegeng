@@ -48,6 +48,9 @@ final _built = <String>{
   Routes.home,
   Routes.dashboard,
   Routes.wallet,
+  // Phase 3.5 — the settings spine, pulled forward from Phase 7 because dark
+  // mode was finished and had no control anywhere in the app.
+  Routes.preferences,
 };
 
 /// Routes still on `PlaceholderScreen`. Deliberate: the navigation graph stays

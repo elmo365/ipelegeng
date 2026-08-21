@@ -66,6 +66,11 @@ abstract final class Routes {
   /// were.
   static const bookingRate = '/bookings/:id/rate';
 
+  /// Preferences hangs off the Account tab the way the wallet hangs off the
+  /// dashboard: somewhere you go to change one thing and come back, not a
+  /// destination you browse.
+  static const preferences = '/account/preferences';
+
   // Provider tabs.
   static const dashboard = '/provider';
   static const requests = '/provider/requests';
