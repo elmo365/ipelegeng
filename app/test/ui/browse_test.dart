@@ -235,6 +235,7 @@ void main() {
       // Pay-per-listing: no booking, no commission, no completion. The tenant
       // enquires and leaves the app.
       final rental = ListingDetailData(
+        id: 'L-9001',
         name: 'Block 8 Rooms',
         category: Categories.rentals,
         location: 'Block 8, Gaborone',

@@ -27,7 +27,7 @@ import 'package:ipelege/ui/screens/placeholder_screen.dart';
 
 /// Routes with a real screen behind them. Keep in step with the "Where things
 /// stand" section of docs/build-order.md.
-const _built = <String>{
+final _built = <String>{
   // Phase 1 — the account gap.
   Routes.splash,
   Routes.register,
@@ -37,6 +37,13 @@ const _built = <String>{
   Routes.unlock,
   Routes.biometricEnrolment,
   Routes.location,
+  // Phase 2 — booking. The status screen's own eleven states are covered in
+  // booking_test.dart; what belongs here is that each route renders at all.
+  // Parameterised, so they are concrete paths rather than patterns — the
+  // router resolves `:id` against Demo either way.
+  Routes.bookingRequestOf('L-4417'),
+  Routes.bookingOf('BK-77410'),
+  Routes.bookingRateOf('BK-77410'),
   // Built during the resync, to validate the tokens.
   Routes.home,
   Routes.dashboard,

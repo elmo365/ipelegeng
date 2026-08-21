@@ -223,18 +223,66 @@ the gaps are in the design's own text, not in interpretation:
 - **Consent supersede is modelled but not enforced.** `Session.canBook` returns
   false on a stale version, and nothing routes that session to `/consent`. The
   design requires the gate to *force* re-consent "before anything else
-  proceeds".
+  proceeds". *(Fixed 2026-08-21 — a `redirect` on the router sends any
+  `needsReconsent` session to `/consent`. `canBook` returning false only ever
+  stopped a booking, which is "before booking", not "before anything else".
+  Three things are deliberately exempt: a visitor, because browsing is free
+  under UC-4; a locked session, because unlock plus an undismissable consent
+  form is two gates at once and a dead end; and `/consent` itself. There is no
+  `refreshListenable`, because `Consent.current` is a compile-time constant and
+  cannot be superseded mid-session — the case it catches is a **restored**
+  session, which is why `SessionController.restore` landed with it.)*
 - **Back is not blocked during the OTP round trip**, which the navigation rules
   state outright. *(Fixed 2026-08-20.)*
 
-**Still open, and known since it was built:** biometry and the passcode are
-wired to the session but not to the platform — both buttons call `unlock()` and
-no `local_auth` prompt is shown yet. The screen, the states and the fallback's
-visual weight are right; the sensor is not connected.
+**~~Still open, and known since it was built:~~ Closed 2026-08-21.** Biometry
+and the passcode were wired to the session but not to the platform — both
+buttons called `unlock()` and no prompt was ever shown. They now go through
+`core/biometrics.dart`:
+
+- **The two buttons ask for different things.** `biometricOnly: true` on the
+  fingerprint, the device credential on the passcode. Letting the OS substitute
+  a PIN for a fingerprint would have made them the same button, which the
+  design draws as two distinct choices.
+- **The "biometry unavailable → passcode" state is implemented**, and in both
+  directions: a handset with no usable sensor never gets the fingerprint button
+  *or* copy telling it to use one, and a prompt that reports unavailable
+  mid-flight collapses the screen to passcode-only rather than leaving a button
+  that can only fail. On a phone with no reader the passcode is promoted to the
+  primary, because there it is not a fallback — it is the only way in.
+- **A refusal is silent.** A cancelled prompt is a change of mind, not an
+  error, and the other way in is already on screen.
+- **Android:** `MainActivity` now extends `FlutterFragmentActivity` (AndroidX
+  `BiometricPrompt` is a Fragment and throws `no_fragment_activity` otherwise —
+  at the moment the user taps unlock, which is the worst place to find out),
+  and the manifest declares `USE_BIOMETRIC`. Verified by `flutter build apk
+  --debug`; **not yet seen on a handset**, which is Phase 0's gate, not this
+  one's.
+
+**Session persistence landed 2026-08-21.** "OTP on every fresh login; the
+session then persists until explicit logout" — the first half was always true
+and the second was not, because every restart was a fresh install.
+`core/session_store.dart` now holds it, and the decisions worth knowing are:
+
+- **A reopen never lands on `active`.** With biometry on it restores to
+  `locked`; with biometry off it goes back through the code, because the
+  Security screen promises "an OTP every time the app is opened" in those
+  words. Restoring straight to signed-in would make a stolen handset a
+  signed-in handset, and that is the one way this could be wrong that matters.
+- **Not kept:** a session mid-verification, and the attempt count with it. The
+  design's restoration list puts "any OTP already sent" under *Not kept*, and
+  resuming into a form whose code has expired is worse than starting again.
+- `SessionController` writes through a single `_set`, so persistence cannot be
+  forgotten when the next mutator is added.
+
+*A bug this caught, worth repeating: the keep-or-drop rule was first written
+only into the prefs-backed store, while every test ran against the in-memory
+one. Tests were passing against behaviour the app did not have. Both now share
+one `write`.*
 
 ---
 
-## Phase 2 · Booking, with the payment moment moved — stage 3
+## Phase 2 · Booking, with the payment moment moved — **built 2026-08-21**
 
 Booking request · Booking status (11 states) · Rate & review
 
@@ -273,9 +321,47 @@ when they were merely somewhere I was deleting.
 **Done when:** all 11 states render with their own copy, tone and single primary
 action, and the payment step sits at position 4.
 
+### What landed
+
+Three screens, and the joins between them:
+
+- **Booking request** at `/home/listing/:id/request` — on the **Home** tab, not
+  Bookings, because until it is sent there is no booking, only a listing being
+  looked at. Backing out returns to the listing. The direction radio set is the
+  canvas's `dirDefs`, both label and sub-line, and the location card is
+  conditional on it exactly as `needsLocation` is: a customer who is travelling
+  to the provider is never asked for their address, because an address collected
+  with no purpose is a DPA problem rather than a stray field.
+- **Booking status**, already built, now reachable *from* the request — sending
+  is a **replace**, so back cannot re-enter the form and send a second request
+  for the same job.
+- **Rate & review** at `/bookings/:id/rate`, reached from `COMPLETED`'s action.
+  It is the one of the eleven actions that has somewhere to go; the rest stay
+  inert rather than pretending, and each is inert for a reason already in the
+  blocked list below.
+
+**Nothing is pre-selected on the rating.** The canvas artboard sits at four
+stars the way its booking artboard sits at `REQUESTED` — that is the demo's
+state, not a default — so **Submit review** is dead until a star is tapped.
+Submitting a rating the customer never chose would be worse than collecting
+none, on a product whose central trust argument is that it does not fabricate
+provider history.
+
+**One correction this phase forced**, in [`design-deltas.md`](design-deltas.md)
+§15: `ServiceDirection` carried a note asking for its options to be confirmed
+against the canvas once the tail was readable. They now are — two customer-facing
+options, with the copy the canvas wrote — and `either` is kept, because it is a
+property of a *listing* from [`booking.md`](booking.md) ("Both — provider offers
+either") rather than a choice ever offered at booking.
+
+**Still open in this phase, and not blockers on Phase 3:** nothing persists, so
+a sent request does not become a real booking and a submitted review is returned
+to the caller and dropped; there is no picker behind the `WHEN` card, because
+scheduling granularity per category is still an open question.
+
 ---
 
-## Phase 3 · The loop prompt — stage 7
+## Phase 3 · The loop prompt — **built 2026-08-21**
 
 Cross-category prompt · Rental enquiry → movers handoff
 
@@ -289,6 +375,47 @@ The design puts it third for that reason, and it is cheap once booking exists.
 **Watch:** suppress the prompt when the adjacent category is thin — do not
 prompt someone into an empty room — when they have already booked it, or when
 the provider in the adjacent category is the same person.
+
+### What landed
+
+**The rules are the feature.** `core/loop_prompt.dart` holds the four states the
+journey map names, and three of them are refusals. `LoopPrompts.decide` returns
+a `LoopDecision` carrying the *reason* it declined, not a bare null, because a
+suppression that fires for the wrong reason looks identical on screen to one
+that works.
+
+Two placements, both named by the design:
+
+- **The rental enquiry → movers handoff**, as a sheet on listing detail. Offered
+  *after* the enquiry, never beside it — a truck alongside the enquiry button
+  competes with the thing the customer came for. "Not now" dismisses to exactly
+  where they were, the same rule the auth gate follows.
+- **A completed booking**, as a card at the foot of the status screen. The
+  screen gates it on `COMPLETED` itself as well as the caller deciding whether
+  to offer one at all: a prompt that could surface while a plumber is still
+  under the sink is precisely the cross-sell banner this is not.
+
+**The demo shows one prompt out of four pairs, and that is the feature
+working.** `movers → plumbing`, `catering → hire` and `hire → catering` all
+point at categories the design marks thin, so the empty-room rule withholds
+them. Only `rentals → movers` — 21 trucks — fires. Six of nine categories being
+thin at launch is the design condition, not a gap in the demo data.
+
+**Reachability cost.** Stage 7 needed a rental to enquire about, so `Demo` grew
+rentals listings and a `listingOf(id)` that resolves them. That surfaced a copy
+bug on listing detail, now fixed and recorded in
+[`design-deltas.md`](design-deltas.md) §16: the new-provider note claimed
+verification covers "trade certification", which is wrong for rentals (proof of
+ownership) and tiling (proof of past work), and a rental was being given a
+"0 completed jobs" count on a journey shape the design says has no completion
+at all.
+
+**What the design did not give, and what was derived instead.** The journey map
+marks this feature `gap` — it is specified as behaviour and never drawn. One
+line of finished copy exists (*"Moving in? Find a truck"*) and is marked
+`verbatim` in code. The other three pairs' copy is derived from the design's own
+adjacency sentences and flagged as derived, so a later canvas can replace it
+without anyone having to guess which strings were ours.
 
 ---
 
@@ -390,21 +517,43 @@ size ladder.
 locked states) · consent · biometric enrolment · unlock · location, plus the
 auth gate as a sheet.
 
-**Booking (Phase 2):** booking status, **all eleven states**, with the payment
-moment at step 4.
+**Booking (Phase 2):** booking request · booking status, **all eleven states**,
+with the payment moment at step 4 · rate & review.
+
+**The loop (Phase 3):** the cross-category prompt with all four suppression
+rules · the rental enquiry → movers handoff sheet · the prompt card on a
+completed booking.
 
 **Built earlier, to validate the resynced tokens:** consumer home · category
 browse · listing detail · provider dashboard · wallet.
 
-Fourteen shared components. **177 tests**, `flutter analyze` clean, and every
-built screen seen rendered on a device in both modes.
+The shared component set gained two: `ScreenHeader`, extracted from the status
+screen so the two booking steps carry the same header rather than one custom and
+one stock `AppBar`; and `LoopPromptCard`. **254 tests**, `flutter analyze`
+clean, and `flutter build apk --debug` green. Every screen built before
+2026-08-21 has been seen rendered on a device in both modes; the two that landed
+that day have not, and Phase 0's gate applies to them before Phase 3 closes.
 
 Everything else renders `PlaceholderScreen`, which is deliberate — the
 navigation graph stays complete and testable while screens land one at a time.
 
-**Next action: Phase 3**, the loop prompt in stage 7.
+**Next action: Phase 4** — becoming a provider, paired with the admin queue.
+**This is where the backend starts**, and it is a much larger step than
+anything before it: a Django project on `/staff/*`, the `PROVIDER_CATEGORY`,
+`ADMIN_ACTION` and `DOCUMENT_ACCESS` models, and two halves that have to ship
+together because neither is testable alone.
 
 Phase 0 is closed. Phase 1 (brand) is done except the four cuts that exceed the
-fetch cap. Phase 2's status screen is built; the **booking request** screen and
-**rate & review** still belong to it, and the dispute *flow* stays blocked
-because the design has not drawn it — the `DISPUTED` state itself is built.
+fetch cap. **Its remainder is closed**: the consent-supersede redirect, session
+persistence and `local_auth` all landed 2026-08-21. What is left of Phase 1 is
+the four brand cuts, and that is a fetch-cap problem only the user can clear.
+Phase 2 is built: request, status with all eleven states, and rate & review.
+Phase 3 is built: the prompt, its four suppression rules and both placements.
+The dispute *flow* stays blocked because the design has not drawn it — the
+`DISPUTED` state itself is built.
+
+**Before Phase 4, run Phase 0's gate on what has landed since it last ran.**
+Booking request, rate & review, the rentals listing and both loop placements
+have never been seen on a device. Phase 0 requires a colour *and* motion pass in
+both modes, and it exists because the one time it was skipped the app shipped
+five screens with a stock Flutter icon.

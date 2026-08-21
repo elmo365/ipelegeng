@@ -14,11 +14,15 @@ import 'package:go_router/go_router.dart';
 
 import '../core/booking.dart';
 import '../core/demo_data.dart';
+import '../core/loop_prompt.dart';
+import '../core/session.dart';
 import '../theme/motion.dart';
+import '../ui/screens/consumer/booking_request_screen.dart';
 import '../ui/screens/consumer/booking_status_screen.dart';
 import '../ui/screens/consumer/category_browse_screen.dart';
 import '../ui/screens/consumer/home_screen.dart';
 import '../ui/screens/consumer/listing_detail_screen.dart';
+import '../ui/screens/consumer/rate_review_screen.dart';
 import '../ui/screens/entry/biometric_enrolment_screen.dart';
 import '../ui/screens/entry/consent_screen.dart';
 import '../ui/screens/entry/location_screen.dart';
@@ -32,6 +36,7 @@ import '../ui/screens/provider/dashboard_screen.dart';
 import '../ui/screens/provider/wallet_screen.dart';
 import '../ui/shell/app_shell.dart';
 import 'nav_tabs.dart';
+import 'navigation.dart';
 import 'routes.dart';
 
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -39,11 +44,34 @@ final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 /// [initialLocation] defaults to the splash, because a cold start with no
 /// account is the normal case. Tests that are about the shell rather than the
 /// entry flow pass [Routes.home] instead.
-GoRouter createRouter({String initialLocation = Routes.splash}) {
+GoRouter createRouter({
+  String initialLocation = Routes.splash,
+  Session Function()? readSession,
+}) {
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: initialLocation,
     restorationScopeId: 'app',
+    // **Consent supersede, enforced.** FR-1.10 and the DPA require re-consent
+    // "before anything else proceeds", and until now that was modelled and not
+    // routed: `Session.canBook` returned false and nothing sent the session
+    // anywhere, so a superseded user could browse indefinitely and only meet
+    // the rule at the booking action.
+    //
+    // There is no `refreshListenable` on purpose. `Consent.current` is a
+    // compile-time constant, so a version cannot be superseded mid-session —
+    // it changes when a new build ships, which means a restart. Evaluating on
+    // movement is therefore sufficient today, and a listenable would be
+    // machinery for a case that cannot occur. **When session persistence
+    // lands** this redirect is what catches a restored session carrying an old
+    // version, which is the case it exists for.
+    redirect: (context, state) {
+      final session = readSession?.call();
+      if (session == null || !session.needsReconsent) return null;
+      // Not a loop: the consent screen is where we are sending them.
+      if (state.matchedLocation == Routes.consent) return null;
+      return Routes.consent;
+    },
     routes: [
       // Entry sits outside both shells. There is no tab bar until there is an
       // account, and a flow that could be escaped by tapping a tab would not
@@ -104,8 +132,30 @@ GoRouter createRouter({String initialLocation = Routes.splash}) {
             _Sub(
               Routes.listing,
               'Listing',
+              builder: (context, state) {
+                final listing = Demo.listingOf(
+                  state.pathParameters['id'] ?? '',
+                );
+                // Stage 7's first placement. Decided here rather than in the
+                // screen: whether to prompt is a supply-and-history question,
+                // and the screen has neither.
+                return ListingDetailScreen(
+                  data: listing,
+                  loopPrompt: Demo.loopAfter(
+                    listing.category,
+                    LoopMoment.rentalEnquiry,
+                  ).pair,
+                );
+              },
+            ),
+            // The request form belongs to the Home tab, not to Bookings:
+            // until it is sent there is no booking, and backing out has to
+            // return to the listing the customer was reading.
+            _Sub(
+              Routes.bookingRequest,
+              'Request booking',
               builder: (context, state) =>
-                  ListingDetailScreen(data: Demo.listing),
+                  BookingRequestScreen(data: Demo.bookingRequest),
             ),
           ],
           // Screens take their data as an argument, so swapping Demo for a
@@ -123,14 +173,46 @@ GoRouter createRouter({String initialLocation = Routes.splash}) {
               // there is nothing to advance the state machine, and the design's
               // own artboard exposes the same switch — a row of state tabs
               // above the phone — for exactly this reason.
-              builder: (context, state) => BookingStatusScreen(
-                state: BookingState.byKey(
+              builder: (context, state) {
+                final booking = BookingState.byKey(
                   state.uri.queryParameters['state'] ?? 'REQUESTED',
-                ),
-                category: Demo.bookingCategory,
-                providerName: Demo.bookingProviderName,
-                providerFirstName: Demo.bookingProviderFirstName,
-              ),
+                );
+                // Stage 7's second placement. Decided once here; the screen
+                // gates it on COMPLETED itself.
+                final loop = Demo.loopAfter(
+                  Demo.bookingCategory,
+                  LoopMoment.bookingCompleted,
+                );
+                return BookingStatusScreen(
+                  state: booking,
+                  category: Demo.bookingCategory,
+                  providerName: Demo.bookingProviderName,
+                  providerFirstName: Demo.bookingProviderFirstName,
+                  // One of the eleven actions has somewhere to go. The rest
+                  // stay inert rather than pretending: messaging has no thread
+                  // UI, the dispute flow is undesigned, and cancellation has no
+                  // settled rule — all three are in docs/build-order.md's
+                  // blocked list.
+                  onAction: booking.key == 'COMPLETED'
+                      ? () => context.pushScreen(
+                          Routes.bookingRateOf(
+                            state.pathParameters['id'] ?? Demo.bookingId,
+                          ),
+                        )
+                      : null,
+                  loopPrompt: loop.pair,
+                  onLoopPrompt: loop.shows
+                      ? () => context.pushScreen(
+                          Routes.categoryOf(loop.pair!.then.key),
+                        )
+                      : null,
+                );
+              },
+            ),
+            _Sub(
+              Routes.bookingRate,
+              'Rate & review',
+              builder: (context, state) => RateReviewScreen(data: Demo.review),
             ),
           ],
         ),

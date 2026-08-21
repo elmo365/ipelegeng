@@ -19,10 +19,13 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/booking.dart';
+import '../../../core/loop_prompt.dart';
 import '../../../theme/dimens.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/typography.dart';
+import '../../components/loop_prompt_card.dart';
 import '../../components/money_text.dart';
+import '../../components/screen_header.dart';
 
 class BookingStatusScreen extends StatelessWidget {
   const BookingStatusScreen({
@@ -31,12 +34,40 @@ class BookingStatusScreen extends StatelessWidget {
     required this.category,
     required this.providerName,
     required this.providerFirstName,
+    this.onAction,
+    this.loopPrompt,
+    this.onLoopPrompt,
   });
 
   final BookingState state;
   final CategoryToken category;
   final String providerName;
   final String providerFirstName;
+
+  /// What the state's single action does.
+  ///
+  /// Null where the destination does not exist yet, which is most of them:
+  /// messaging has no thread UI, the dispute *flow* is undesigned, and
+  /// cancelling has no settled rule. An unwired action is inert rather than
+  /// pretending — the one that is wired is `COMPLETED` → rate & review.
+  final VoidCallback? onAction;
+
+  /// Stage 7's cross-category prompt, already through
+  /// [LoopPrompts.decide] at the call site — a pair here means the four
+  /// suppression rules have run and none of them fired.
+  ///
+  /// **This screen still gates it on `COMPLETED` itself.** The moment the
+  /// design names is a *finished* job, and a prompt that could surface while a
+  /// plumber is still under the sink would be the cross-sell banner stage 7
+  /// exists not to be. Two gates on purpose: the caller decides *whether*,
+  /// this screen decides *when*.
+  final LoopPair? loopPrompt;
+
+  final VoidCallback? onLoopPrompt;
+
+  /// The one state a prompt may appear on.
+  bool get _showsLoopPrompt =>
+      loopPrompt != null && onLoopPrompt != null && state.key == 'COMPLETED';
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +78,7 @@ class BookingStatusScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _Header(category: category, brightness: brightness),
+            ScreenHeader(title: 'Your booking', category: category),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -67,85 +98,25 @@ class BookingStatusScreen extends StatelessWidget {
                     const SizedBox(height: Space.x3),
                     _NoteCard(note: state.note!),
                   ],
+                  // Last, and only on a closed booking: everything above is
+                  // about this job, and this is the next one.
+                  if (_showsLoopPrompt) ...[
+                    const SizedBox(height: Space.x4),
+                    LoopPromptCard(pair: loopPrompt!, onTap: onLoopPrompt!),
+                  ],
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(18, Space.x4, 18, 22),
-              child: _Action(state: state, palette: palette),
+              child: _Action(
+                state: state,
+                palette: palette,
+                onPressed: onAction,
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Back, title, and the category as a filled pill in its own hue.
-class _Header extends StatelessWidget {
-  const _Header({required this.category, required this.brightness});
-
-  final CategoryToken category;
-  final Brightness brightness;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    final text = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
-      child: Row(
-        children: [
-          // The back control is a raised plate here, not a bare glyph in an
-          // AppBar — this screen has no app bar, so the affordance has to
-          // carry itself.
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: palette.cardBg,
-              borderRadius: Radii.iconTileAll,
-              boxShadow: palette.shadowRow,
-            ),
-            child: SizedBox(
-              width: 38,
-              height: 38,
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).maybePop(),
-                  borderRadius: Radii.iconTileAll,
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 21,
-                    color: palette.textPrimary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: Space.x3),
-          Expanded(
-            child: Text(
-              'Your booking',
-              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
-            decoration: BoxDecoration(
-              color: category.inkOf(brightness),
-              borderRadius: Radii.pillAll,
-            ),
-            child: Text(
-              category.label,
-              style: AppTypography.chipLabel.copyWith(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w700,
-                color: Brand.white,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -552,10 +523,19 @@ class _NoteCard extends StatelessWidget {
 
 /// One action, drawn three ways. Never two primaries.
 class _Action extends StatelessWidget {
-  const _Action({required this.state, required this.palette});
+  const _Action({
+    required this.state,
+    required this.palette,
+    required this.onPressed,
+  });
 
   final BookingState state;
   final AppPalette palette;
+
+  /// Null where the state's destination is not built yet. The label still
+  /// says what the action would be — the design wrote one per state and
+  /// hiding it would leave the screen a dead end.
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +558,7 @@ class _Action extends StatelessWidget {
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
-          onTap: () {},
+          onTap: onPressed,
           borderRadius: Radii.buttonAll,
           child: Container(
             width: double.infinity,

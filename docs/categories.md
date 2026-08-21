@@ -17,6 +17,31 @@ is in the adjacency, not the count.
 **Implication for sequencing:** launch clusters that reinforce each other rather
 than a scattered set of unrelated categories.
 
+### The adjacency pairs, as built
+
+The journey map's stage 7 turns this principle into a feature — the loop prompt,
+built 2026-08-21 in `app/lib/core/loop_prompt.dart`. These are the pairs it
+fires on. **This table and that file are one statement in two places**; change
+them together.
+
+| After | Offer | Where | Copy |
+|---|---|---|---|
+| Property rentals | Movers & hauling | The rental enquiry | *"Moving in? Find a truck"* — the design's own |
+| Movers & hauling | Plumbing | A completed booking | Derived |
+| Catering | Hire | A completed booking | Derived |
+| Hire | Catering | A completed booking | Derived |
+
+**Rides appears in no row as a source.** It is the connective tissue *into* the
+other categories, it is dispatch so it has no browse screen to send anyone to,
+and it is the highest-frequency category — a prompt after every ride is noise.
+
+**A pair is an offer, not a guarantee.** Four rules suppress it, three of them
+refusals the design states outright: the adjacent category is thin ("don't
+prompt into an empty room"), the customer has already booked it, or the only
+provider over there is the person they just used. Against the launch supply
+figures only the rentals row survives — see
+[design-deltas](design-deltas.md#163-the-suppression-rules-mostly-fire-and-that-is-correct).
+
 ## Launch categories
 
 **Nine categories at launch.** Revised 2026-08-17 — see

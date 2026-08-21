@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Biometric unlock. Not a runtime permission: it is granted at install
+         and the prompt is the system's own, so the app never sees a
+         fingerprint. Declaring it is what lets AndroidX BiometricPrompt run —
+         see app/lib/core/biometrics.dart and MainActivity.kt, which extends
+         FlutterFragmentActivity for the same feature. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <application
         android:label="ipelege"
         android:name="${applicationName}"

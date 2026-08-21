@@ -417,6 +417,171 @@ what it supersedes rather than appending beside it.
 
 ---
 
+## 15. Building Phase 2's remainder — four departures, each recorded
+
+Booking request and rate & review were built on 2026-08-21 from the
+`5–6 · BOOKING REQUEST / STATUS` and `8 · RATE & REVIEW` artboards in
+`ipelege-ds-2-customer.dc.html`, plus the `dirDefs` and `ratingStars` bindings in
+that file's `<script>` block. Four things in the built screens differ from what
+the canvas draws. None is an improvement made for its own sake; each is written
+here so it can be argued with.
+
+### 15.1 The service direction options are confirmed, and `either` survives
+
+`ServiceDirection` carried a doc comment saying its three values were "inferred
+from the model rather than read", because the option list "sits past the read
+cap on the source canvas", and asking for confirmation once the tail was
+recoverable. The tail has been readable since the canvas was split. It now is
+confirmed, and the answer is split:
+
+| | The canvas | Kept |
+|---|---|---|
+| Booking radio set | `Comes to you` / `You go to them`, each with a sub-line | Both, verbatim, as `ServiceDirection.choices` |
+| Browse filter | `Any direction` / `Comes to you` / `You go to them` | Yes — the "All" chip is now "Any direction" |
+| `either` | Absent | **Kept**, as a listing property |
+
+`either` is not an invention and is not deleted. [`booking.md`](booking.md) is
+explicit that a listing may offer "**Both** — provider offers either", with the
+customer selecting the applicable direction at the point of booking. So a
+listing may be `either`; a booking request never is. `choices` is what says so
+in code, and both the filter and the radio set read it rather than filtering
+`values` by hand.
+
+**The design's own inconsistency, recorded not corrected:** the canvas draws
+both radio cards unconditionally, on a listing its own browse card labels
+"Comes to you · Block 8". Both cards render, as the design has them. Narrowing
+them to what a provider actually offers is a decision for when listings carry
+real direction data.
+
+### 15.2 The `Request / Status` tab strip is not built
+
+The artboard puts a two-tab segmented control at the top of the phone — Request
+and Status — because it is showing screens **5 and 6** in one frame. They are
+separate routes in the app, on different tabs, reached at different times: a
+status you can flip back to a request form for is a status of nothing. The
+status screen made this call when it was built; the request screen follows it.
+
+What the tab strip was also doing was carrying the top of the screen, so
+removing it leaves a screen with no way back. Both booking screens now use one
+extracted `ScreenHeader` — a raised back plate, a title, the category as a
+filled pill — rather than one custom header and one stock `AppBar`.
+
+### 15.3 A chosen star reads the palette, not the canvas's literal
+
+The canvas fills a chosen star with the literal `#145A8D`, not with
+`pal.accentText`. In light mode those are the same colour to the byte. In dark
+mode the literal would put deep navy on a `oklch(0.235 …)` card, and the rating
+— the one thing the screen exists to collect — would be close to invisible.
+
+`_Stars` reads `palette.accentText`: identical to the canvas in light,
+`#75BDEB` in dark. This is the same class of fix as the shadow-vocabulary
+mapping in §13 — the canvas is authoritative about intent, and a literal that
+only works in one mode is not the intent.
+
+### 15.4 The pronoun in the payment sentence
+
+The canvas writes, of a provider named Kabelo:
+
+> Kabelo quotes you back. Nothing is charged now, and you pay **him** directly.
+
+That sentence is a template rendered for every provider on the platform. The
+built copy is identical but for the pronoun — **them** — because the alternative
+is an app that misgenders providers on the screen where it asks a customer to
+trust one. Everything else in the sentence is verbatim, and it is verbatim on
+purpose: this is the screen that says nothing is charged now.
+
+### One thing that is not a delta
+
+The canvas's provider row reads "Verified · from P150". The built row reads
+"Verified · from P150.00", because [`test-strategy.md`](test-strategy.md)'s
+money rule is two decimal places always, including on whole numbers, and it is
+enforced by tests. The canvas is drawing a figure; the app is formatting one.
+
+---
+
+## 16. Building a feature the design specified but never drew
+
+Stage 7's loop prompt was built on 2026-08-21. The journey map in
+`ipelege-ds-1-foundations.dc.html` marks both of its pieces — *Cross-category
+prompt* and *Rental enquiry → movers handoff* — as `gap`, which tracks **design**
+completeness. So unlike every screen before it, this one had no artboard.
+
+What it did have is more than enough to build from, and the distinction matters
+because [`build-order.md`](build-order.md) draws a line between "unsettled" and
+"blocked": the journey map gives the two trigger points, the adjacency pairs,
+the four suppression states, and one finished line of copy. What it does not
+give is a layout or the other three headlines.
+
+### 16.1 What is the design's, and what is ours
+
+| | Source |
+|---|---|
+| The two placements | Journey map: *"the prompt belongs at the rental enquiry, and again at a completed movers job"* |
+| The four suppression states | Journey map, verbatim |
+| The pairs | Journey map's own table, plus [`categories.md`](categories.md) |
+| `rentals → movers` headline | **The design's.** *"Moving in? Find a truck"* — marked `verbatim: true` in `LoopPair` |
+| The other three headlines and all body copy | **Derived**, and flagged `verbatim: false` |
+| The layout of card and sheet | **Ours**, assembled from existing components |
+
+The `verbatim` flag is not decoration. It is how a later canvas replaces our
+copy without anyone having to work out from a diff which strings were the
+design's and which were guesses, and there is a test asserting the rentals pair
+carries it and the others do not.
+
+### 16.2 Four decisions turning the design's table into four pairs
+
+The journey map's table reads *Room taken → truck that same week → plumber,
+water delivery once moved in* · *Funeral or wedding → catering · chairs, tents
+and sound hire · transport for guests* · *Rides → the connective tissue*.
+
+1. **Water delivery is not a launch category.** It is in `categories.md`'s full
+   list but not the nine, so `movers → plumbing` carries the "once moved in"
+   half of that chain alone.
+2. **The event cluster is three categories and a prompt offers one.** The design
+   says "the adjacent category", singular, and a prompt offering three things is
+   a menu — a menu at the end of a job is the banner this is not supposed to be.
+   Catering offers hire, hire offers catering.
+3. **Rides is a target, never a source.** *Transport for guests* is not offered,
+   for two independent reasons: rides is `dispatch`, so it has no browse screen
+   to send anyone to, and it is the highest-frequency category, so a prompt
+   after every ride is exactly the noise stage 7 is meant to avoid. A test
+   asserts no pair points at a dispatch category.
+4. **An unknown supply figure counts as thin.** The design says don't prompt
+   into an empty room; not *knowing* whether a room is empty is not grounds for
+   sending someone into it, so the default fails closed.
+
+### 16.3 The suppression rules mostly fire, and that is correct
+
+Against the demo's own supply figures — which are the canvas's `CATS` array
+verbatim — exactly one of the four pairs shows. The other three point at
+categories the design marks thin.
+
+That is worth stating plainly because it is the kind of result that looks like a
+bug: **six of nine categories are thin at launch by plan**, so a correctly built
+loop prompt spends most of its life declining to appear. A version of this
+feature that showed all four would be one that had quietly stopped checking
+supply, and there is a test pinning the demo figures for that reason.
+
+### 16.4 A copy bug the work exposed
+
+Making rentals reachable — stage 7 needs a rental to enquire about — put the
+listing detail screen in front of a `payPerListing` category for the first time,
+and two things on it were wrong:
+
+- **"Verification confirms identity and trade certification"** is wrong for at
+  least two of the nine. Rentals is verified on proof of ownership and property
+  inspection; tiling has no certificate at all and is verified on proof of past
+  work — which `categories.md` says outright, and which is half the reason
+  "small trades" was split into three categories in the first place. It now
+  reads "the documents this category requires".
+- **"0 completed jobs yet"** on a rental is a zero that can never become
+  anything else. The design is explicit that pay-per-listing means "no booking,
+  no commission, no completion", so a job count there is meaningless. Rentals
+  now get their own note about what verification covers and how a viewing is
+  arranged.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

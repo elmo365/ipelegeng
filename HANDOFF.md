@@ -1,154 +1,147 @@
 # Work Handoff - Ipelege
 
-**Saved:** Friday, 2026-08-21, 05:13 (+02:00)
+**Saved:** Friday 21 August 2026, 13:28 (+02:00)
 **Branch:** main
-**Last commit:** a01ed33 Build the booking status screen: all eleven states
+**Last commit:** 4a5a72f handoff: save session 2026-08-21 0513
 
 ## What I was working on
 
-**Reading the design properly, and repairing everything that had been built on
-a partial reading of it.** The session began as "resume and follow
-build-order.md" and became something else once the user pushed back, repeatedly
-and correctly, on the same point: I was working from extracted slices of the
-canvases rather than reading them.
+Resumed from the 05:13 handoff and built straight down `docs/build-order.md`:
+finished **Phase 2**, built **Phase 3** whole, then closed **all three of Phase
+1's open remainder items**. The repo went from 177 tests to **254**, with
+`flutter analyze` clean and `flutter build apk --debug` green throughout.
 
-Five rounds of that pushback, each one right:
-
-1. *"why are you dealing with design as if you don't know the design"* — the
-   project id was in `design/README.md` the whole time.
-2. *"read top to bottom the whole design not foundation"* — I had read one
-   canvas of five.
-3. *"docs come before dart"* — I was correcting code before the document it
-   was built from.
-4. *"if documentation is wrong its a definite emergency"* — three documents
-   were actively wrong and I was building on them.
-5. *"the design mentions the assets and done the flutter conversion for you"* —
-   my flattener was stripping `<script>`, which is where the design keeps its
-   token data.
+Three screens, one rules engine, two platform integrations, and the docs that
+had to stop being wrong once each landed.
 
 ## Files changed this session
 
-Five commits: `3a29e95` (read the whole design, correct the docs), `f4a3c8a`
-(import brand, ship the icon), `3b72016` (implement Foundations), `38f3b4a`
-(splash + notification icons), `a01ed33` (booking status).
+**New — Phase 2 (booking):**
+- `app/lib/ui/screens/consumer/booking_request_screen.dart` — screen 5, the
+  direction radio set and the conditional location card
+- `app/lib/ui/screens/consumer/rate_review_screen.dart` — screen 8
+- `app/lib/ui/components/screen_header.dart` — extracted from the status screen
+  so both booking steps share one header
 
-**Docs corrected** — `design-system.md` (motion, haptics, navigation, state
-restoration merged and re-sourced), `identity.md` (rewritten twice as the truth
-changed), `design/README.md`, `design-deltas.md` (§13, §14), `build-order.md`
-(brand promoted to Phase 1; screen index added; DISPUTED/NO_SHOW unblocked).
+**New — Phase 3 (the loop):**
+- `app/lib/core/loop_prompt.dart` — the pairs and the four suppression rules
+- `app/lib/ui/components/loop_prompt_card.dart` — the card on a closed booking
+- `app/lib/ui/screens/consumer/loop_handoff.dart` — the rental→movers sheet
 
-**New Dart** — `core/booking.dart`, `core/haptics.dart`,
-`ui/screens/consumer/booking_status_screen.dart`,
-`ui/screens/entry/biometric_enrolment_screen.dart`; `BrandMark` /
-`BrandLockupHorizontal` / `BrandCut` in `brand_lockup.dart`; `QuietAction`.
+**New — Phase 1 remainder:**
+- `app/lib/core/session_store.dart` — session persistence and the reopen policy
+- `app/lib/core/biometrics.dart` — the `local_auth` seam
 
-**New tests** — `booking_test.dart`, `motion_test.dart`, `encoding_test.dart`,
-plus rewritten `identity_test.dart`.
+**New tests:** `booking_request_test`, `rate_review_test`, `loop_test`,
+`core/loop_prompt_test`, `core/session_store_test`, `routing/consent_redirect_test`,
+`ui/unlock_test`.
 
-**Assets** — seven brand PNGs in `design/assets/`, three shipped in
-`app/assets/brand/`, launcher + adaptive + splash + notification icons
-generated into `android/.../res`.
+**Modified:** `routes.dart`, `app_router.dart` (two new routes, the consent
+redirect, loop decisions), `session.dart` (`needsReconsent`, `restore`, a single
+`_set` write point), `main.dart` (prefs + platform biometrics), `demo_data.dart`
+(rentals listings, `listingOf`, `loopAfter`), `listing_detail_screen.dart`,
+`booking_status_screen.dart`, `category_browse_screen.dart`,
+`unlock_screen.dart`, `MainActivity.kt`, `AndroidManifest.xml`, `pubspec`.
+
+**Docs:** `build-order.md`, `design-deltas.md` (§15, §16), `booking.md`,
+`categories.md`, `compliance.md`, `design-system.md`.
 
 ## What is working
 
-- **The brand is real.** Launcher icon at five densities, adaptive icon with a
-  `<monochrome>` layer, splash icon in both modes, notification icon wired into
-  the manifest. All verified on a Pixel 9a.
-- **Colour and type are verified against the canvas**, not assumed: every value
-  in `tokens.dart` matches `PAL` exactly in both modes including all six shadow
-  alphas, and all eight type roles match.
-- **Booking status: all eleven states**, copy verbatim from `BSTATES`, payment
-  at step 4, endings hiding the step bar.
-- **177 tests, `flutter analyze` clean.**
+- **Phase 2 complete.** Booking request → status → rate & review, with the
+  auth gate joining listing detail to the request form. Sending is a *replace*
+  so back cannot fire a second request; rate & review submits nothing until a
+  star is tapped.
+- **Phase 3 complete.** Four adjacency pairs, four suppression rules, two
+  placements. Against the real launch supply figures **only the rentals→movers
+  prompt fires** — the other three point at thin categories and are correctly
+  withheld. There is a test pinning that so nobody "fixes" it later.
+- **Consent supersede is enforced**, not just modelled: a router redirect sends
+  any `needsReconsent` session to `/consent`. Visitors and locked sessions are
+  deliberately exempt.
+- **The session persists** and never comes back `active` — biometry on restores
+  to `locked`, biometry off goes back through the code.
+- **Biometric unlock is wired to the platform.** Two distinct prompts, the
+  no-sensor state handled in both directions, refusals silent.
+- 254 tests, `flutter analyze` clean, debug APK builds.
 
 ## What is NOT working yet
 
-- **Four brand cuts exceed the 256 KiB fetch cap** — `mark-dark`,
-  `wordmark-dark-new`, `lockup-dark`, `logo-light-transparent`. The in-app
-  splash therefore still sets the wordmark in type on its navy gradient.
-- **Phase 2 is half done**: booking *status* is built; **booking request** and
-  **rate & review** are not.
-- **The OTP screen has wrong-code and locked states but no backend** — any
-  four digits are accepted by `DemoOtpVerifier`.
-- Consent supersede is modelled and still not enforced by a router redirect.
-- `local_auth` is not wired; both unlock buttons call `unlock()`.
-- Nothing persists. No Django backend.
-- iOS is stock and cannot be built on this machine.
+- **Nothing built since 2026-08-20 has been seen on a handset.** Booking
+  request, rate & review, the rentals listing, both loop placements and the new
+  unlock screen are all unverified visually. Phase 0's gate (colour *and*
+  motion, both modes) is owed on all of them.
+- No backend. A sent request does not become a booking; a submitted review is
+  returned to the caller and dropped; `DemoOtpVerifier` still accepts any four
+  digits.
+- The four brand cuts still exceed the 256 KiB fetch cap.
+- Ten of the eleven booking actions are inert. Only `COMPLETED` → rate & review
+  goes anywhere, and each of the others is blocked for a reason already in the
+  build order.
+- No picker behind the booking request's `WHEN` card — scheduling granularity
+  per category is still an open question.
 
 ## Decisions made (and why)
 
-- **Brand is Phase 1**, because the design's Foundations runs Brand → Colour →
-  Type → Components before any screen. It had been "Phase 0.5", bolted on.
-- **`DISPUTED` and `NO_SHOW` ship with their provisional notes** rather than
-  being withheld. The design wrote the copy and flagged it itself; a state with
-  no screen is worse than one that admits what is unsettled.
-- **Never recolour the brand artwork.** Light and dark are separate drawings —
-  the dark cut has a white `i` body. A `ColorFilter` flattens the ripple rings
-  and both blues, which is the exact damage the canvas records from a previous
-  mixed-export set.
-- **The dark splash uses the design's dark app icon** on a background matching
-  its baked navy plate, which is why it works without `mark-dark.png`.
-- **`PromiseCard.iconColor` is required**, because two artboards use different
-  greens on the same glyph and a default would silently make one wrong.
+- **Phase 3 was buildable despite being marked `gap`.** The journey map gives
+  the trigger points, the pairs, the four states and one finished line of copy.
+  What it lacks is an artboard. `LoopPair.verbatim` marks the design's one
+  string so a later canvas can replace ours without a diff archaeology session.
+- **Rides is a target, never a source** for the loop prompt: it is dispatch so
+  it has no browse to land on, and it is the highest-frequency category, so
+  prompting after every ride is the banner stage 7 exists not to be.
+- **An unknown supply figure counts as thin.** Not knowing whether a room is
+  empty is not grounds for sending someone into it.
+- **A restored session never comes back `active`.** That is the one way
+  persistence could be wrong that matters — it would make a stolen handset a
+  signed-in handset.
+- **`ServiceDirection.either` was kept**, against the canvas, because
+  `booking.md` makes "Both" a *listing* property. The customer still picks one
+  of two; `ServiceDirection.choices` says so in code.
+- **The rating star reads `palette.accentText`, not the canvas's `#145A8D`
+  literal** — identical in light, legible in dark.
+- **"you pay them directly"**, where the canvas writes "him" of a provider named
+  Kabelo. It is a template rendered for every provider on the platform.
+- **No `refreshListenable` on the consent redirect.** `Consent.current` is a
+  compile-time constant, so a version cannot be superseded mid-session; the case
+  it catches is a *restored* session.
 
 ## Things I tried that did NOT work - do not repeat these
 
-- **Stripping `<script>` when flattening a canvas.** That is 16,673 characters
-  per file containing `PAL`, `CATS`, `REQUIREMENTS`, the pricing copy and all
-  eleven `BSTATES`. Everything I called "missing from the design" was in there.
-- **Transcribing a binary out of a tool result.** `mark-icon.png` came back
-  complete and inline and was still corrupt, because I hand-copied ~20 KB of
-  base64. `Image.open()` read its header happily; only a full `load()` failed.
-  Decode from the file the tool wrote, and verify the `IEND` chunk before the
-  file lands.
-- **`Get-Content` / `Set-Content` on a source file.** They default to the
-  system codepage: a rename of one symbol double-encoded nine em dashes and a
-  middot in `booking_status_screen.dart`. It compiled, all tests passed, and it
-  was only visible as "Verified Â· Plumbing" in a screenshot.
-- **Writing a mojibake-detector with the mangled characters written out
-  literally.** It matches itself. Build the pattern from `\u` escapes.
-- **Reading a canvas name as one of ours.** `pal.shCard` is our `shadowRow`;
-  `pal.shRaise` is our `shadowCard`. The vocabularies invert.
-- **`CrossAxisAlignment.stretch` on a Row inside a ListView** — unbounded
-  constraint, will not lay out. Use `IntrinsicHeight`.
-- **A modal on a tab's Navigator.** go_router re-syncs on pop and removes the
-  page underneath.
-- **A PowerShell here-string or heredoc for `git commit -m`.** Write the
-  message to a file and use `git commit -F`.
+- **A `cat <<'EOF'` heredoc through the Bash tool for a ~430-line Dart file**
+  died with "unexpected EOF". Use the Write tool for whole files; heredocs are
+  fine for short ones and the encoding is correct UTF-8 either way.
+- **Bulk `str.replace` on `state = state.copyWith(` → `_set(state.copyWith(`**
+  left every call one closing paren short. If you rewrite call shapes
+  mechanically, the arity changes too — check `flutter analyze` before moving on.
+- **Putting the keep-or-drop rule only in `PrefsSessionStore.write`** while every
+  test ran against `InMemorySessionStore` meant tests passed against behaviour
+  the app did not have. Two tests caught it. Both stores now share one `write`.
+- `local_auth` **3.x is not 2.x**: no `error_codes.dart`, no
+  `AuthenticationOptions`, `stickyAuth` is now `persistAcrossBackgrounding`, and
+  errors are typed `LocalAuthException` / `LocalAuthExceptionCode`.
 
 ## Exact next steps to continue
 
-1. **Finish Phase 2** — booking request (`5–6 · BOOKING REQUEST / STATUS`) and
-   rate & review (`8 · RATE & REVIEW`), both in `ds-2-customer`. The direction
-   radio set and the pricing copy are already in the canvas script block.
-2. **Phase 3** — the loop prompt, stage 7. Suppression rules are in
-   foundations: adjacent category thin, already booked, or the same person.
-3. **When the four cuts arrive**: drop them into `design/assets/`, point
-   `BrandLockup(onDark:)` at the real artwork, and delete the type fallback.
-4. Close Phase 1's remainder: `local_auth`, the consent-supersede redirect, and
-   persistence for `SessionController`.
-
-Read `docs/build-order.md` first — it now carries a 60-artboard index so each
-phase points at the screen it implements.
+1. **Run Phase 0's gate** on everything built since 2026-08-20 — a Pixel in both
+   modes, colour *and* motion. This is owed before Phase 4 and is the one thing
+   blocking a clean "Phase 1–3 done".
+2. **Verify biometric unlock on real hardware.** It builds and is unit-tested
+   behind a fake; the sensor path itself has never run.
+3. **Phase 4 — becoming a provider, paired with the admin queue.** This is where
+   the backend starts: Django on `/staff/*`, plus `PROVIDER_CATEGORY`,
+   `ADMIN_ACTION` and `DOCUMENT_ACCESS`. Both halves ship together because
+   neither is testable alone. Postgres is already running.
 
 ## Open questions / blockers
 
-**Blocking, and only you can clear it:** `mark-dark.png`,
-`wordmark-dark-new.png`, `lockup-dark.png`, `logo-light-transparent.png` — all
-over the 256 KiB `get_file` cap. Re-save them smaller in the design project or
-export them directly.
-
-**Undesigned, so not startable:** the dispute *flow* (UC-13), customer↔provider
-messaging, provider listing management at scale, empty/offline states.
-
-**Business decisions the screens are written around:** late-cancellation fee
-amount · no-show consequence · commission rate per category (rides shows 8%) ·
-dispute turnaround.
-
-**Carried:** wallet naming vs `compliance.md` · reversal policy · negative
-balance · min top-up · hosting durability · EPS licensing · data residency ·
-KYC retention · GPS DPIA.
-
-**Noted, not fixed:** the design numbers two screens `21`, and `Session.
-maxCodeAttempts` (5) is the repo's number — the design says "locked after N
-attempts" without setting N.
+- **BLOCKING, only the user can clear it:** `mark-dark`, `wordmark-dark-new`,
+  `lockup-dark` and `logo-light-transparent` exceed the 256 KiB `get_file` cap.
+- Undesigned so not startable: the dispute **flow** (UC-13), customer↔provider
+  messaging, provider listing management at scale, empty and offline states.
+- Late-cancellation fee amount; no-show consequence for providers; per-category
+  commission rate; dispute turnaround time.
+- Carried: reversal policy, negative balance, min top-up, hosting durability,
+  EPS licensing, data residency, KYC retention, GPS DPIA.
+- Noted not fixed: the design numbers two screens 21; `Session.maxCodeAttempts`
+  (5) is the repo's number, not the design's.

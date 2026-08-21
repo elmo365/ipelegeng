@@ -485,6 +485,18 @@ scroll position in a long list · provider online state and the ride you were on
 
 **Not kept:** search text · filter selections · any OTP already sent.
 
+> **The session itself is kept — implemented 2026-08-21.** The entry rules say
+> "the session then persists until explicit logout", so name, number, consent
+> version, channels and the biometric answer survive a kill.
+>
+> **It never comes back signed in.** With biometric unlock on it restores to
+> `locked` and the unlock screen reopens it; with it off the app goes back
+> through the code, which is what Security promises in those words. And *"any
+> OTP already sent"* is honoured literally: a session caught mid-verification
+> is dropped rather than resumed, along with its attempt count.
+>
+> See `app/lib/core/session_store.dart`.
+
 Implementation note from the design: tab roots use nested `Navigator`s with a
 `PopScope` at each root, and drafts persist to local storage **on every field
 change**, not on a save action.

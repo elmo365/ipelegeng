@@ -26,20 +26,47 @@ import '../../components/surface.dart';
 
 /// How the service reaches the customer.
 ///
-/// The design's filter is data-driven and its option list sits past the read
-/// cap on the source canvas, so these three are inferred from the model rather
-/// than read: the target provider has **no fixed premises**, so "comes to you"
-/// is the common case and "you go to them" is the exception worth filtering
-/// for. Confirm against the canvas when the tail is recoverable.
+/// **Confirmed against the canvas 2026-08-21**, which the previous note here
+/// asked for: the customer-facing set is two options, not three, and the
+/// canvas writes both the label and the line under it —
+///
+/// > `{ key: 'provider_comes', label: 'Comes to you', sub: 'Provider travels to your location' }`
+/// > `{ key: 'customer_goes',  label: 'You go to them', sub: 'Service is at their premises' }`
+///
+/// [either] is **not** one of those, and it is not an invention either. It is a
+/// property of a *listing*, from docs/booking.md: "**Both** — provider offers
+/// either", with the customer picking the applicable one at the point of
+/// booking. So a listing may be `either`; a booking request never is, which is
+/// what [choices] exists to say.
 enum ServiceDirection {
-  comesToYou('Comes to you', Icons.directions_walk),
-  youGoToThem('You go to them', Icons.storefront),
-  either('Either', Icons.swap_horiz);
+  comesToYou(
+    'Comes to you',
+    'Provider travels to your location',
+    Icons.directions_walk,
+  ),
+  youGoToThem(
+    'You go to them',
+    'Service is at their premises',
+    Icons.storefront,
+  ),
 
-  const ServiceDirection(this.label, this.icon);
+  /// A listing that offers both. The sub-line is docs/booking.md's own wording
+  /// rather than the canvas's, because the canvas never offers this one.
+  either('Either', 'Provider offers either', Icons.swap_horiz);
+
+  const ServiceDirection(this.label, this.sub, this.icon);
 
   final String label;
+
+  /// The line under the label in the booking request's radio set.
+  final String sub;
+
   final IconData icon;
+
+  /// The two a customer may choose between: the browse filter's chips and the
+  /// booking request's radio set are the same pair, and both read it from
+  /// here rather than filtering [values] by hand.
+  static const choices = <ServiceDirection>[comesToYou, youGoToThem];
 }
 
 @immutable
@@ -216,18 +243,17 @@ class _CategoryBrowseScreenState extends State<CategoryBrowseScreen> {
                 ),
                 children: [
                   _DirectionChip(
-                    label: 'All',
+                    label: 'Any direction',
                     selected: _direction == null,
                     onTap: () => setState(() => _direction = null),
                   ),
-                  for (final d in ServiceDirection.values)
-                    if (d != ServiceDirection.either)
-                      _DirectionChip(
-                        label: d.label,
-                        icon: d.icon,
-                        selected: _direction == d,
-                        onTap: () => setState(() => _direction = d),
-                      ),
+                  for (final d in ServiceDirection.choices)
+                    _DirectionChip(
+                      label: d.label,
+                      icon: d.icon,
+                      selected: _direction == d,
+                      onTap: () => setState(() => _direction = d),
+                    ),
                 ],
               ),
             ),

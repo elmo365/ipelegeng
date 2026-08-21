@@ -19,11 +19,14 @@ import '../theme/tokens.dart';
 import '../ui/components/category_tile.dart';
 import '../ui/components/ledger_entry.dart';
 import '../ui/components/status_chip.dart';
+import '../ui/screens/consumer/booking_request_screen.dart';
 import '../ui/screens/consumer/category_browse_screen.dart';
 import '../ui/screens/consumer/home_screen.dart';
 import '../ui/screens/consumer/listing_detail_screen.dart';
+import '../ui/screens/consumer/rate_review_screen.dart';
 import '../ui/screens/provider/dashboard_screen.dart';
 import '../ui/screens/provider/wallet_screen.dart';
+import 'loop_prompt.dart';
 
 abstract final class Demo {
   static Decimal _d(String v) => Decimal.parse(v);
@@ -90,52 +93,143 @@ abstract final class Demo {
       category: category,
       city: 'Gaborone',
       standing: home.standings[category.key] ?? SupplyStanding.thin,
-      listings: category.key == Categories.plumbing.key
-          ? [
-              Listing(
-                id: 'L-4417',
-                name: 'Kabelo’s Plumbing & Repairs',
-                tag: 'Block 8, Gaborone',
-                fromPrice: _d('150.00'),
-                direction: ServiceDirection.comesToYou,
-                verified: true,
-                // Zero jobs and still listed. That is the whole point: a new
-                // provider has to be bookable or the ratings problem kills
-                // supply before it starts.
-                isNew: true,
-              ),
-              Listing(
-                id: 'L-4402',
-                name: 'Tumelo Pipeworks',
-                tag: 'Mobile · same day',
-                fromPrice: _d('220.00'),
-                direction: ServiceDirection.comesToYou,
-                verified: true,
-                isNew: false,
-              ),
-              Listing(
-                id: 'L-4390',
-                name: 'Gaborone Drain Care',
-                tag: 'Workshop · Gaborone West',
-                fromPrice: _d('180.00'),
-                direction: ServiceDirection.youGoToThem,
-                verified: true,
-                isNew: false,
-              ),
-            ]
-          : const [],
+      listings: _listingsFor(category),
     );
   }
+
+  /// Two categories carry demo listings: plumbing, which every earlier screen
+  /// was built against, and **rentals**, added so stage 7's handoff is
+  /// reachable at all — the design puts the loop prompt at the rental enquiry,
+  /// and a rental enquiry needs a rental to enquire about.
+  static List<Listing> _listingsFor(CategoryToken category) {
+    if (category.key == Categories.rentals.key) return _rentals;
+    return category.key == Categories.plumbing.key ? _plumbers : const [];
+  }
+
+  /// Single rooms in a yard, which is what the Botswana rental market
+  /// actually is — see docs/categories.md. One landlord, several rooms, is
+  /// the normal shape, so two of these share a yard.
+  static final _rentals = [
+    Listing(
+      id: 'R-2210',
+      name: 'Kgosi Yard · Room 4',
+      tag: 'Block 8, Gaborone',
+      fromPrice: _d('1200.00'),
+      direction: ServiceDirection.youGoToThem,
+      verified: true,
+      isNew: false,
+    ),
+    Listing(
+      id: 'R-2211',
+      name: 'Kgosi Yard · Room 7',
+      tag: 'Block 8, Gaborone',
+      fromPrice: _d('1100.00'),
+      direction: ServiceDirection.youGoToThem,
+      verified: true,
+      isNew: false,
+    ),
+    Listing(
+      id: 'R-2240',
+      name: 'Phase 2 Rooms · Extension 12',
+      tag: 'Extension 12, Gaborone',
+      fromPrice: _d('1450.00'),
+      direction: ServiceDirection.youGoToThem,
+      verified: true,
+      isNew: true,
+    ),
+  ];
+
+  static List<Listing> get _plumbers => [
+    Listing(
+      id: 'L-4417',
+      name: 'Kabelo’s Plumbing & Repairs',
+      tag: 'Block 8, Gaborone',
+      fromPrice: _d('150.00'),
+      direction: ServiceDirection.comesToYou,
+      verified: true,
+      // Zero jobs and still listed. That is the whole point: a new
+      // provider has to be bookable or the ratings problem kills
+      // supply before it starts.
+      isNew: true,
+    ),
+    Listing(
+      id: 'L-4402',
+      name: 'Tumelo Pipeworks',
+      tag: 'Mobile · same day',
+      fromPrice: _d('220.00'),
+      direction: ServiceDirection.comesToYou,
+      verified: true,
+      isNew: false,
+    ),
+    Listing(
+      id: 'L-4390',
+      name: 'Gaborone Drain Care',
+      tag: 'Workshop · Gaborone West',
+      fromPrice: _d('180.00'),
+      direction: ServiceDirection.youGoToThem,
+      verified: true,
+      isNew: false,
+    ),
+  ];
 
   /// The booking the status screen renders. One provider, one category; the
   /// *state* is what varies, and it is picked by the route so all eleven are
   /// reachable without a backend — the design's own artboard works the same
   /// way, with a row of state tabs above the phone.
+  static const bookingId = 'BK-77410';
   static const bookingProviderName = "Kabelo’s Plumbing & Repairs";
   static const bookingProviderFirstName = 'Kabelo';
   static const bookingCategory = Categories.plumbing;
 
+  /// The request form the listing's booking action leads to.
+  ///
+  /// `offered` is the listing's own direction, so the radio set opens on
+  /// "Comes to you" — which is also what makes the location card appear, as
+  /// the canvas's `needsLocation` does.
+  static final bookingRequest = BookingRequestData(
+    bookingId: bookingId,
+    providerName: bookingProviderName,
+    providerFirstName: bookingProviderFirstName,
+    category: bookingCategory,
+    fromPrice: _d('150.00'),
+    offered: ServiceDirection.comesToYou,
+    customerLocation: 'Plot 4521, Block 8, Gaborone',
+    when: 'Today, 14:00',
+  );
+
+  /// What `COMPLETED` leads to. The amount is the one the status screen's pay
+  /// panel states — the rating is being asked for against that job, not
+  /// against the listing's starting figure.
+  static final review = RateReviewData(
+    providerName: bookingProviderName,
+    category: bookingCategory,
+    completed: 'Completed today',
+    amountPaid: _d('250.00'),
+  );
+
+  /// Listing detail by id, so the two journey shapes are both reachable:
+  /// `L-*` books, `R-*` enquires. Anything unknown falls back to the plumbing
+  /// listing every earlier screen was built against.
+  static ListingDetailData listingOf(String id) =>
+      id.startsWith('R-') ? rentalListing : listing;
+
+  /// A room. Pay-per-listing: no booking, no commission, no completion — and
+  /// the one place stage 7's handoff is offered.
+  static final rentalListing = ListingDetailData(
+    id: 'R-2210',
+    name: 'Kgosi Yard · Room 4',
+    category: Categories.rentals,
+    location: 'Block 8, Gaborone',
+    direction: ServiceDirection.youGoToThem,
+    startingFrom: _d('1200.00'),
+    priceNote: 'Per room, per month. You arrange the viewing directly.',
+    verified: true,
+    completedJobs: 0,
+    rating: null,
+  );
+
   static final listing = ListingDetailData(
+    id: 'L-4417',
     name: 'Kabelo’s Plumbing & Repairs',
     category: Categories.plumbing,
     location: 'Block 8, Gaborone',
@@ -148,6 +242,51 @@ abstract final class Demo {
     // inventing one is exactly the failure this product is built against.
     rating: null,
   );
+
+  /// Provider ids per category, for stage 7's fourth suppression rule —
+  /// "provider in the adjacent category is the same person". Only the
+  /// categories a prompt can point at need entries.
+  static const providersByCategory = <String, Set<String>>{
+    'movers': {'P-2201', 'P-2202'},
+    'plumbing': {'P-4417', 'P-4402', 'P-4390'},
+    'catering': {'P-6100'},
+    'hire': {'P-7100'},
+  };
+
+  /// Categories this demo customer has already booked in. Empty, so the
+  /// already-booked rule is exercised by tests rather than silently by the
+  /// demo — a suppression that fires for the wrong reason looks identical to
+  /// one that works.
+  static const bookedCategories = <String>{};
+
+  /// Stage 7's decision, made from the demo's own supply figures.
+  ///
+  /// **Only one of the four pairs fires against this data, and that is
+  /// correct.** `movers → plumbing`, `catering → hire` and `hire → catering`
+  /// all point at categories the design marks thin, so the "don't prompt into
+  /// an empty room" rule withholds them. `rentals → movers` points at 21
+  /// trucks and shows. Six of nine categories being thin at launch is the
+  /// design condition, so a loop prompt that mostly declines to fire is the
+  /// feature working, not the demo being incomplete.
+  static LoopDecision loopAfter(
+    CategoryToken after,
+    LoopMoment moment, {
+    String? providerJustUsed,
+  }) {
+    final pair = LoopPrompts.pairFor(after, moment);
+    return LoopPrompts.decide(
+      LoopContext(
+        after: after,
+        moment: moment,
+        standings: home.standings,
+        bookedCategories: bookedCategories,
+        providerJustUsed: providerJustUsed,
+        providersInAdjacent: pair == null
+            ? const <String>{}
+            : (providersByCategory[pair.then.key] ?? const <String>{}),
+      ),
+    );
+  }
 
   static final dashboard = DashboardData(
     providerName: 'Kagiso',

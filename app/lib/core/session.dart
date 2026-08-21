@@ -17,13 +17,17 @@
 ///   [SessionStage.none] must reach home, browse and listing detail. The wall
 ///   is at the booking action.
 ///
-/// Nothing here persists yet — that lands with the settings store and the
-/// Django session. Until then a restart is a new device, which is the safe
-/// direction to be wrong in.
+/// **This does persist, as of 2026-08-21** — "OTP on every fresh login; the
+/// session then persists until explicit logout". What is kept, what is dropped,
+/// and what a reopen restores *to* all live in session_store.dart, because they
+/// are storage decisions rather than properties of the model. The one that
+/// matters: a reopen never lands on [SessionStage.active].
 library;
 
 import 'package:characters/characters.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'session_store.dart';
 
 /// The consent documents and the version in force.
 ///
@@ -154,6 +158,25 @@ class Session {
   bool get canBook =>
       stage == SessionStage.active && consentVersion == Consent.current;
 
+  /// Signed in, on a consent version that has since been superseded.
+  ///
+  /// FR-1.10 and the DPA require re-consent "before anything else proceeds",
+  /// which is stronger than [canBook] returning false — that only stops a
+  /// booking, and the design wants the session routed. The router reads this
+  /// and redirects; see `createRouter`.
+  ///
+  /// **Deliberately excludes [SessionStage.locked].** A locked session has to
+  /// get through unlock first: sending it to a consent form it cannot dismiss
+  /// would trap someone behind two gates at once. Unlocking makes it
+  /// [SessionStage.active], and the redirect fires on the next movement.
+  ///
+  /// **And excludes [SessionStage.none].** A visitor has agreed to nothing and
+  /// needs to have agreed to nothing — browsing is free under UC-4, and
+  /// bouncing a stranger into a consent form is exactly the wall the design
+  /// moved to the booking action.
+  bool get needsReconsent =>
+      stage == SessionStage.active && consentVersion != Consent.current;
+
   /// First initials, for the sign-in avatar. "Kabo Mothibi" → "KM".
   String get initials {
     final parts = (name ?? '').trim().split(RegExp(r'\s+'))
@@ -195,18 +218,50 @@ final sessionProvider = NotifierProvider<SessionController, Session>(
 
 class SessionController extends Notifier<Session> {
   @override
-  Session build() => const Session();
+  Session build() {
+    final stored = ref.read(sessionStoreProvider).read();
+    // Never straight back to `active` — see SessionCodec.reopened. A restored
+    // session that is immediately signed in makes a stolen handset a signed-in
+    // handset.
+    return stored == null ? const Session() : SessionCodec.reopened(stored);
+  }
+
+  /// The single write point.
+  ///
+  /// Every mutation below goes through here rather than assigning `state`
+  /// directly, so persistence cannot be forgotten when the next one is added.
+  /// [signOut] is the one exception, and it clears rather than writes.
+  void _set(Session next) {
+    state = next;
+    ref.read(sessionStoreProvider).write(next);
+  }
+
+  /// Put back a session that was read from storage.
+  ///
+  /// This is the seam session persistence lands in, not a hook that exists for
+  /// tests — the same reasoning [OtpVerifier] carries. It is also the **only**
+  /// way to produce a session that is [SessionStage.active] on a superseded
+  /// consent version, because the state machine above cannot reach one:
+  /// [confirmCode] sends a stale version to [SessionStage.needsConsent] and
+  /// [agree] always writes [Consent.current].
+  ///
+  /// That is exactly why the consent-supersede redirect exists. A version is
+  /// superseded by shipping a new build, so the case appears when yesterday's
+  /// session is restored against today's constant — through here.
+  void restore(Session session) => _set(session);
 
   /// Register or sign in: both end at the same place, because both send a code.
   ///
   /// Resets the attempt count — a new number is a new round, and carrying a
   /// lockout across it would punish the wrong thing.
   void requestCode({String? name, required String phone}) {
-    state = state.copyWith(
-      stage: SessionStage.confirmingNumber,
-      name: name ?? state.name,
-      phone: phone,
-      codeAttemptsLeft: Session.maxCodeAttempts,
+    _set(
+      state.copyWith(
+        stage: SessionStage.confirmingNumber,
+        name: name ?? state.name,
+        phone: phone,
+        codeAttemptsLeft: Session.maxCodeAttempts,
+      ),
     );
   }
 
@@ -223,58 +278,64 @@ class SessionController extends Notifier<Session> {
     }
 
     final left = state.codeAttemptsLeft - 1;
-    state = state.copyWith(codeAttemptsLeft: left < 0 ? 0 : left);
+    _set(state.copyWith(codeAttemptsLeft: left < 0 ? 0 : left));
     return left <= 0 ? OtpOutcome.locked : OtpOutcome.wrongCode;
   }
 
   /// The code was accepted. Where this lands depends on consent, not on which
   /// screen asked — a returning user on a current version goes straight in.
   void confirmCode() {
-    state = state.copyWith(
-      stage: state.consentVersion == Consent.current
-          ? SessionStage.active
-          : SessionStage.needsConsent,
+    _set(
+      state.copyWith(
+        stage: state.consentVersion == Consent.current
+            ? SessionStage.active
+            : SessionStage.needsConsent,
+      ),
     );
   }
 
   void agree({Set<ConsentChannel> channels = const <ConsentChannel>{}}) {
-    state = state.copyWith(
-      stage: SessionStage.active,
-      consentVersion: Consent.current,
-      channels: channels,
+    _set(
+      state.copyWith(
+        stage: SessionStage.active,
+        consentVersion: Consent.current,
+        channels: channels,
+      ),
     );
   }
 
   void setLocationGranted(bool granted) =>
-      state = state.copyWith(locationGranted: granted);
+      _set(state.copyWith(locationGranted: granted));
 
   /// The enrolment offer, answered. Recorded as *offered* either way, because
   /// the design offers it once after the first OTP and never asks again —
   /// declining without penalty means the offer is spent, not deferred.
   void answerBiometricOffer({required bool enrol}) {
-    state = state.copyWith(biometricOffered: true, biometricUnlock: enrol);
+    _set(state.copyWith(biometricOffered: true, biometricUnlock: enrol));
   }
 
   /// Turned on or off later, from Security. Off means an OTP on every open,
   /// which is what that screen says in those words.
-  void setBiometricUnlock(bool on) =>
-      state = state.copyWith(biometricUnlock: on);
+  void setBiometricUnlock(bool on) => _set(state.copyWith(biometricUnlock: on));
 
   /// The app was reopened. Only a session that was active can lock — a visitor
   /// has nothing to unlock.
   void lock() {
     if (state.stage != SessionStage.active) return;
-    state = state.copyWith(stage: SessionStage.locked);
+    _set(state.copyWith(stage: SessionStage.locked));
   }
 
   /// Biometry or the device passcode. Both reopen the same session; neither
   /// proves identity, which is why there is one method and not two.
   void unlock() {
     if (state.stage != SessionStage.locked) return;
-    state = state.copyWith(stage: SessionStage.active);
+    _set(state.copyWith(stage: SessionStage.active));
   }
 
   /// "Sign in as someone else", and explicit sign-out. The device keeps
   /// nothing, so the next entry is a full phone + OTP.
-  void signOut() => state = const Session();
+  void signOut() {
+    state = const Session();
+    ref.read(sessionStoreProvider).clear();
+  }
 }

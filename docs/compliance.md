@@ -116,6 +116,53 @@ transactions.** The ledger references a pseudonymous account ID; personal data
 lives in a separate store that can be erased without destroying financial
 history. Design this in from the start — retrofitting it is very expensive.
 
+### What the handset itself holds
+
+Recorded here because it is a processing decision, and because the next person
+to add a field to it will not think of it as one.
+
+As of 2026-08-21 the app stores a session on the device between launches —
+`app/lib/core/session_store.dart`, in app-private storage under one key:
+
+| Kept | Not kept |
+|---|---|
+| Name, phone number | Any OTP, sent or pending |
+| Consent version agreed to | The code-attempt count |
+| Which optional channels were agreed (SMS, WhatsApp) | Anything about a booking |
+| Whether location was granted | Any KYC document or ledger figure |
+| Whether biometric unlock was offered and enabled | Any token or credential |
+
+Three things follow, and they are the rules for changing it:
+
+1. **This is the same data the account screen shows on demand.** It is not
+   special-category data, and it is what the session already needed to render.
+   That is the justification, and it stops holding the moment something else is
+   added.
+2. **A KYC document must never be written here.** Half-finished uploads persist
+   locally too, but under their own draft store with its own retention — see
+   [design-system](design-system.md)'s state-restoration rules. Mixing them
+   would put an unsubmitted Omang into a record that survives logout.
+3. **A token does not belong here either.** When the Django session lands, where
+   its credential is stored is a separate decision and needs this section
+   revisited, not extended by default.
+
+**Erasure:** signing out clears the record rather than blanking it, so the
+device-side copy has no independent lifetime to account for.
+
+**Biometrics are not in that table, and never will be.** Biometric unlock was
+wired 2026-08-21 (`app/lib/core/biometrics.dart`). The prompt is the operating
+system's own: the app asks the OS a yes/no question and receives a boolean.
+**No fingerprint, face template or any derivative of one is read, transmitted
+or stored by Ipelege**, which is what keeps this out of special-category
+processing entirely. `USE_BIOMETRIC` is an install-time declaration, not a
+runtime permission, and it grants access to the prompt rather than to the
+sensor.
+
+The rule that keeps it that way: **biometry unlocks, it never authenticates.**
+A successful prompt reopens a session the device already held. It cannot create
+one, so nothing in this app treats a biometric result as proof of identity —
+which would be the point where it started to matter under the DPA.
+
 ### KYC has a local advantage
 
 Botswana's national ID system already allows agents to verify customers and

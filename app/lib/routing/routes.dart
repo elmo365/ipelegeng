@@ -53,7 +53,18 @@ abstract final class Routes {
   // Consumer stacks. Each pushes onto the tab it belongs to.
   static const category = '/home/category/:key';
   static const listing = '/home/listing/:id';
+
+  /// The request form, on the **Home** tab rather than Bookings, because until
+  /// it is sent there is no booking — only a listing being looked at. Backing
+  /// out returns to the listing, which is where the customer was.
+  static const bookingRequest = '/home/listing/:id/request';
+
   static const booking = '/bookings/:id';
+
+  /// Rate & review. A push onto the booking rather than a replace: the booking
+  /// is already closed, and skipping has to leave the customer where they
+  /// were.
+  static const bookingRate = '/bookings/:id/rate';
 
   // Provider tabs.
   static const dashboard = '/provider';
@@ -67,5 +78,7 @@ abstract final class Routes {
 
   static String categoryOf(String key) => '/home/category/$key';
   static String listingOf(String id) => '/home/listing/$id';
+  static String bookingRequestOf(String id) => '/home/listing/$id/request';
   static String bookingOf(String id) => '/bookings/$id';
+  static String bookingRateOf(String id) => '/bookings/$id/rate';
 }

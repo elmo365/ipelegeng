@@ -19,6 +19,9 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/loop_prompt.dart';
+import '../../../routing/navigation.dart';
+import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
 import '../../../theme/tokens.dart';
 import '../../components/info_note.dart';
@@ -27,10 +30,12 @@ import '../../components/status_chip.dart';
 import '../../components/surface.dart';
 import '../entry/auth_gate.dart';
 import 'category_browse_screen.dart';
+import 'loop_handoff.dart';
 
 @immutable
 class ListingDetailData {
   const ListingDetailData({
+    required this.id,
     required this.name,
     required this.category,
     required this.location,
@@ -41,6 +46,10 @@ class ListingDetailData {
     required this.completedJobs,
     this.rating,
   });
+
+  /// `L-4417`. The booking request hangs off this listing's path, so the
+  /// screen has to know which listing it is rather than only what it says.
+  final String id;
 
   final String name;
   final CategoryToken category;
@@ -63,9 +72,17 @@ class ListingDetailData {
 }
 
 class ListingDetailScreen extends ConsumerWidget {
-  const ListingDetailScreen({super.key, required this.data});
+  const ListingDetailScreen({super.key, required this.data, this.loopPrompt});
 
   final ListingDetailData data;
+
+  /// Stage 7's handoff, already through [LoopPrompts.decide] — a pair here
+  /// means the four suppression rules ran and none fired.
+  ///
+  /// It is offered **after** the enquiry, never beside it: a truck suggested
+  /// next to the enquiry button competes with the thing the customer came for.
+  /// Null on a category that books, because a booking has its own next step.
+  final LoopPair? loopPrompt;
 
   /// "Kabelo's Plumbing & Repairs" → "Kabelo". The gate says *who* needs the
   /// number, and a trading name is not a person.
@@ -147,12 +164,29 @@ class ListingDetailScreen extends ConsumerWidget {
                 children: [
                   // The zero is stated, and what verification does and does
                   // not cover is stated with it. No fabricated rating.
-                  if (data.completedJobs == 0)
+                  if (!data.category.shape.books)
+                    // A rental has no completions to count — the design is
+                    // explicit that pay-per-listing means "no booking, no
+                    // commission, no completion". A job count here would be a
+                    // zero that can never become anything else.
                     const InfoNote(
                       body:
+                          'Verification confirms the landlord owns this '
+                          'property and that it has been inspected. Rooms are '
+                          'not booked through Ipelege — you arrange the '
+                          'viewing directly.',
+                    )
+                  else if (data.completedJobs == 0)
+                    const InfoNote(
+                      // "trade certification" was wrong for at least two of the
+                      // nine: rentals is verified on proof of ownership and
+                      // tiling on proof of past work, neither of which is a
+                      // certificate. The requirement is per category — see
+                      // docs/categories.md.
+                      body:
                           '0 completed jobs yet. Verification confirms '
-                          'identity and trade certification, independent of a '
-                          'review history.',
+                          'identity and the documents this category requires, '
+                          'independent of a review history.',
                     )
                   else
                     _Completed(jobs: data.completedJobs, rating: data.rating),
@@ -196,12 +230,34 @@ class ListingDetailScreen extends ConsumerWidget {
                       // A visitor who taps this is shown the gate naming the
                       // provider, then returned to this screen if they decline
                       // — they never lose their place for refusing.
-                      onPressed: () => requireAccount(
-                        context,
-                        ref,
-                        providerName: data.name,
-                        providerFirstName: firstNameOf(data.name),
-                      ),
+                      onPressed: () async {
+                        final allowed = await requireAccount(
+                          context,
+                          ref,
+                          providerName: data.name,
+                          providerFirstName: firstNameOf(data.name),
+                        );
+                        if (!allowed || !context.mounted) return;
+                        // Rentals stop at the enquiry: there is no booking to
+                        // request. What follows instead is stage 7's handoff —
+                        // "a tenant who takes a room is a mover customer that
+                        // same week" — offered after the enquiry, not beside
+                        // it.
+                        if (!data.category.shape.books) {
+                          final pair = loopPrompt;
+                          if (pair == null) return;
+                          final taken = await offerLoopHandoff(
+                            context,
+                            pair: pair,
+                          );
+                          if (!taken || !context.mounted) return;
+                          // A push, not a replace: they can still go back to
+                          // the room they just enquired about.
+                          context.pushScreen(Routes.categoryOf(pair.then.key));
+                          return;
+                        }
+                        context.pushScreen(Routes.bookingRequestOf(data.id));
+                      },
                       // Property rentals is pay-per-listing: there is no
                       // booking, no commission and no completion. The tenant
                       // enquires and leaves the app, so offering "Request

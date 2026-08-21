@@ -3,69 +3,70 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-21T05:13:00+02:00",
+    "saved": "2026-08-21T13:28:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "a01ed33",
-      "subject": "Build the booking status screen: all eleven states"
+      "hash": "4a5a72f",
+      "subject": "handoff: save session 2026-08-21 0513"
     },
-    "summary": "Read the design properly and repaired everything built on a partial reading of it. Five rounds of user pushback, each correct: the design project was reachable all along; only one canvas of five had been read; docs must precede Dart; wrong documentation is an emergency because everything downstream inherits it; and the flattener was stripping <script>, which is where the design keeps PAL, CATS, REQUIREMENTS and all eleven BSTATES. Brand imported and shipped - launcher, adaptive, splash and notification icons all real and verified on device. Colour and type verified against the canvas rather than assumed. Booking status built with all eleven states.",
-    "state": "Brand real and on device; colour and type verified against PAL; entry flow built; booking status built with 11 states; four brand cuts still over the fetch cap; no backend; nothing persists",
+    "summary": "Built straight down docs/build-order.md: finished Phase 2 (booking request, rate & review), built Phase 3 whole (the loop prompt, its four suppression rules and both placements), then closed all three of Phase 1's remainder items - the consent-supersede redirect, session persistence, and local_auth. 177 tests to 254, analyze clean, debug APK green. Committed and pushed.",
+    "state": "Phases 1-3 complete in code and untested on a handset; no backend; four brand cuts still over the fetch cap",
     "decisions": [
-      "Brand is Phase 1, because the design's Foundations runs Brand then Colour then Type then Components before any screen. It had been bolted on as Phase 0.5",
-      "DISPUTED and NO_SHOW ship with the design's own provisional notes rather than being withheld - the design wrote the copy and flagged it itself",
-      "Never recolour the brand artwork: light and dark are separate drawings, the dark cut has a white i body, and a ColorFilter flattens the ripple rings and both blues",
-      "The dark splash uses the design's dark app icon on a background matching its baked navy plate, which is why it works without mark-dark.png",
-      "PromiseCard.iconColor is required - two artboards use different greens on the same glyph and a default would silently make one wrong",
-      "Docs are corrected before Dart, and Dart follows the docs rather than the reverse"
+      "Phase 3 was buildable despite the journey map marking it `gap` - the map gives trigger points, pairs, four states and one finished line of copy; only the artboard is missing. LoopPair.verbatim marks which string is the design's",
+      "Rides is a target and never a source for the loop prompt: dispatch has no browse to land on, and it is the highest-frequency category",
+      "An unknown supply figure counts as thin - not knowing whether a room is empty is not grounds for sending someone into it",
+      "A restored session never comes back active. That is the one way persistence could be wrong that matters",
+      "ServiceDirection.either kept against the canvas, because booking.md makes 'Both' a listing property; the customer still picks one of two",
+      "The rating star reads palette.accentText, not the canvas's #145A8D literal - identical in light, legible in dark",
+      "'you pay them directly' where the canvas writes 'him' of a provider named Kabelo - it is a template for every provider",
+      "No refreshListenable on the consent redirect: Consent.current is a compile-time constant, so the case it catches is a restored session"
     ],
     "working": [
-      "Launcher icon at five densities, adaptive icon with a monochrome layer, splash icon in both modes, notification icon wired into the manifest - all verified on a Pixel 9a",
-      "Colour verified against the canvas PAL: every token matches exactly in both modes, including all six shadow alphas",
-      "Type verified: all eight roles match the canvas scale",
-      "Booking status with all eleven states, copy verbatim from BSTATES, payment at step 4, endings hiding the step bar",
-      "Entry flow: splash, register, sign in, OTP with wrong-code and locked states, consent, biometric enrolment, unlock, location, auth gate",
-      "177 tests, flutter analyze clean"
+      "Phase 2 complete: booking request, status with eleven states, rate & review, joined by the auth gate. Sending is a replace; submit is dead until a star is tapped",
+      "Phase 3 complete: four pairs, four suppression rules, two placements. Only rentals-to-movers fires against real supply figures, and a test pins that",
+      "Consent supersede enforced by a router redirect, with visitors and locked sessions deliberately exempt",
+      "The session persists and never returns active - biometry on restores to locked, biometry off goes back through the code",
+      "Biometric unlock wired to the platform: two distinct prompts, the no-sensor state handled both directions, refusals silent",
+      "254 tests, flutter analyze clean, flutter build apk --debug green"
     ],
     "notWorking": [
-      "Four brand cuts exceed the 256 KiB fetch cap - mark-dark, wordmark-dark-new, lockup-dark, logo-light-transparent. The in-app splash still sets the wordmark in type",
-      "Phase 2 is half done: booking status is built, booking request and rate & review are not",
-      "The OTP screen has its states but no backend - DemoOtpVerifier accepts any four digits",
-      "Consent supersede is modelled and still not enforced by a router redirect",
-      "local_auth is not wired; both unlock buttons call unlock()",
-      "Nothing persists. No Django backend",
-      "iOS is stock and cannot be built on this machine"
+      "Nothing built since 2026-08-20 has been seen on a handset - Phase 0's colour and motion gate is owed on all of it",
+      "No backend: a sent request never becomes a booking, a review is dropped, DemoOtpVerifier accepts any four digits",
+      "Four brand cuts still exceed the 256 KiB fetch cap",
+      "Ten of eleven booking actions are inert; only COMPLETED goes anywhere",
+      "No picker behind the booking request's WHEN card - scheduling granularity is still open"
     ],
     "doNotRepeat": [
-      "Stripping <script> when flattening a canvas - that is 16673 characters per file holding PAL, CATS, REQUIREMENTS, the pricing copy and all eleven BSTATES",
-      "Transcribing a binary out of a tool result. mark-icon.png came back complete and inline and was still corrupt from a hand copy; Image.open read the header fine and only a full load() failed. Decode from the file the tool wrote and verify the IEND chunk before it lands",
-      "Get-Content / Set-Content on a source file - they default to the system codepage. A one-symbol rename double-encoded nine em dashes and a middot; it compiled and all tests passed, and was only visible as mojibake in a screenshot",
-      "Writing a mojibake detector with the mangled characters written out literally - it matches itself. Build the pattern from \\u escapes",
-      "Reading a canvas name as one of ours: pal.shCard is our shadowRow, pal.shRaise is our shadowCard",
-      "CrossAxisAlignment.stretch on a Row inside a ListView - unbounded constraint, will not lay out. Use IntrinsicHeight",
-      "A modal on a tab's Navigator - go_router re-syncs on pop and removes the page underneath",
-      "A PowerShell here-string or heredoc for git commit -m. Write the message to a file and use git commit -F"
+      "A cat <<'EOF' heredoc through the Bash tool for a ~430-line Dart file dies with 'unexpected EOF'. Use the Write tool for whole files",
+      "Bulk string-replacing call shapes (state = state.copyWith( to _set(state.copyWith() changes arity and leaves every call a paren short. Analyze before moving on",
+      "Putting a policy only in the shipping store while tests run against the in-memory one means tests pass against behaviour the app does not have. Both stores now share one write",
+      "local_auth 3.x is not 2.x: no error_codes.dart, no AuthenticationOptions, stickyAuth is persistAcrossBackgrounding, errors are typed LocalAuthException",
+      "Carried: stripping <script> when flattening a canvas; transcribing a binary out of a tool result; Get-Content/Set-Content on a source file; CrossAxisAlignment.stretch on a Row inside a ListView; a modal on a tab's Navigator; a here-string for git commit -m"
     ],
     "nextSteps": [
-      "Finish Phase 2: booking request and rate & review, both in ds-2-customer. The direction radio set and pricing copy are already in the canvas script block",
-      "Phase 3: the loop prompt, stage 7. Suppression rules are in foundations - adjacent category thin, already booked, or the same person",
-      "When the four cuts arrive: drop them into design/assets/, point BrandLockup(onDark:) at the real artwork, delete the type fallback",
-      "Close Phase 1's remainder: local_auth, the consent-supersede redirect, persistence for SessionController",
-      "Read docs/build-order.md first - it carries a 60-artboard index so each phase points at the screen it implements"
+      "Run Phase 0's gate on everything built since 2026-08-20 - a Pixel in both modes, colour and motion",
+      "Verify biometric unlock on real hardware; it builds and is unit-tested behind a fake, but the sensor path has never run",
+      "Phase 4: becoming a provider paired with the admin queue. This is where the backend starts - Django on /staff/*, PROVIDER_CATEGORY, ADMIN_ACTION, DOCUMENT_ACCESS. Postgres is already running"
     ],
     "blockers": [
-      "BLOCKING, only the user can clear it: mark-dark, wordmark-dark-new, lockup-dark and logo-light-transparent all exceed the 256 KiB get_file cap. Re-save them smaller in the design project or export directly",
+      "BLOCKING, only the user can clear it: mark-dark, wordmark-dark-new, lockup-dark and logo-light-transparent all exceed the 256 KiB get_file cap",
       "Undesigned so not startable: the dispute FLOW (UC-13), customer-provider messaging, provider listing management at scale, empty and offline states",
-      "Late-cancellation fee amount - percentage, flat, or first-occurrence waiver",
-      "No-show consequence for providers",
-      "Commission rate per category - rides shows 8%",
-      "Dispute turnaround - screens promise contact but name no timeframe",
-      "Wallet naming vs compliance.md",
+      "Late-cancellation fee amount; no-show consequence for providers; commission rate per category; dispute turnaround",
       "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA",
-      "Noted not fixed: the design numbers two screens 21, and Session.maxCodeAttempts (5) is the repo's number - the design says 'locked after N attempts' without setting N"
+      "Noted not fixed: the design numbers two screens 21, and Session.maxCodeAttempts (5) is the repo's number"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-21-1029.md",
+      "saved": "2026-08-21T05:13:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "a01ed33",
+        "subject": "Build the booking status screen: all eleven states"
+      },
+      "summary": "Read the design properly and repaired everything built on a partial reading of it. Five rounds of user pushback, each correct: the design project was reachable all along; only one canvas of five had been read; docs must precede Dart; wrong documentation is an emergency because everything downstream inherits it; and the flattener was stripping <script>, which is where the design keeps PAL, CATS, REQUIREMENTS and all eleven BSTATES. Brand imported and shipped - launcher, adaptive, splash and notification icons all real and verified on device. Colour and type verified against the canvas rather than assumed. Booking status built with all eleven states."
+    },
     {
       "file": "handoffs/2026-08-21-0513.md",
       "saved": "2026-08-20T21:43:00+02:00",
