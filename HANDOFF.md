@@ -1,311 +1,172 @@
 # Work Handoff - Ipelege
 
-**Saved:** Friday 21 August 2026, 19:40 (+02:00)
+**Saved:** Friday 21 August 2026, 22:03 (+02:00)
 **Branch:** main
-**Last commit:** d76096c Adopt element-by-element UI ticks; fix the three things a glance missed
+**Last commit:** 227b29c Log a successful OTP confirmation, not only a rejected one
 
 ## What I was working on
 
-Resumed from the 13:28 handoff and did its first named next step: **run Phase
-0's gate on everything built since 2026-08-20**. Both halves — motion, then
-colour — and the gate is a runnable script now rather than an act of will.
+Resumed the 13:28 handoff and ran a very long session that went well past its
+plan. In order: ran **Phase 0's gate** on everything built since 2026-08-20
+(both halves), **closed Phase 1** by verifying biometrics on a real handset,
+built **Phase 3.5** (the settings spine), **changed the auth model**, **wired
+Firebase** and got **real SMS delivering to a Botswana number**, and extracted
+a **code-discovery skill** after a search-driven conclusion turned out wrong.
 
-Both halves found real defects, and in both cases the defect was the same
-shape: something the design specified, that the repo had *recorded* correctly
-and *implemented* nowhere, and that no widget test could ever have seen.
-
-**The motion pass** found the transition table consumed by four places and no
-screen. `theme/motion.dart` held the right durations — they were corrected on
-2026-08-20 after the previous pass — but there was not one `AnimatedContainer`,
-`AnimatedSwitcher` or `TweenAnimationBuilder` anywhere in the app. The table's
-two most-specified rows, the 300 ms booking state change with its eleven-row
-per-state table and the 400 ms wallet count, were simply absent. Correcting a
-token is not implementing it.
-
-**The colour pass** ran 28 screens in both modes on a Pixel emulator. The
-palette holds exactly. What it found instead was three interactive controls
-that are **invisible at rest** — a class of bug an artboard comparison cannot
-catch either, because artboards draw controls in their chosen state.
+The session ended on three bugs found by testing the entry flow on the handset.
+**They are the next session's first job** — see *What is NOT working yet*.
 
 ## Files changed this session
 
-Seven commits: 599d16e, 89aa2f6, 8f894c4, 5c5a7c0, 014b3f2, 4c7cf7b, d76096c.
+Fourteen commits, `599d16e` … `227b29c`. The shape of it:
 
-**The motion pass**
-
-- **A** `app/lib/ui/components/enter_in_place.dart` — "anything entering in
-  place", the design's own rule, as one widget instead of three copies.
-- **M** `app/lib/ui/screens/consumer/booking_status_screen.dart` — now
-  stateful, so it can tell arriving at a state from being opened at one; the
-  whole per-state motion table.
-- **M** `app/lib/ui/components/money_text.dart` — `MoneyCounter`, which counts
-  on change and never on load.
-- **M** `app/lib/ui/screens/provider/wallet_screen.dart` — the balance uses it.
-- **M** `app/lib/ui/components/category_tile.dart` — `CategoryTileEntrance`
-  delegates to `EnterInPlace`.
-- **A** `app/test/ui/motion_test.dart` — 21 tests, pinning the rules rather
-  than the numbers.
-
-**The colour pass**
-
-- **A** `app/integration_test/gate_test.dart` — the gate itself: 28 screens,
-  both modes, one PNG per artboard.
-- **A** `app/test_driver/integration_test.dart` — writes the frames to
-  `app/build/gate/`.
-- **M** `app/lib/theme/tokens.dart` — `AppPalette.controlOutline`.
-- **M** `app/lib/ui/screens/consumer/rate_review_screen.dart`,
-  `app/lib/ui/components/choice_cards.dart`, `app/lib/theme/app_theme.dart` —
-  the three controls that were invisible.
-- **A** `app/test/theme/contrast_test.dart` — 15 tests holding the floors in
-  both directions.
-- **M** `app/pubspec.yaml` / `.lock` — `integration_test` from the SDK.
-- **M** `docs/design-deltas.md` §17 and §18; `docs/build-order.md` Phase 0.
-
-**Pointing the gate at the real platform**
-
-- **M** `app/integration_test/gate_test.dart` — applies `main()`'s
-  `biometricsProvider` override, so the unlock screen is photographed answering
-  the handset rather than a stub.
-- **M** `app/lib/ui/screens/entry/unlock_screen.dart` — the hero glyph obeys the
-  same rule the copy and buttons already did.
-- **M** `app/test/ui/unlock_test.dart` — pins it; verified to fail without the
-  fix.
-
-**Closing Phase 1 on real hardware**
-
-- **A** `app/integration_test/biometric_test.dart` — raises a real system
-  prompt and waits for a real finger. A separate target from the gate, because
-  a gate is unattended and this is not.
-- **M** `app/integration_test/gate_test.dart` — applies `main()`'s
-  `biometricsProvider` override, says `--debug` out loud, and documents the
-  sleeping-screen failure.
-- **M** `app/lib/ui/screens/entry/unlock_screen.dart` — the hero glyph obeys
-  the same rule the copy and buttons already did.
-
-**The permission surface, and Phase 3.5**
-
-- **A** `docs/device-permissions.md` — the whole surface: what is asked, when,
-  and what happens when the answer is no. §2b is why the overlay permission
-  cannot be front-loaded.
-- **A** `design/CORRECTIONS.md` — a work list pointing *back* at the design
-  project, the opposite direction to `design-deltas.md`. First entry is profile
-  photos, which do not exist anywhere in the canvas.
-- **A** `app/lib/core/settings.dart` — the store, shaped like `session_store`.
-- **A** `app/lib/ui/screens/settings/preferences_screen.dart` — Appearance, and
-  the keep-screen-on preference.
-- **D** `app/lib/theme/theme_mode.dart` — replaced by the settings store.
-- **A** `app/test/ui/preferences_test.dart`.
-
-**UI ticks, and what the first one found**
-
-- **M** `docs/test-strategy.md` — the tick procedure, and a table naming every
-  stub and exactly what it hides.
-- **M** `app/lib/ui/components/brand_lockup.dart` — the wordmark's blue `i`,
-  and the inverted `ExcludeSemantics`/`Semantics` nesting.
-- **M** `app/lib/theme/tokens.dart`, `.../entry/splash_screen.dart` —
-  `Brand.skyPale`, the splash glyph tint the canvas actually specifies.
-- **M** `app/test/identity/identity_test.dart` — both pinned.
-- **A** `docs/sms-otp.md` — testing OTP without a paid service, and the
-  Botswana recommendation.
+- **Motion & colour gate** — `motion.dart` consumers built
+  (`enter_in_place.dart`, `MoneyCounter`, the booking state table),
+  `integration_test/gate_test.dart` + `test_driver/`,
+  `AppPalette.controlOutline`, `contrast_test.dart`.
+- **Biometrics on hardware** — `integration_test/biometric_test.dart`,
+  `unlock_screen.dart` glyph fix.
+- **Phase 3.5** — `core/settings.dart`,
+  `ui/screens/settings/preferences_screen.dart`, `theme/theme_mode.dart`
+  **deleted**, `preferences_test.dart`.
+- **Auth model** — `session_store.dart` (`reopened` always → `locked`),
+  `unlock_screen.dart` (no-device-lock fallback).
+- **Firebase** — `firebase_options.dart`, `google-services.json`,
+  `core/otp_firebase.dart`, `OtpVerifier` made async with a `send` half,
+  `main.dart` init, `Session.codeLength` 4 → **6**.
+- **Docs** — `device-permissions.md`, `sms-otp.md`, `CODE-DISCOVERY-GUIDE.md`
+  (retargeted), `design/CORRECTIONS.md` (new, 7 entries), `design-deltas.md`
+  §17–§21, calling folded into `architecture.md`, `docs/calling.md` deleted.
+- **Skill** — `.claude/skills/code-discovery/SKILL.md`, its global copy, and two
+  `PostToolUse` hooks in `~/.claude/settings.json`.
 
 ## What is working
 
-- **Phase 0 is closed on everything built up to 2026-08-21.** The palette was
-  compared against the canvas on 28 screens in both modes and holds — every
-  surface, plate, chip and gradient. The dark mode most of these screens had
-  never been rendered in is correct.
-- **The booking state change moves as one event.** The chip's plate, dot and
-  label ink, the accent rule and all six step bars run on **one** duration,
-  passed down rather than repeated. Forward progress animates; every ending is
-  instant. The pay panel and provider row rise 12 dp on the states the design
-  names, the rating action arrives 120 ms behind the bar completing, and a
-  screen opened at a state does not replay reaching it or buzz for it.
-- **The wallet balance counts to a new figure and does nothing on load**,
-  enforced structurally: the tween begins at the amount the widget was born
-  holding, so the rule cannot be forgotten rather than merely remembered.
-- **The three invisible controls are visible**, confirmed on device in both
-  modes after the fix, not just in arithmetic.
-- **The rentals → movers handoff sheet has been seen rendered**, for the first
-  time. It is the only one of stage 7's two placements that can be.
-- **The no-biometry branch is verified against the real platform.** The
-  emulator has a fingerprint sensor with nothing enrolled and no device
-  credential — precisely the design's *"biometry unavailable → passcode"* case
-  — and the screen came back correct: no fingerprint button, no copy naming
-  one, **Enter device passcode** promoted to the primary.
-- **The biometric path is verified end to end on a Galaxy S24** (Android 16,
-  three enrolled prints), paired over wireless adb. The same build gives the
-  opposite answer to the emulator — fingerprint glyph, fingerprint copy, **Use
-  fingerprint** as the primary — so the conditional is confirmed from both
-  sides, not just the broken one. A **real system prompt** was raised and a
-  **real fingerprint** carried a locked session back to `active`, with the same
-  name on the far side. Every branch of `core/biometrics.dart` has now run
-  against a real platform.
-- **Dark mode is reachable.** Phase 3.5 shipped the settings spine, so the
-  theme can be changed from inside the app and survives a restart. It had been
-  finished and unreachable — both themes and the provider existed with no
-  control anywhere.
-- 254 tests → **305**. `flutter analyze` clean. The gate runs green end to end,
-  **58 shots on the handset** as well as on the emulator, and both brand fixes
-  were confirmed *there* rather than only in the analyzer.
+- **Phase 0 closed.** 28 screens shot in both modes on a Galaxy S24 **and** the
+  emulator; the palette holds everywhere. The gate is a script now:
+  `flutter drive --debug --driver=test_driver/integration_test.dart
+  --target=integration_test/gate_test.dart -d <device>`.
+- **Biometrics verified end to end on real hardware.** Both availability
+  branches, a real system prompt, and a real fingerprint reopening a locked
+  session with the same name on the far side.
+- **Real SMS works.** `otp: codeSent` at 21:32, delivered to +267 77 744 018,
+  on the **free Spark plan**. Play Integrity attestation confirmed in the log.
+- **Dark mode is reachable** — Preferences ships Appearance and the
+  keep-screen-on preference, and the choice survives a restart.
+- **307 tests**, `flutter analyze` clean.
+- **The VPS is up again** and all four containers returned healthy on their own.
 
 ## What is NOT working yet
 
-- **Profile photos do not exist anywhere in the design.** The Account artboard
-  renders initials on a plate and that fallback is the only state drawn — no
-  avatar, no upload, no remove. Raised as a gap; written up as the first entry
-  in `design/CORRECTIONS.md` for the design side to supply.
-- **Nothing reads `keepScreenOnDuringRides` yet.** It is stored and defaults
-  on; the ride screens are Phase 5. That is deliberate, not an oversight.
-- **The splash has no logo**, and this is the sharpest cost of the fetch-cap
-  blocker. The artboard stacks `mark-dark.png` at 88 px above the wordmark; the
-  build renders the type stand-in and no pin at all.
-- **The OTP tests do not test OTP.** `DemoOtpVerifier` accepts any four digits,
-  so the rules around the code are tested and the code is not. Every stub and
-  what it hides is now tabled in `test-strategy.md`.
-- **Only the splash has had a real UI tick.** The other 28 screens have been
-  looked at, which is now explicitly not the same thing.
-- **No backend.** A sent request never becomes a booking, a submitted review is
-  returned to the caller and dropped, and `DemoOtpVerifier` accepts any four
-  digits. Ten of eleven booking actions are inert.
-- **Three brand cuts and one logo still exceed the 256 KiB fetch cap** —
-  `mark-dark`, `wordmark-dark-new`, `lockup-dark`, `logo-light-transparent`.
-  The light cuts all landed; the dark ones compress larger. Only the design
-  side can clear this.
-- **No picker behind the booking request's WHEN card** — scheduling granularity
-  per category is still open.
-- The loop prompt's **completed-booking** placement renders nowhere in the demo,
-  and that is correct — see the decision below.
+**The three entry-flow bugs the next session starts on.** Found on the handset.
+Symptoms are as observed; **causes have not been investigated** — the
+hypotheses below are starting points, not findings.
+
+1. **Cannot sign in a second time.** After a successful login, signing in again
+   fails.
+2. **Biometric unlock never engages.** The offer to allow it appears and is
+   accepted, but no biometric prompt is ever raised afterwards.
+3. **A reopen falls back to SMS and then hits `too-many-requests`.** Because 2
+   never engages, every reopen goes back through a code and Firebase
+   rate-limits the device.
+
+*Unverified hypothesis, recorded only so there is somewhere to start:* all
+three are consistent with **the session not being restored at all** — a reopen
+landing on `SessionStage.none` rather than `locked` would produce exactly this
+trio. `SessionCodec.reopened` was changed this session to always return
+`locked`, and `PrefsSessionStore` is wired only in `main()`. **Prove whether
+the session is written and read back before assuming the reopen logic is
+wrong.** Give this the code-discovery treatment rather than a guess — this
+session has already produced two confident wrong answers from not doing that.
+
+Also outstanding:
+
+- **The OTP confirm half is unconfirmed.** `codeSent` is proven; whether
+  `signInWithCredential` accepts the typed code has never been seen in a log,
+  because success only started logging in the final commit.
+- **No backend.** A sent request never becomes a booking; a review is dropped.
+- **The VPS is a Spot VM** — `Standard_D2pds_v6`, `priority: Spot`,
+  `evictionPolicy: Deallocate`. Azure will keep deallocating it; it went down
+  once during this session. **Agreed to deal with this next session.**
+- Three brand cuts and one logo still exceed the 256 KiB fetch cap.
+- Nothing reads `keepScreenOnDuringRides` yet — Phase 5 owns that.
 
 ## Decisions made (and why)
 
-- **"Medium haptic" is a strength the app deliberately does not have.** The
-  design marks `ACCEPTED` and `COMPLETED` with one, and `core/haptics.dart`
-  exposes three haptics named after *meanings*, not strengths, because "a phone
-  that buzzes at everything gets muted". Resolved to `Haptics.decision()` —
-  whose own definition is "accepting a request; confirming a booking is done",
-  i.e. these two moments under their other name. **A fourth haptic was not
-  added**, because the two sections are not in conflict about behaviour.
-- **The empty-room rule wins over demo completeness.** All three
-  `bookingCompleted` loop pairs point at categories the demo marks thin, so the
-  prompt is withheld and the placement cannot be photographed. Making it
-  reachable would mean fabricating supply, which is the one thing stage 7's
-  rules exist to prevent. Recorded so the absence is not read as a regression.
-- **No new colour was invented to fix contrast.** `controlOutline` carries
-  `textMuted`'s existing value in both palettes. A hex the design never
-  specified would have traded one silent drift for another.
-- **`divider` is pinned to stay *under* 3:1.** Fixing contrast by darkening the
-  hairline would give every card a visible border and undo the design's
-  shadow-not-borders treatment. Both directions are tested.
-- **The gate reaches screens by overriding `routerProvider`, not by tapping
-  through the app.** A gate that must complete a nine-step journey to
-  photograph the ninth screen fails at step two and shows nothing.
-- **Every animation is gated on having arrived.** Motion explains a change; one
-  that fires when nothing happened is decoration.
-- **A picture is copy.** The unlock screen's hero glyph was the only element on
-  it that did not obey the no-sensor rule — 50 dp of fingerprint over the words
-  "Use your device passcode to continue". It is `Icons.dialpad` there now.
-- **The gate must override what `main()` overrides**, or it photographs stubs.
-  The session store is the deliberate exception: a prefs-backed one would carry
-  a shot's session into the next shot.
-- **The biometric test is a separate target from the gate.** A gate is
-  unattended; a test that waits thirty seconds for a person to touch a sensor
-  is not, and folding it in would make every future gate run need a human.
-- **Device runs are debug, always** — written out in the commands even though
-  it is the default. The driver attaches to the Dart VM service, which a
-  release build does not have.
-- **A special permission cannot be "set early and defaulted on".**
-  `SYSTEM_ALERT_WINDOW` has no API to grant it — the user must toggle it in
-  Settings by hand — and declaring it before the feature exists is a Play Store
-  liability. The manifest entry lands in the phase that uses it. Keep-screen-on
-  is the opposite case: no permission at all, just a window flag, so the
-  *preference* could be front-loaded and was.
-- **Notifications stay off the Preferences screen** even though the canvas puts
-  them there. They are consent records under FR-1.10, and splitting one DPA
-  trail across two stores to save a phase would be the wrong shortcut.
-- **A UI tick is earned per element, not per screen.** Enumerate the artboard's
-  elements *before* opening the screenshot, or the screenshot decides what gets
-  checked. Adopted after a whole-screen review passed a defect that was plainly
-  visible in the image.
-- **A seam's fake must be more permissive than the real thing**, never less, so
-  no test can pass *because* the fake rejected what production would allow.
-- **Launch OTP on Firebase Auth phone**, not an aggregator — the free quota
-  covers early volume and it skips a commercial negotiation that is a
-  lead-time item. Move to a SADC aggregator at volume. WhatsApp is the lever
-  worth pushing hardest here, and the app already collects consent for it.
+- **Dropped "an OTP every time the app is opened".** Not on cost — the check
+  does not work. An SMS code proves possession of the SIM, and on a reopen the
+  SIM is inside the handset the person is holding, so against a stolen phone it
+  proves nothing while costing a message per launch. Every reopen asks for the
+  device credential instead. §20.
+- **The OTP is six digits.** Firebase sends six and it is not configurable, so
+  the artboard's four boxes cannot accept the code that arrives. Forced, not
+  chosen. §21.
+- **Firebase for messaging and SMS, never for identity.** `FirebaseOtpVerifier`
+  throws the Firebase user away and reports only whether the code was right.
+  The account of record stays the app's own session, and later the Postgres row
+  beside the wallet and the KYC documents — the same lock-in argument
+  `architecture.md` already made against Firebase as a backend.
+- **Phase 3.5 was pulled forward** because dark mode was finished and
+  unreachable: both themes and the provider existed with no control anywhere.
+- **Both call routes will be built**, on competitive parity rather than privacy —
+  inDrive and the others offer an in-app call *and* a phone call in this market.
+  Matrix rejected: a homeserver and a second identity system for two features.
+- **A UI tick is earned per element, not per screen.** Adopted after a
+  whole-screen review passed a flat-white wordmark plainly visible in the image.
+- **Device tests are debug builds, always** — the driver attaches to the Dart VM
+  service, which a release build does not have.
 
 ## Things I tried that did NOT work - do not repeat these
 
+- **A seam that discards the cause is not observable.** `_readFailure` mapped a
+  `FirebaseAuthException` onto four enum values and dropped `e.code`, so a real
+  failure surfaced as "could not send a code" with nothing saying why. No amount
+  of watching logcat recovers information that was never emitted. **Logging only
+  the failure branch is the same bug half-fixed** — success and never-attempted
+  looked identical until the last commit.
+- **A sleeping screen kills an on-device gate and names nothing useful.**
+  `PixelCopy` throws `Window doesn't have a backing surface!`, the app takes
+  SIGKILL, the driver reports `Service has disappeared`, and **no screenshots
+  survive** — the driver flushes at the end.
 - **An `AnimatedSwitcher`'s outgoing child animates on the controller it was
-  built with.** Flipping its `duration` from zero to 300 ms at the moment of
-  the change gives the *incoming* half the new duration and leaves the outgoing
-  half at zero, so it vanishes instead of crossfading — and every assertion
-  about the widget's properties still passes. Instantness must come from
-  unmounting the switcher, not from zeroing it.
-- **"Has it changed" is not "is it different from where it started."** Gating
-  an arrival animation on `state.key != _openedAt` reads as *not arrived* for
-  any booking that returns to a state it has been in. It is a latch.
-- **A second `pumpWidget` in one test reuses the element tree**, so the screen
-  is still the one opened a moment ago and reports having arrived. Split the
-  test instead.
-- **`find.byType(AnimatedDefaultTextStyle)` finds Material's own.** Anchor a
-  finder to the widget you mean — `find.ancestor(of: find.text(…))`.
-- **Do not "fix" the chip by crossfading its word.** "Chip crossfades pending →
-  ok" names `BookingTone`s. The tone crossfades; the word changes with the
-  frame.
-- **A sleeping screen kills an on-device gate and names nothing useful.** A
-  handset on a 30-second timeout locked mid-run: `PixelCopy` threw
-  `IllegalArgumentException: Window doesn't have a backing surface!`, the app
-  took SIGKILL, and the driver reported `Service has disappeared`. **No
-  screenshots survive** — the driver flushes at the end, so dying at shot 55
-  leaves as much evidence as dying at shot 1. `adb shell svc power stayon true`
-  only holds while the handset is charging.
-- **A widget test pumping a screen needs `AppTheme`, not a bare `MaterialApp`.**
-  The palette is a `ThemeExtension`; without it `context.palette` throws a null
-  check on the first component that reads it.
-- Carried: a `cat <<'EOF'` heredoc for a ~430-line Dart file dies with
-  "unexpected EOF" — use Write; bulk string-replacing call shapes changes arity
-  and leaves every call a paren short; a policy written only into the shipping
-  store while tests run against the in-memory one passes against behaviour the
-  app does not have; `local_auth` 3.x is not 2.x; stripping `<script>` when
-  flattening a canvas; transcribing a binary out of a tool result;
-  `Get-Content`/`Set-Content` on a source file; `CrossAxisAlignment.stretch` on
-  a Row inside a ListView; a modal on a tab's Navigator; a here-string for
-  `git commit -m`.
+  built with.** Flipping `duration` from zero at the moment of the change leaves
+  the outgoing half at zero. Instantness must come from unmounting the switcher.
+- **"Has it changed" is not "is it different from where it started."**
+- **A widget test pumping a screen needs `AppTheme`**, not a bare `MaterialApp` —
+  the palette is a `ThemeExtension`.
+- **Do not conclude from a search.** I read a gate, concluded a button was
+  disabled, and said so; the user had already passed that screen. The real bug
+  was one level in — `_send()` navigated without ever asking for a code.
+- **Do not claim a file is absent after grepping two directories.** I said no
+  VPS host was recorded anywhere; `.env` had it, with the Azure IDs.
+- Carried: heredocs for large Dart files; bulk string-replacing call shapes;
+  a policy written only into the shipping store; `local_auth` 3.x ≠ 2.x;
+  stripping `<script>` when flattening a canvas; transcribing a binary.
 
 ## Exact next steps to continue
 
-1. **Phase 4: becoming a provider, paired with the admin queue.** This is where
-   the backend starts and it is a much larger step than anything before it: a
-   Django project on `/staff/*`, the `PROVIDER_CATEGORY`, `ADMIN_ACTION` and
-   `DOCUMENT_ACCESS` models. Postgres 16.4 + PostGIS, Redis, MinIO and Caddy
-   are already running on the Azure arm64 box. The two halves ship together
-   because neither is testable alone.
-2. **Re-run the gate after Phase 4's screens land** —
-   `cd app && flutter drive --debug --driver=test_driver/integration_test.dart
-   --target=integration_test/gate_test.dart -d <device>` — and add the new
-   screens to `_shots`. The list is the gate's coverage; a screen not in it is
-   a screen nobody has looked at. On a handset, stop the screen sleeping first.
-3. **Tick the other 28 screens**, element by element against their artboards,
-   in both modes. The splash alone produced three findings; the rest have only
-   been glanced at. `app/build/gate/` holds the shots.
-4. **Send `design/CORRECTIONS.md` to the design side.** Profile photos, the
-   keep-screen-on preference row, and how an incoming ride reaches a driver who
-   is not in the app. The last one is three different designs on Android and
-   picking wrong costs a Play Store review.
+1. **Fix the three entry-flow bugs.** Reproduce on the handset first —
+   `adb -s adb-RZCXA17Z2JK-ig29zg._adb-tls-connect._tcp logcat -s flutter:V`
+   now reports both OTP outcomes. Begin by proving whether the session is
+   persisted and restored at all.
+2. **Deal with the VPS deallocation.** Spot eviction is the cause and it will
+   recur. Convert to Regular, automate a restart, or accept it knowingly — but a
+   ledger cannot live on a VM Azure can deallocate mid-transaction, and Phase 4
+   puts one there.
+3. **Confirm the OTP round trip** — watch for `otp: confirm accepted`.
+4. **Phase 4:** becoming a provider, paired with the admin queue.
+5. **Tick the remaining 27 screens** element by element. Only the splash has had
+   a real one and it produced three findings.
+6. **Send `design/CORRECTIONS.md` to the design side** — seven entries now.
 
 ## Open questions / blockers
 
-- **BLOCKED, and only the user can clear it:** four brand files exceed the
-  256 KiB `DesignSync.get_file` cap and truncate silently. They must be
-  exported or re-saved smaller from the design project.
-- **Undesigned, so not startable:** the dispute *flow* (UC-13) — the `DISPUTED`
-  state is built, the flow that reaches it is not; customer↔provider messaging;
-  provider listing management at scale; empty and offline states.
-- **Unsettled product decisions:** late-cancellation fee amount; no-show
-  consequence for providers; commission rate per category; dispute turnaround.
-  Three booking states ship the design's own "provisional" note in the
-  meantime.
+- **Why the VPS keeps stopping is answered — Spot eviction.** What to do about
+  it is next session's call.
+- **BLOCKED, user-only:** four brand files exceed the 256 KiB `get_file` cap.
+- **Undesigned:** the dispute *flow*, messaging, the calling screens, empty and
+  offline states, profile photos.
+- **Unsettled:** late-cancellation fee, no-show consequence, commission per
+  category, dispute turnaround, and whether the design wants number privacy back.
 - Carried: reversal policy, negative balance, minimum top-up, hosting
   durability, EPS licensing, data residency, KYC retention, GPS DPIA.
-- Noted, not fixed: the design numbers two screens 21, and
-  `Session.maxCodeAttempts` (5) is the repo's number, not the canvas's.
