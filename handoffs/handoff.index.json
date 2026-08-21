@@ -3,68 +3,79 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-20T21:43:00+02:00",
+    "saved": "2026-08-21T05:13:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "8877ff3",
-      "subject": "Build Phase 1: the account gap"
+      "hash": "a01ed33",
+      "subject": "Build the booking status screen: all eleven states"
     },
-    "summary": "Followed docs/build-order.md rather than re-deriving it. Closed Phase 0 by running all five built screens on a Pixel 9a in both modes - the first time this app has been seen rendered. The palette came back exact; the supply count was ellipsised and is fixed. The run exposed that the app has no identity at all, raised by the user mid-session: stock Flutter icon, white cold-start flash, no mark. Fixed what needed no artwork, made the rest an enforced artifact. Then built Phase 1 in full: seven entry routes plus the auth gate, with the entry rules held as states in core/session.dart. 147 tests.",
-    "state": "Entry flow built and verified on device in both modes; 5 earlier screens confirmed against the canvas; no brand artwork anywhere; no backend; nothing persists",
+    "summary": "Read the design properly and repaired everything built on a partial reading of it. Five rounds of user pushback, each correct: the design project was reachable all along; only one canvas of five had been read; docs must precede Dart; wrong documentation is an emergency because everything downstream inherits it; and the flattener was stripping <script>, which is where the design keeps PAL, CATS, REQUIREMENTS and all eleven BSTATES. Brand imported and shipped - launcher, adaptive, splash and notification icons all real and verified on device. Colour and type verified against the canvas rather than assumed. Booking status built with all eleven states.",
+    "state": "Brand real and on device; colour and type verified against PAL; entry flow built; booking status built with 11 states; four brand cuts still over the fetch cap; no backend; nothing persists",
     "decisions": [
-      "The auth gate is a sheet on the ROOT navigator, not a route - refusing it must not cost the visitor their place, and a tab's navigator is managed declaratively by go_router",
-      "Entry routes sit outside both shells: a flow escapable by tapping a tab is not a gate",
-      "The entry rules live in Session as states - OTP unskippable by construction, canBook false on a superseded consent version, lock() no-ops unless the session was active so biometry can only unlock",
-      "Consent is captured on the OTP screen, not after it (FR-1.10); the primary stays dead until code + required tick, with a line saying why",
-      "BrandLockup holds the lockup slot rather than faking a mark - the canvas says a previously assembled set lost the ripple rings and the blue i",
-      "The category tile's off-grid literals are recorded, not tokenised, as navPillBg already is",
-      "entryGradient and splashGradient added as palette tokens; splashGradient is identical in both themes on purpose"
+      "Brand is Phase 1, because the design's Foundations runs Brand then Colour then Type then Components before any screen. It had been bolted on as Phase 0.5",
+      "DISPUTED and NO_SHOW ship with the design's own provisional notes rather than being withheld - the design wrote the copy and flagged it itself",
+      "Never recolour the brand artwork: light and dark are separate drawings, the dark cut has a white i body, and a ColorFilter flattens the ripple rings and both blues",
+      "The dark splash uses the design's dark app icon on a background matching its baked navy plate, which is why it works without mark-dark.png",
+      "PromiseCard.iconColor is required - two artboards use different greens on the same glyph and a default would silently make one wrong",
+      "Docs are corrected before Dart, and Dart follows the docs rather than the reverse"
     ],
     "working": [
-      "Palette verified pixel-exact on a real device in both modes: dark page #050B0F, card #171F25, nav #11171C. The PAL recovery holds and dark mode renders as specified",
-      "The app has a way in: cold start lands on the splash; register to OTP to consent to location to Home works end to end",
-      "A visitor reaches home, browse and listing detail with no account; the wall is at the booking action and names the provider",
-      "147 tests pass, flutter analyze clean (109 at the start of the session; the '97' in the last two handoffs was already stale)",
-      "The cold-start flash is gone, asserted against AppPalette so an Android XML resource cannot drift from a Dart token silently",
-      "The supply count wraps instead of ellipsising, guarded by a test that measures in the real IBM Plex face"
+      "Launcher icon at five densities, adaptive icon with a monochrome layer, splash icon in both modes, notification icon wired into the manifest - all verified on a Pixel 9a",
+      "Colour verified against the canvas PAL: every token matches exactly in both modes, including all six shadow alphas",
+      "Type verified: all eight roles match the canvas scale",
+      "Booking status with all eleven states, copy verbatim from BSTATES, payment at step 4, endings hiding the step bar",
+      "Entry flow: splash, register, sign in, OTP with wrong-code and locked states, consent, biometric enrolment, unlock, location, auth gate",
+      "177 tests, flutter analyze clean"
     ],
     "notWorking": [
-      "No brand artwork anywhere - stock Flutter launcher icon, no adaptive icon, no splash image, no notification icon, no lockup in-app. Searched the whole user profile; the PNGs are not on this machine",
-      "Biometry is not wired to the platform: both unlock buttons call unlock(), no local_auth prompt",
-      "Nothing persists - SessionController is in-memory, so /unlock is only reachable by deep link today",
-      "No Django backend; screens still read core/demo_data.dart",
-      "Most screens still placeholders: booking request/status, ride tracking, rate & review, mode switcher, my categories, inbox, top up, become a provider, KYC, six settings screens",
-      "iOS is stock and unverified; it cannot be built on this machine"
+      "Four brand cuts exceed the 256 KiB fetch cap - mark-dark, wordmark-dark-new, lockup-dark, logo-light-transparent. The in-app splash still sets the wordmark in type",
+      "Phase 2 is half done: booking status is built, booking request and rate & review are not",
+      "The OTP screen has its states but no backend - DemoOtpVerifier accepts any four digits",
+      "Consent supersede is modelled and still not enforced by a router redirect",
+      "local_auth is not wired; both unlock buttons call unlock()",
+      "Nothing persists. No Django backend",
+      "iOS is stock and cannot be built on this machine"
     ],
     "doNotRepeat": [
-      "Reading a canvas shadow name as if it were ours - pal.shCard is our shadowRow, pal.shRaise is our shadowCard. The vocabularies invert. I shipped a wrong 'fix' on that misreading before the mapping table in tokens.dart corrected me",
-      "Pushing a modal onto a tab's Navigator - go_router re-syncs on pop and removes the page underneath. Dismissing the auth gate took the listing with it. useRootNavigator: true",
-      "CrossAxisAlignment.stretch on a Row inside a ListView - unbounded cross-axis constraint, does not lay out. Use IntrinsicHeight; a BoxDecoration border is not an alternative on a rounded rect",
-      "Assuming a widget in a Column is full width - a Column centres on the cross axis",
-      "Asserting text layout under the default test font - it draws every glyph a full em wide. Load the bundled face with FontLoader",
-      "find.text on a Text.rich span - needs find.textContaining(..., findRichText: true)",
-      "A PowerShell here-string for git commit -m - it breaks on quotes. Write the message to a file and use git commit -F",
-      "Carried: claiming 'retrieved' when meaning 'applied'; merging an old design snapshot with a fresh pull; grepping for backRules/motionSpecs/haptics; splitting the canvas from the repo side; a bare grep -o over a 256 KB HTML file"
+      "Stripping <script> when flattening a canvas - that is 16673 characters per file holding PAL, CATS, REQUIREMENTS, the pricing copy and all eleven BSTATES",
+      "Transcribing a binary out of a tool result. mark-icon.png came back complete and inline and was still corrupt from a hand copy; Image.open read the header fine and only a full load() failed. Decode from the file the tool wrote and verify the IEND chunk before it lands",
+      "Get-Content / Set-Content on a source file - they default to the system codepage. A one-symbol rename double-encoded nine em dashes and a middot; it compiled and all tests passed, and was only visible as mojibake in a screenshot",
+      "Writing a mojibake detector with the mangled characters written out literally - it matches itself. Build the pattern from \\u escapes",
+      "Reading a canvas name as one of ours: pal.shCard is our shadowRow, pal.shRaise is our shadowCard",
+      "CrossAxisAlignment.stretch on a Row inside a ListView - unbounded constraint, will not lay out. Use IntrinsicHeight",
+      "A modal on a tab's Navigator - go_router re-syncs on pop and removes the page underneath",
+      "A PowerShell here-string or heredoc for git commit -m. Write the message to a file and use git commit -F"
     ],
     "nextSteps": [
-      "Phase 2 - booking with the payment moment moved: booking request, booking status (11 states), rate & review. Payment precedes 'mark complete', at position 4. DISPUTED and NO_SHOW stay out, they have no honest copy yet",
-      "Phase 0.5 the moment the artwork arrives: export into design/assets/, then launcher icon at all densities, adaptive icon, the Android 12 splash API, notification icon, and swap BrandLockup to the image. Update docs/identity.md and the hashes in identity_test.dart together",
-      "Finish Phase 1's two loose ends: local_auth behind the unlock buttons, and persistence for SessionController",
-      "Read docs/build-order.md and update it with its test - do not re-derive the order in a handoff"
+      "Finish Phase 2: booking request and rate & review, both in ds-2-customer. The direction radio set and pricing copy are already in the canvas script block",
+      "Phase 3: the loop prompt, stage 7. Suppression rules are in foundations - adjacent category thin, already booked, or the same person",
+      "When the four cuts arrive: drop them into design/assets/, point BrandLockup(onDark:) at the real artwork, delete the type fallback",
+      "Close Phase 1's remainder: local_auth, the consent-supersede redirect, persistence for SessionController",
+      "Read docs/build-order.md first - it carries a 60-artboard index so each phase points at the screen it implements"
     ],
     "blockers": [
-      "NEW AND HARD-BLOCKING: the brand artwork. Nothing in Phase 0.5 can proceed without it and it cannot be reconstructed from this repo",
-      "Already-accepted bookings on category revoke - still the code blocker for the admin Revoke action",
+      "BLOCKING, only the user can clear it: mark-dark, wordmark-dark-new, lockup-dark and logo-light-transparent all exceed the 256 KiB get_file cap. Re-save them smaller in the design project or export directly",
+      "Undesigned so not startable: the dispute FLOW (UC-13), customer-provider messaging, provider listing management at scale, empty and offline states",
       "Late-cancellation fee amount - percentage, flat, or first-occurrence waiver",
-      "No-show consequence for providers - what happens, and after how many",
-      "Commission rate per category - rides shows 8%, trades and rentals unresolved",
+      "No-show consequence for providers",
+      "Commission rate per category - rides shows 8%",
       "Dispute turnaround - screens promise contact but name no timeframe",
-      "Not yet designed at all: customer-provider messaging, provider listing management at scale, empty/offline states",
-      "Wallet naming vs compliance.md - design says 'wallet balance', CLAUDE.md still says 'commission credit'",
-      "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA"
+      "Wallet naming vs compliance.md",
+      "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA",
+      "Noted not fixed: the design numbers two screens 21, and Session.maxCodeAttempts (5) is the repo's number - the design says 'locked after N attempts' without setting N"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-21-0513.md",
+      "saved": "2026-08-20T21:43:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "8877ff3",
+        "subject": "Build Phase 1: the account gap"
+      },
+      "summary": "Followed docs/build-order.md rather than re-deriving it. Closed Phase 0 by running all five built screens on a Pixel 9a in both modes - the first time this app has been seen rendered. The palette came back exact; the supply count was ellipsised and is fixed. The run exposed that the app has no identity at all, raised by the user mid-session: stock Flutter icon, white cold-start flash, no mark. Fixed what needed no artwork, made the rest an enforced artifact. Then built Phase 1 in full: seven entry routes plus the auth gate, with the entry rules held as states in core/session.dart. 147 tests."
+    },
     {
       "file": "handoffs/2026-08-20-2143.md",
       "saved": "2026-08-20T20:15:00+02:00",
