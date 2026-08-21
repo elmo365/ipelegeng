@@ -23,14 +23,22 @@
 /// - **Biometric unlock on** → [SessionStage.locked]. "Signed in, but the app
 ///   has been closed and reopened. Biometry or the device passcode reopens it;
 ///   it never re-authenticates."
-/// - **Biometric unlock off** → back through the code. The Security screen says
-///   this in those words: off means "an OTP every time the app is opened". The
-///   number is remembered so it does not have to be typed again, but the code
-///   is not skipped.
+/// - **Biometric unlock off** → also [SessionStage.locked], reached by the
+///   device passcode instead. **Corrected 2026-08-21**: this used to send the
+///   user back through an OTP, and that check does not do what it looks like
+///   it does. An SMS code proves possession of the SIM, and on a reopen the
+///   SIM is inside the handset the person is already holding — so against a
+///   stolen phone it proves nothing while costing a message on every launch.
+///   The device credential is the only proof a thief lacks.
 ///
 /// Both directions require an action to get in. That is the point: restoring
 /// straight to `active` would make a stolen handset a signed-in handset, and it
 /// is the one way this file could be wrong that matters.
+///
+/// **The OTP is not gone — it moved to what it actually proves.** A number is
+/// verified at registration, on a new device, after a reinstall, and after an
+/// explicit sign-out. Those are the moments where nothing on the device
+/// vouches for the person yet. See docs/design-deltas.md §20.
 ///
 /// ## Why not encrypted storage
 ///
@@ -177,15 +185,24 @@ abstract final class SessionCodec {
   static Session reopened(Session stored) {
     if (stored.stage != SessionStage.active) return stored;
 
-    return stored.biometricUnlock
-        // "Biometry or the device passcode reopens it."
-        ? stored.copyWith(stage: SessionStage.locked)
-        // "Off means an OTP every time the app is opened." The number is
-        // remembered so it need not be retyped; the code is not skipped.
-        : stored.copyWith(
-            stage: SessionStage.confirmingNumber,
-            codeAttemptsLeft: Session.maxCodeAttempts,
-          );
+    // **Always locked, whatever the biometric preference says.**
+    //
+    // This used to branch: biometry on went to `locked`, biometry off went
+    // back through an OTP, because the Security screen promised "an OTP every
+    // time the app is opened". That rule was dropped on 2026-08-21, and the
+    // reason is not the message cost — it is that the check does not work.
+    //
+    // An SMS code proves possession of the **SIM**. On a reopen, the SIM is
+    // inside the handset the person is holding, so against the one threat this
+    // file exists to stop — a stolen phone — the code arrives in the thief's
+    // hand along with everything else. It is the device credential that a
+    // thief does not have, and [SessionStage.locked] is the state that asks
+    // for it.
+    //
+    // `biometricUnlock` still decides what `/unlock` *offers* first, which is
+    // what the preference was always really about. It no longer decides
+    // whether an OTP is sent. See docs/design-deltas.md §20.
+    return stored.copyWith(stage: SessionStage.locked);
   }
 }
 

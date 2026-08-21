@@ -81,6 +81,17 @@ class _UnlockScreenState extends ConsumerState<UnlockScreen> {
         ref.read(sessionProvider.notifier).unlock();
         context.goReplacing(Routes.home);
       case BiometricOutcome.unavailable:
+        // The passcode reporting unavailable means something different from
+        // the fingerprint doing so: it is the **last** way in. A handset with
+        // no screen lock at all has no device credential to check, and since
+        // 2026-08-21 a reopen no longer falls back to an OTP, so there is
+        // nothing left to ask. Send them through a fresh sign-in rather than
+        // leaving them on a screen whose every button fails.
+        if (prompt == BiometricPrompt.deviceCredential) {
+          ref.read(sessionProvider.notifier).signOut();
+          context.goReplacing(Routes.signIn);
+          return;
+        }
         // "Biometry unavailable or refused → passcode." The screen changes to
         // say so rather than leaving a button that can only fail.
         setState(() => _availability = BiometricAvailability.unavailable);

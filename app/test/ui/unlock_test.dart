@@ -240,6 +240,38 @@ void main() {
     });
   });
 
+  group('a handset with no device lock at all', () {
+    testWidgets('is sent to a fresh sign-in rather than left stranded', (
+      tester,
+    ) async {
+      // The passcode reporting unavailable means something different from the
+      // fingerprint doing so: it is the **last** way in. Since 2026-08-21 a
+      // reopen no longer falls back to an OTP — see
+      // test/core/session_store_test.dart for why — so a device with no
+      // screen lock has nothing left to be asked for.
+      //
+      // Before this, both buttons failed silently and the screen was a dead
+      // end with a live session behind it.
+      final biometrics = FakeBiometrics(
+        available: BiometricAvailability.unsupported,
+        outcome: BiometricOutcome.unavailable,
+      );
+      final container = await pumpLocked(tester, biometrics);
+
+      await tester.tap(find.text('Enter device passcode'));
+      await tester.pumpAndSettle();
+
+      expect(
+        container.read(sessionProvider).stage,
+        SessionStage.none,
+        reason:
+            'nothing on this device can vouch for the person, so the session '
+            'is not one that should still be held',
+      );
+      expect(biometrics.prompts, [BiometricPrompt.deviceCredential]);
+    });
+  });
+
   group('signing out is the only path that re-authenticates', () {
     testWidgets('it clears the session rather than unlocking it', (
       tester,

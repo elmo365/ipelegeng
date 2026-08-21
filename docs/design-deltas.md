@@ -878,6 +878,66 @@ cuts.
 
 ---
 
+## 20. Dropping "an OTP every time the app is opened"
+
+**The design's rule, from the Security screen, in its own words:** biometric
+unlock off means *"an OTP every time the app is opened"*. It was built exactly
+that way — `SessionCodec.reopened` sent a biometry-off session back to
+`confirmingNumber` — and it is now gone.
+
+**Not for cost.** For the reason that makes the cost unjustifiable: **the check
+does not do what it looks like it does.**
+
+An SMS code proves possession of the **SIM**. The threat a reopen check exists
+for is a stolen or borrowed handset — that is what `reopened`'s own comment
+says, *"restoring straight to active would make a stolen handset a signed-in
+handset"*. But on a reopen, the SIM is **inside the handset the person is
+holding**. The code arrives in the thief's hand along with everything else.
+
+So the old rule sent a paid message, on every single launch, to perform a check
+that the attacker passes automatically. The device credential — a fingerprint
+or the phone's own PIN — is the one proof a thief does not have, and asking for
+it is what `SessionStage.locked` already does.
+
+### What changed
+
+| Moment | Before | Now |
+|---|---|---|
+| Reopen, biometry on | `locked` | `locked` |
+| Reopen, biometry off | **`confirmingNumber`** — an OTP | **`locked`**, reached by the device passcode |
+| Register / new device / reinstall | phone + OTP | unchanged |
+| Explicit sign-out | phone + OTP | unchanged |
+
+`biometricUnlock` still decides what `/unlock` **offers first**, which is what
+the preference was always really about. It no longer decides whether a message
+is sent.
+
+**The OTP did not go away — it moved to what it actually proves.** A phone
+number is verified at the moments where nothing on the device vouches for the
+person yet: first registration, a new handset, a reinstall, and after a
+deliberate sign-out.
+
+### The edge case this created, and its answer
+
+A handset with **no screen lock at all** has no device credential to check. It
+used to fall through to the OTP; now there is nothing left to ask for, and
+`/unlock` would have been a dead end with both buttons failing silently and a
+live session behind them.
+
+So a **passcode** prompt reporting `unavailable` is now treated differently
+from a fingerprint doing so — it is the last way in, not a step down to the
+next one. The session is signed out and the user goes through a fresh sign-in,
+which is the honest outcome: nothing on this device can vouch for them.
+
+### What the design side has to change
+
+The Security screen's copy promises the old behaviour in those words. It is
+listed in [`../design/CORRECTIONS.md`](../design/CORRECTIONS.md) — the screen
+is Phase 7 and unbuilt, so no shipped string is wrong today, but the artboard
+is.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

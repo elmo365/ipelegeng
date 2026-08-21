@@ -72,24 +72,43 @@ void main() {
       expect(restored.canBook, isFalse);
     });
 
-    test('with biometry off it goes back through the code', () {
-      // The Security screen says this in those words: off means "an OTP every
-      // time the app is opened".
+    test('with biometry off it comes back locked too, not through an OTP', () {
+      // **Changed 2026-08-21.** This used to assert the opposite, because the
+      // Security screen promised "an OTP every time the app is opened".
+      //
+      // The rule was dropped because the check does not do what it looks like
+      // it does: an SMS code proves possession of the SIM, and on a reopen the
+      // SIM is inside the handset the person is holding. Against a stolen
+      // phone — the only threat a reopen check exists for — the code arrives
+      // in the thief's hand with everything else, while costing a message on
+      // every single launch.
+      //
+      // The device credential is the proof a thief does not have, so both
+      // preferences now land on `locked`. What `biometricUnlock` still decides
+      // is what `/unlock` offers first. See docs/design-deltas.md §20.
       final store = InMemorySessionStore();
       signIn(containerOn(store), enrolBiometrics: false);
 
       final restored = containerOn(store).read(sessionProvider);
-      expect(restored.stage, SessionStage.confirmingNumber);
+      expect(restored.stage, SessionStage.locked);
+      expect(restored.canBook, isFalse);
       expect(
         restored.phone,
         '71 234 567',
-        reason: 'the number is known, so it should not have to be retyped',
+        reason: 'the number is still known — nothing about it was forgotten',
       );
-      expect(
-        restored.codeAttemptsLeft,
-        Session.maxCodeAttempts,
-        reason: 'a new launch is a new round of guessing',
-      );
+    });
+
+    test('the OTP is kept for what it actually proves', () {
+      // Not a reopen: a *fresh* start on this device. Signing out is the user
+      // saying they are done, and what comes back has to prove the number
+      // again because nothing on the device vouches for them any more.
+      final store = InMemorySessionStore();
+      final container = containerOn(store);
+      signIn(container, enrolBiometrics: true);
+      container.read(sessionProvider.notifier).signOut();
+
+      expect(containerOn(store).read(sessionProvider).stage, SessionStage.none);
     });
 
     test('unlocking a restored session gets all the way in', () {

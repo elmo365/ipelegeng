@@ -89,20 +89,28 @@ this document would be wrong about within a quarter.
 
 ### The cost finding that matters more than the per-message price
 
-The design does not ask for OTP once at registration. It asks for **"an OTP on
-every fresh login"**, and the Security screen promises it in those words. That
-makes SMS a **recurring per-user cost**, not a one-time acquisition cost, and
-in a small market that is the number that decides whether this is affordable.
+**Superseded 2026-08-21 — and the fix made this much cheaper.** The design asked
+for *"an OTP every time the app is opened"* when biometric unlock is off, which
+made SMS a recurring per-user cost rather than a one-time acquisition cost.
 
-Three things already reduce it, and one would reduce it further:
+That rule is gone, and not because of the price: **the check does not work.** An
+SMS code proves possession of the SIM, and on a reopen the SIM is inside the
+handset the person is holding — so against a stolen phone, the code reaches the
+thief too. Every reopen now asks for the device credential instead, which is the
+one proof a thief lacks. See [`design-deltas.md`](design-deltas.md) §20.
 
-- **The session persists.** `session_store.dart` means a reopen is not a fresh
-  login, so the common case sends nothing.
-- **Biometry unlocks** rather than re-authenticating, which is exactly why it
-  was built that way.
-- **A "fresh login" is genuinely rare** — a new device, a reinstall, or an
+**What that leaves is close to a one-time cost per user.** A number is verified
+at registration, on a new handset, after a reinstall, and after an explicit
+sign-out — and nothing else. Which changes the provider decision below from a
+recurring-spend problem to an acquisition-cost one.
+
+What remains is already small, and one thing would shrink it further:
+
+- **The session persists**, and **every** reopen is now a device-credential
+  unlock rather than a code — so the common case sends nothing at all.
+- **A verification is genuinely rare** — a new device, a reinstall, or an
   explicit sign-out.
-- **Flash-call verification** would cut it further: the system places a call
+- **Flash-call verification** would cut even that: the system places a call
   the user never answers and the last digits of the number *are* the code. It
   is much cheaper than SMS and widely used in exactly this kind of market. It
   needs a different screen, so it is a design question as well as a cost one.

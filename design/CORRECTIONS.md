@@ -101,7 +101,36 @@ does not have to rediscover them.
 
 ---
 
-## 4. Carried — already known, still outstanding
+## 4. The Security screen promises an OTP that no longer happens
+
+**Decided 2026-08-21.** Screen 19 (Security) tells the user that turning
+biometric unlock off means *"an OTP every time the app is opened"*, and the
+build did that until now.
+
+The rule was dropped because the check is ineffective, not because it is
+expensive: an SMS code proves possession of the SIM, and on a reopen the SIM is
+inside the handset the person is holding — so against the stolen-phone threat
+it exists for, the code reaches the thief too. The device credential is the
+only proof a thief lacks. Full reasoning in
+[`../docs/design-deltas.md`](../docs/design-deltas.md) §20.
+
+**What the design needs to change:**
+
+- The Security screen's biometric-unlock sub-line. Off no longer means an OTP;
+  it means the device passcode instead of a fingerprint. Both still land on the
+  same locked screen.
+- A state for **a handset with no screen lock at all**, which now goes through
+  a fresh sign-in because there is no credential to check. Currently undrawn.
+- Wherever onboarding explains what biometric unlock is *for*, since it is now
+  a choice between two device credentials rather than a choice between a
+  credential and a code.
+
+**Nothing shipped is wrong today** — Security is Phase 7 and unbuilt. The
+artboard is what needs correcting, before it is built from.
+
+---
+
+## 5. Carried — already known, still outstanding
 
 | | |
 |---|---|
