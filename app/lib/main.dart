@@ -4,10 +4,13 @@
 /// [createRouter]. This file wires the two together and does nothing else.
 library;
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'firebase_options.dart';
 
 import 'core/biometrics.dart';
 import 'core/session.dart';
@@ -22,6 +25,25 @@ Future<void> main() async {
   // the app open straight onto the right screen instead of flashing the splash
   // and then correcting itself.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // **Firebase is initialised for messaging, not for auth.** The two are
+  // independent products in one project, and only one of them costs money:
+  // FCM is free and unlimited, phone auth is billed past a quota. Push is the
+  // only way to reach a closed app on Android — a socket dies to Doze unless a
+  // foreground service holds it up, which a waiting customer will never have —
+  // and the manifest has expected FCM since the notification icon landed.
+  //
+  // A failure here must not take the app down. Firebase is how a booking
+  // update *arrives*; it is not how the app *runs*, and browse, search and the
+  // whole entry flow work without it.
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on FirebaseException catch (e) {
+    debugPrint('Firebase unavailable, continuing without push: ${e.code}');
+  }
+
   final prefs = await SharedPreferences.getInstance();
 
   runApp(

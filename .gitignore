@@ -29,8 +29,21 @@ venv/
 *.pem
 *.key
 service-account*.json
-google-services.json
-GoogleService-Info.plist
+
+# NOT ignored, deliberately: google-services.json / GoogleService-Info.plist.
+#
+# Firebase *client* config is an identifier, not a credential. It ships inside
+# every APK and anyone can extract it in a minute; Google's own guidance says
+# so. Security comes from App Check, Auth rules and Storage/Firestore rules —
+# never from hiding this file.
+#
+# Grouping it with service-account*.json and *.key, which ARE private keys, did
+# two bad things at once: it implied a protection that does not exist, and it
+# broke a fresh clone, because `lib/firebase_options.dart` is committed, is
+# imported by main(), and carries the very same values. Ignoring one and
+# committing the other protected nothing and cost the build.
+#
+# If a real server key ever lands here, it goes above this comment.
 
 # Editors / OS / tooling indexes
 .idea/

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872516253795",
+    "project_id": "ipelege-bw",
+    "storage_bucket": "ipelege-bw.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872516253795:android:cdd36eb7ecc8df8553a056",
+        "android_client_info": {
+          "package_name": "bw.co.ipelege"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2S4eQxDI1cj9xsObvVUh9151PtV48KFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
