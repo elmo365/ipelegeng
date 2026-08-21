@@ -3,60 +3,69 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-21T13:28:00+02:00",
+    "saved": "2026-08-21T14:06:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "4a5a72f",
-      "subject": "handoff: save session 2026-08-21 0513"
+      "hash": "89aa2f6",
+      "subject": "Run Phase 0's colour gate; fix three controls nobody could see"
     },
-    "summary": "Built straight down docs/build-order.md: finished Phase 2 (booking request, rate & review), built Phase 3 whole (the loop prompt, its four suppression rules and both placements), then closed all three of Phase 1's remainder items - the consent-supersede redirect, session persistence, and local_auth. 177 tests to 254, analyze clean, debug APK green. Committed and pushed.",
-    "state": "Phases 1-3 complete in code and untested on a handset; no backend; four brand cuts still over the fetch cap",
+    "summary": "Ran Phase 0's gate on everything built since 2026-08-20, both halves, and made it a runnable script rather than an act of will. The motion pass found the transition table consumed by four places and no screen - no AnimatedContainer, AnimatedSwitcher or TweenAnimationBuilder existed anywhere - and built the booking state change and the wallet count. The colour pass ran 28 screens in both modes on a device: the palette holds exactly, and three interactive controls were invisible at rest. 254 tests to 290, analyze clean, both fixes confirmed on device. Committed and pushed.",
+    "state": "Phases 1-3 complete and now seen rendered in both modes; Phase 0 closed except the biometric sensor path; no backend; four brand cuts still over the fetch cap",
     "decisions": [
-      "Phase 3 was buildable despite the journey map marking it `gap` - the map gives trigger points, pairs, four states and one finished line of copy; only the artboard is missing. LoopPair.verbatim marks which string is the design's",
-      "Rides is a target and never a source for the loop prompt: dispatch has no browse to land on, and it is the highest-frequency category",
-      "An unknown supply figure counts as thin - not knowing whether a room is empty is not grounds for sending someone into it",
-      "A restored session never comes back active. That is the one way persistence could be wrong that matters",
-      "ServiceDirection.either kept against the canvas, because booking.md makes 'Both' a listing property; the customer still picks one of two",
-      "The rating star reads palette.accentText, not the canvas's #145A8D literal - identical in light, legible in dark",
-      "'you pay them directly' where the canvas writes 'him' of a provider named Kabelo - it is a template for every provider",
-      "No refreshListenable on the consent redirect: Consent.current is a compile-time constant, so the case it catches is a restored session"
+      "'Medium haptic' is a strength the app deliberately does not have. Haptics names three uses and no strengths, so ACCEPTED and COMPLETED fire decision() - whose own definition is these two moments under their other name. No fourth haptic was added",
+      "The empty-room rule wins over demo completeness: all three bookingCompleted loop pairs point at thin categories, so that placement cannot be photographed and making it reachable would mean fabricating supply",
+      "No new colour was invented to fix contrast - controlOutline carries textMuted's existing value, because a hex the design never specified trades one silent drift for another",
+      "divider is pinned to stay UNDER 3:1: darkening the hairline would give every card a visible border and undo the design's shadow-not-borders treatment",
+      "The gate reaches screens by overriding routerProvider, not by tapping through the app - a gate that must complete a nine-step journey to photograph the ninth screen fails at step two and shows nothing",
+      "Every animation is gated on having arrived. Motion explains a change; one that fires when nothing happened is decoration"
     ],
     "working": [
-      "Phase 2 complete: booking request, status with eleven states, rate & review, joined by the auth gate. Sending is a replace; submit is dead until a star is tapped",
-      "Phase 3 complete: four pairs, four suppression rules, two placements. Only rentals-to-movers fires against real supply figures, and a test pins that",
-      "Consent supersede enforced by a router redirect, with visitors and locked sessions deliberately exempt",
-      "The session persists and never returns active - biometry on restores to locked, biometry off goes back through the code",
-      "Biometric unlock wired to the platform: two distinct prompts, the no-sensor state handled both directions, refusals silent",
-      "254 tests, flutter analyze clean, flutter build apk --debug green"
+      "Phase 0 closed on everything up to 2026-08-21: 28 screens compared against the canvas in both modes, palette holds on every surface, plate, chip and gradient",
+      "The booking state change moves as one event - chip plate, dot, label ink, accent rule and six step bars on one duration passed down rather than repeated. Endings are instant",
+      "The wallet balance counts on change and does nothing on load, enforced structurally",
+      "The three invisible controls are visible, confirmed on device after the fix",
+      "The rentals to movers handoff sheet has been seen rendered for the first time",
+      "290 tests, flutter analyze clean, the gate runs green end to end"
     ],
     "notWorking": [
-      "Nothing built since 2026-08-20 has been seen on a handset - Phase 0's colour and motion gate is owed on all of it",
-      "No backend: a sent request never becomes a booking, a review is dropped, DemoOtpVerifier accepts any four digits",
-      "Four brand cuts still exceed the 256 KiB fetch cap",
-      "Ten of eleven booking actions are inert; only COMPLETED goes anywhere",
-      "No picker behind the booking request's WHEN card - scheduling granularity is still open"
+      "The biometric sensor path has never run on real hardware - it builds and is unit-tested behind a fake. The gate cannot cover it. Last item outstanding from Phase 1",
+      "No backend: a sent request never becomes a booking, a review is dropped, DemoOtpVerifier accepts any four digits, ten of eleven booking actions are inert",
+      "Three brand cuts and one logo still exceed the 256 KiB fetch cap - the dark ones compress larger than the light ones, which all landed",
+      "No picker behind the booking request's WHEN card - scheduling granularity still open",
+      "The loop prompt's completed-booking placement renders nowhere in the demo, correctly"
     ],
     "doNotRepeat": [
-      "A cat <<'EOF' heredoc through the Bash tool for a ~430-line Dart file dies with 'unexpected EOF'. Use the Write tool for whole files",
-      "Bulk string-replacing call shapes (state = state.copyWith( to _set(state.copyWith() changes arity and leaves every call a paren short. Analyze before moving on",
-      "Putting a policy only in the shipping store while tests run against the in-memory one means tests pass against behaviour the app does not have. Both stores now share one write",
-      "local_auth 3.x is not 2.x: no error_codes.dart, no AuthenticationOptions, stickyAuth is persistAcrossBackgrounding, errors are typed LocalAuthException",
-      "Carried: stripping <script> when flattening a canvas; transcribing a binary out of a tool result; Get-Content/Set-Content on a source file; CrossAxisAlignment.stretch on a Row inside a ListView; a modal on a tab's Navigator; a here-string for git commit -m"
+      "An AnimatedSwitcher's outgoing child animates on the controller it was built with. Flipping duration from zero to 300ms at the change leaves the outgoing half at zero so it vanishes instead of crossfading - and every property assertion still passes. Instantness must come from unmounting the switcher",
+      "'Has it changed' is not 'is it different from where it started' - gating on state.key != _openedAt reads as not-arrived for any return to a prior state. It is a latch",
+      "A second pumpWidget in one test reuses the element tree, so the screen still reports having arrived. Split the test",
+      "find.byType(AnimatedDefaultTextStyle) finds Material's own - anchor finders to the widget you mean with find.ancestor(of: find.text(...))",
+      "Do not crossfade the chip's word: 'chip crossfades pending to ok' names BookingTones",
+      "Carried: a heredoc for a large Dart file dies with unexpected EOF (use Write); bulk string-replacing call shapes changes arity; a policy written only into the shipping store while tests run against the in-memory one; local_auth 3.x is not 2.x; stripping <script> when flattening a canvas; transcribing a binary out of a tool result; Get-Content on a source file; CrossAxisAlignment.stretch on a Row inside a ListView; a modal on a tab's Navigator; a here-string for git commit -m"
     ],
     "nextSteps": [
-      "Run Phase 0's gate on everything built since 2026-08-20 - a Pixel in both modes, colour and motion",
-      "Verify biometric unlock on real hardware; it builds and is unit-tested behind a fake, but the sensor path has never run",
-      "Phase 4: becoming a provider paired with the admin queue. This is where the backend starts - Django on /staff/*, PROVIDER_CATEGORY, ADMIN_ACTION, DOCUMENT_ACCESS. Postgres is already running"
+      "Verify biometric unlock on real hardware - an Android emulator can raise a real prompt via 'adb emu finger touch 1', so this may not need a handset. Last thing Phase 1 owes",
+      "Phase 4: becoming a provider paired with the admin queue. Where the backend starts - Django on /staff/*, PROVIDER_CATEGORY, ADMIN_ACTION, DOCUMENT_ACCESS. Postgres, Redis, MinIO and Caddy already running on the Azure arm64 box",
+      "Re-run the gate after Phase 4's screens land and add them to _shots - the list is the gate's coverage, and a screen not in it is a screen nobody has looked at"
     ],
     "blockers": [
-      "BLOCKING, only the user can clear it: mark-dark, wordmark-dark-new, lockup-dark and logo-light-transparent all exceed the 256 KiB get_file cap",
+      "BLOCKED, and only the user can clear it: four brand files exceed the 256 KiB DesignSync.get_file cap and truncate silently. They must be exported from the design side",
       "Undesigned so not startable: the dispute FLOW (UC-13), customer-provider messaging, provider listing management at scale, empty and offline states",
-      "Late-cancellation fee amount; no-show consequence for providers; commission rate per category; dispute turnaround",
+      "Late-cancellation fee amount; no-show consequence for providers; commission rate per category; dispute turnaround. Three booking states ship the design's provisional note",
       "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA",
       "Noted not fixed: the design numbers two screens 21, and Session.maxCodeAttempts (5) is the repo's number"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-21-1406.md",
+      "saved": "2026-08-21T13:28:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "4a5a72f",
+        "subject": "handoff: save session 2026-08-21 0513"
+      },
+      "summary": "Built straight down docs/build-order.md: finished Phase 2 (booking request, rate & review), built Phase 3 whole (the loop prompt, its four suppression rules and both placements), then closed all three of Phase 1's remainder items - the consent-supersede redirect, session persistence, and local_auth. 177 tests to 254, analyze clean, debug APK green. Committed and pushed."
+    },
     {
       "file": "handoffs/2026-08-21-1029.md",
       "saved": "2026-08-21T05:13:00+02:00",
