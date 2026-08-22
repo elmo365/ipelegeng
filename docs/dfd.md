@@ -183,6 +183,13 @@ flowchart TB
 | 9.0 | Channel Syndication & Messaging | Listing published, booking events, consent state | Teaser posts, template messages, post-ready queue          | D9, D10    |
 | 10.0 | Event Relay & Notification     | Unprocessed domain events, consent state, device registry | Push notifications, outbound message rows  | D12, D10, D9 |
 
+**Note on 1.0.** Its Level 2 decomposition lives in
+[entry-flow.md §4](entry-flow.md#4-data-flow--level-2-of-process-10) rather than
+here, because it is the only process with a substantial flow **on the handset**:
+`DL1`, the device session store, is a data store this diagram has no room for
+and the entry flow cannot be described without. That file is normative for
+everything between app launch and a signed-in session.
+
 **Note on 10.0 — this is the admin↔app join.** It did not exist in the original
 specification, which described admin decisions and app screens without anything
 connecting them. Four processes write to D12, and they write **inside the same

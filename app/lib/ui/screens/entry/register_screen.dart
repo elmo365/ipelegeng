@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/haptics.dart';
 import '../../../core/phone.dart';
 import '../../../core/session.dart';
+import '../../../routing/entry_flow.dart';
 import '../../../routing/navigation.dart';
 import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
@@ -80,6 +81,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             .read(sessionProvider.notifier)
             .requestCode(name: _name.text.trim(), phone: phone);
         context.goReplacing(Routes.verify);
+      // No message was sent and there is nothing to type. Straight past the
+      // code screen — but not past consent: a brand-new account lands on
+      // `needsConsent` and [nextEntryRoute] sends it to the consent screen,
+      // which is the card the verify screen would otherwise have carried.
+      case OtpSendOutcome.autoVerified:
+        ref
+            .read(sessionProvider.notifier)
+            .verifiedWithoutCode(name: _name.text.trim(), phone: phone);
+        context.goReplacing(nextEntryRoute(ref.read(sessionProvider)));
       case OtpSendOutcome.invalidNumber:
         setState(() => _error = Phone.requirement);
       case OtpSendOutcome.tooManyRequests:

@@ -89,6 +89,12 @@ flowchart LR
 
 ## UC-1 · Register account
 
+> **Expanded and superseded in detail by
+> [entry-flow.md §2](entry-flow.md#2-use-cases).** This entry stays as the
+> requirements-traceable summary; that file is normative for the flow, and it
+> adds the three cases this one never had — signing in on a device that already
+> knows the account, reopening a closed app, and signing out.
+
 | | |
 |---|---|
 | **Actor** | Visitor |

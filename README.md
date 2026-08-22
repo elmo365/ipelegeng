@@ -56,6 +56,7 @@ Start with the [SDLC overview](docs/sdlc-overview.md) for reading order.
 
 | Document | What's in it |
 |---|---|
+| [**Entry flow**](docs/entry-flow.md) | **Account creation, sign in, OTP, reopen and unlock — normative, with the invariants and the test pinning each one** |
 | [Use cases](docs/use-cases.md) | Actors, use case diagram, detailed specifications |
 | [Data model](docs/data-model.md) | ER diagram, entity dictionary, ledger design |
 | [Activity diagrams](docs/activity-diagrams.md) | Onboarding, booking, rides, top-up, rentals |

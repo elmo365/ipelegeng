@@ -149,6 +149,7 @@ abstract final class SessionCodec {
     'consentVersion': session.consentVersion,
     'channels': session.channels.map((c) => c.name).toList(),
     'locationGranted': session.locationGranted,
+    'locationAsked': session.locationAsked,
     'biometricOffered': session.biometricOffered,
     'biometricUnlock': session.biometricUnlock,
     // codeAttemptsLeft is absent on purpose: it is a property of one
@@ -172,6 +173,10 @@ abstract final class SessionCodec {
       consentVersion: json['consentVersion'] as String?,
       channels: channels,
       locationGranted: json['locationGranted'] as bool? ?? false,
+      // Defaults false, so a record written before this field existed is read
+      // as never-asked and the screen appears once. Asking again is the safe
+      // direction; silently treating an old record as answered is not.
+      locationAsked: json['locationAsked'] as bool? ?? false,
       biometricOffered: json['biometricOffered'] as bool? ?? false,
       biometricUnlock: json['biometricUnlock'] as bool? ?? false,
     );

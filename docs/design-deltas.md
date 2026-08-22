@@ -981,6 +981,74 @@ the failure points at consent when the cause is length. The literal is now
 
 ---
 
+## 22. Specifying the entry flow, and the four departures that fell out
+
+The three bugs a Galaxy S24 found on 2026-08-21 were all **joins between
+screens that were each individually correct**: the welcome screen made no
+launch decision, `Routes.unlock` was navigated to by nothing, and the OTP
+sender had a callback branch that resolved nothing. None of them is a fidelity
+question — the artboards do not draw joins — so the fix was to write the
+process down first. [`entry-flow.md`](entry-flow.md) is that specification and
+is normative for everything between app launch and a signed-in session.
+
+Four departures from the canvas came out of writing it.
+
+### 22.1 A returning member never sees the welcome screen
+
+The canvas puts the splash ahead of the launch branch. The Android system
+splash already covers the moment before the first frame, so the Flutter
+`/welcome` screen is a **marketing** screen — three promise cards, "Get
+started", "Sign in" — and a member who already has an account should not meet
+one.
+
+The consequence of showing it was not cosmetic. A restored session landed there
+with no way forward but "Sign in", which sends an SMS; twice in a row walks the
+number into Firebase's per-number throttle, which is the `too-many-requests`
+the handset actually displayed.
+
+The decision is now `launchRoute` in `routing/entry_flow.dart` and lives in the
+router's redirect, not in `SplashScreen.initState` — a screen that decides
+where to go is only consulted when that screen is built, which is precisely the
+screen a member must not be shown.
+
+### 22.2 No consent card on a returning sign-in
+
+The verify artboard draws the consent block on every verification. Drawn for a
+member whose consent version is current, an unticked *optional* channel box
+becomes a **withdrawal they never made**: the screen called `agree()`
+unconditionally, so signing in rewrote the granted channels from two checkboxes
+the person had not been shown in that context.
+
+Signing in is not a place to renegotiate consent. The block is now drawn only
+when the round owes consent — no stored version, or one superseded. A first
+account still sees it, still cannot proceed without the required tick, and
+FR-1.10 is satisfied by the state machine rather than by that screen happening
+to carry a checkbox.
+
+### 22.3 Instant verification is accepted, so a sign-in may send no SMS
+
+Firebase verifies a number it has recently seen on the same handset **without
+sending anything** — `verificationCompleted` fires and `codeSent` never does.
+The design's rule is "every fresh login goes through OTP", and the reading
+adopted on 2026-08-21 is that this means *there is no password*, not that a
+message must be billed on every entry: the check the platform performs is the
+same possession check the SMS performs, against the same SIM.
+
+So the code screen is skipped entirely on that path. It cannot skip consent —
+a new account verified this way lands on `needsConsent` and is routed to
+`/consent` — and it cannot skip the biometric offer.
+
+### 22.4 A refused location is an answer
+
+`Session` recorded `locationGranted` and nothing else, so refusing looked
+identical to never having been asked, and the ladder after a verification would
+have produced the location screen on **every** entry once repeat sign-ins
+started working. `locationAsked` now mirrors `biometricOffered`: the ask is
+spent whichever way it is answered. "Choose my area instead" is a first-class
+path, and re-asking would make it read as a holding position.
+
+---
+
 ## Import fidelity
 
 ### The canvas was split — nothing is truncated any more

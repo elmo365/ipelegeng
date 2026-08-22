@@ -202,15 +202,20 @@ Also new from the design. UC-4 grants Visitor browse rights, so **the account
 wall belongs at the booking action, not at app launch.** A stranger sees real
 supply before being asked for a phone number.
 
+**The launch half of this diagram is specified in
+[entry-flow.md §5.2](entry-flow.md#52-the-launch-decision), which is normative.**
+Two corrections it makes to what is drawn below: the decision is made **before**
+anything is drawn rather than after a splash, and a restored session goes to
+unlock **whatever the biometric preference says** — the preference decides what
+the unlock screen offers first, not whether it appears.
+
 ```mermaid
 flowchart TD
-    A([App opens]) --> B[Splash - no auth check yet]
-    B --> C{Session valid?}
-    C -->|Yes| D{Biometric enrolled on this device?}
-    D -->|Yes| E[Biometric unlock]
-    D -->|No| F[Home - authenticated]
-    E --> F
-    C -->|No| G[Home - visitor]
+    A([App opens]) --> C{Session stored?}
+    C -->|Yes| E[Unlock - biometry or device passcode]
+    E --> F[Home - authenticated]
+    C -->|No| B[Welcome]
+    B --> G[Home - visitor]
     G --> H[Browse categories, listings, provider detail]
     H --> I{Action requires an account?}
     I -->|No| H
@@ -230,8 +235,10 @@ The transition at M is a **replace**, not a push
 ([design-system](design-system.md#sideways-is-not-forward)) — back must not
 re-enter the auth flow and re-run the action.
 
-A new device is always an SMS code. Biometrics are per device and have to be
-re-enabled after a re-install or a device change.
+A new device always goes through the OTP round — though the platform may satisfy
+it without sending an SMS ([entry-flow §6.3](entry-flow.md#63-instant-verification-is-a-pass-not-a-shortcut-to-be-ignored)).
+Biometrics are per device and have to be re-enabled after a re-install or a
+device change.
 
 ---
 

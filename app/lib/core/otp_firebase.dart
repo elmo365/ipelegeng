@@ -64,11 +64,17 @@ class FirebaseOtpVerifier implements OtpVerifier {
   /// is what stops a resend looking like a fresh attempt to the network.
   int? _resendToken;
 
+  /// Broadcast, because the round outlives the screen that opened it: sign-in
+  /// calls [send] and it is the verify screen, built afterwards, that has to
+  /// hear the platform read the SMS. Broadcast rather than single-subscription
+  /// so a verify screen rebuilt mid-round can resubscribe.
+  final _autoVerified = StreamController<void>.broadcast();
+
   @override
-  Future<OtpSendOutcome> send(
-    String phone, {
-    void Function()? onAutoVerified,
-  }) async {
+  Stream<void> get autoVerifications => _autoVerified.stream;
+
+  @override
+  Future<OtpSendOutcome> send(String phone) async {
     // Firebase wants E.164. `Phone.normalise` formats for humans — spaces and
     // all — so the digits are rebuilt here.
     final e164 = _e164(phone);
@@ -83,13 +89,34 @@ class FirebaseOtpVerifier implements OtpVerifier {
       forceResendingToken: _resendToken,
       // Android only, and the reason this interface has an auto-verified hook
       // at all: the platform read the SMS and there is nothing left to type.
+      //
+      // **This must resolve the round, and for a long time it did not.** It
+      // fires in two different situations and only one of them was thought
+      // about:
+      //
+      // - *After* `codeSent` — the platform read the SMS. The round already has
+      //   an answer, so the latch is a no-op and the broadcast is what moves
+      //   the verify screen on.
+      // - *Instead of* `codeSent` — the platform verified the SIM outright, for
+      //   a number it has recently verified on this handset. Nothing else fires
+      //   in that round. With no `complete` below, `send()` never returned and
+      //   the button sat on "Sending…" forever, which is what "cannot sign in a
+      //   second time" actually was. See docs/entry-flow.md §8.1.
       verificationCompleted: (credential) async {
         try {
           await _auth.signInWithCredential(credential);
-          onAutoVerified?.call();
-        } on FirebaseAuthException {
+          debugPrint('otp: verificationCompleted, no code needed');
+          // Whichever situation this is, the round is answered. `_Latch`
+          // ignores the second completion, so ordering does not matter.
+          sent.complete(OtpSendOutcome.autoVerified);
+          if (!_autoVerified.isClosed) _autoVerified.add(null);
+        } on FirebaseAuthException catch (e) {
           // Auto-retrieval failing is not an error the user should see — the
-          // code is still on its way to the field they are looking at.
+          // code is still on its way to the field they are looking at. But if
+          // nothing else ever fires, silence here is the hang again, so it is
+          // logged and the round is left for `codeSent` or the timeout to
+          // answer.
+          debugPrint('otp: auto-verify rejected code=${e.code}');
         }
       },
       verificationFailed: (e) {
@@ -99,7 +126,9 @@ class FirebaseOtpVerifier implements OtpVerifier {
         // this shipped without the line below, and a real failure on a real
         // handset surfaced as "could not send a code" with nothing anywhere
         // saying why. A seam that discards the cause is not observable.
-        debugPrint('otp: verificationFailed code=${e.code} message=${e.message}');
+        debugPrint(
+          'otp: verificationFailed code=${e.code} message=${e.message}',
+        );
         sent.complete(_readFailure(e));
       },
       codeSent: (verificationId, resendToken) {
@@ -114,7 +143,23 @@ class FirebaseOtpVerifier implements OtpVerifier {
           _verificationId = verificationId,
     );
 
-    return sent.future;
+    // **The backstop for the rule in [OtpSendOutcome]: no path leaves this
+    // unresolved.** The table above covers every callback the SDK documents,
+    // but the failure mode of a callback interface is a hang rather than an
+    // error, and a hang has no log line and no screen state — it is the single
+    // hardest thing here to diagnose. A wrong error after a minute is
+    // recoverable; a button stuck on "Sending…" is not.
+    //
+    // Sixty seconds is deliberately longer than Firebase's own 30-second
+    // auto-retrieval window, so this can only fire after the SDK itself has
+    // given up.
+    return sent.future.timeout(
+      const Duration(seconds: 60),
+      onTimeout: () {
+        debugPrint('otp: no callback resolved the round within 60s');
+        return OtpSendOutcome.unavailable;
+      },
+    );
   }
 
   @override
@@ -146,8 +191,8 @@ class FirebaseOtpVerifier implements OtpVerifier {
   static OtpSendOutcome _readFailure(FirebaseAuthException e) =>
       switch (e.code) {
         'invalid-phone-number' => OtpSendOutcome.invalidNumber,
-        'too-many-requests' || 'quota-exceeded' =>
-          OtpSendOutcome.tooManyRequests,
+        'too-many-requests' ||
+        'quota-exceeded' => OtpSendOutcome.tooManyRequests,
         _ => OtpSendOutcome.unavailable,
       };
 

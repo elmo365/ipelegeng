@@ -21,8 +21,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/haptics.dart';
 import '../../../core/session.dart';
+import '../../../routing/entry_flow.dart';
 import '../../../routing/navigation.dart';
-import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/typography.dart';
@@ -52,8 +52,29 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
   bool _agreed = false;
   bool _smsUpdates = false;
 
+  /// Whether **this** round is the one that owes consent — no stored version,
+  /// or one that has been superseded.
+  ///
+  /// Read once, at build, and never re-read: it must not flip mid-round, and
+  /// the answer changes the moment [SessionController.agree] runs.
+  ///
+  /// **A returning member is not asked again.** The artboard draws the consent
+  /// card on every verification, and drawing it for someone whose consent is
+  /// current means an unticked optional box silently withdraws a channel they
+  /// granted — signing in is not a place to renegotiate consent. Registered in
+  /// docs/design-deltas.md and docs/entry-flow.md §9.2.
+  late final bool _owesConsent =
+      ref.read(sessionProvider).consentVersion != Consent.current;
+
+  /// The platform read the SMS itself and there is nothing left to type.
+  StreamSubscription<void>? _autoVerified;
+
   Timer? _ticker;
   int _remaining = VerifyScreen.resendSeconds;
+
+  /// A resend is in flight. Separate from the countdown: the countdown says
+  /// whether one *may* be sent, this says whether one *is* being sent.
+  bool _resending = false;
 
   @override
   void initState() {
@@ -62,6 +83,12 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
       // Typing clears the error. It described the previous code.
       if (_wrongCode && _code.text.isNotEmpty) _wrongCode = false;
       setState(() {});
+    });
+    // Android auto-retrieval. The round was opened by the previous screen, so
+    // this stream is the only way this screen hears about it — see
+    // [OtpVerifier.autoVerifications].
+    _autoVerified = ref.read(otpVerifierProvider).autoVerifications.listen((_) {
+      if (mounted) _verify();
     });
     _startCountdown();
   }
@@ -77,8 +104,52 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
     });
   }
 
+  /// **Resend actually sends.** This was wired to [_startCountdown] alone, so
+  /// the button restarted the timer and nothing else — the one situation it
+  /// exists for, an SMS that never arrived, was the one it could not fix.
+  ///
+  /// It does not restore attempts. The limit is on guessing, and a resend that
+  /// reset it would make it decorative. See docs/entry-flow.md §6.4.
+  Future<void> _resend() async {
+    if (_resending) return;
+    setState(() => _resending = true);
+
+    final phone = ref.read(sessionProvider).phone ?? '';
+    final outcome = await ref.read(otpVerifierProvider).send(phone);
+
+    if (!mounted) return;
+    setState(() => _resending = false);
+
+    switch (outcome) {
+      case OtpSendOutcome.sent:
+        _startCountdown();
+        _say('A new code is on its way.');
+      // The platform answered the resend by verifying outright. Nothing left to
+      // type, so nothing to come back to this screen for.
+      case OtpSendOutcome.autoVerified:
+        _verify();
+      case OtpSendOutcome.tooManyRequests:
+        Haptics.error();
+        _say(
+          'Too many codes requested for this number. Wait a few minutes and '
+          'try again.',
+        );
+      case OtpSendOutcome.invalidNumber:
+      case OtpSendOutcome.unavailable:
+        Haptics.error();
+        // The countdown is deliberately not restarted: nothing was sent, so
+        // there is nothing to wait for and the button should stay live.
+        _say('Could not send a new code just now. Try again.');
+    }
+  }
+
+  void _say(String message) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
+
   @override
   void dispose() {
+    _autoVerified?.cancel();
     _ticker?.cancel();
     _code.dispose();
     _codeFocus.dispose();
@@ -90,8 +161,13 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
   bool _wrongCode = false;
 
   bool get _complete => _code.text.length == VerifyScreen.codeLength;
+
+  /// Satisfied when this round does not owe consent at all, or when the
+  /// required box has been ticked.
+  bool get _consented => !_owesConsent || _agreed;
+
   bool get _ready =>
-      _complete && _agreed && !ref.read(sessionProvider).codeLocked;
+      _complete && _consented && !ref.read(sessionProvider).codeLocked;
 
   Future<void> _submit() async {
     final outcome = await ref
@@ -117,23 +193,28 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
     }
   }
 
+  /// The round passed — by a typed code, by auto-retrieval, or by the platform
+  /// answering a resend outright. All three land here.
   void _verify() {
-    ref.read(sessionProvider.notifier)
-      ..confirmCode()
-      ..agree(channels: {if (_smsUpdates) ConsentChannel.sms});
+    final session = ref.read(sessionProvider.notifier)
+      // Idempotent, and called unconditionally because the three ways in do not
+      // agree on whether it has already run: `submitCode` calls it, the two
+      // platform paths do not.
+      ..confirmCode();
+
+    // **Only when this round owes it.** Calling `agree` for a member whose
+    // consent is current would rewrite their channel grants from two
+    // checkboxes they were never shown.
+    if (_owesConsent) {
+      session.agree(channels: {if (_smsUpdates) ConsentChannel.sms});
+    }
 
     // Replace, not push: the code has been spent, and back must not be able to
     // re-enter a flow that would send a second one.
     //
-    // The enrolment offer comes straight after the first OTP and is made once —
-    // "offered once after first OTP, declinable without penalty". Skipping it
-    // is what left `/unlock` unreachable by any real path.
-    final session = ref.read(sessionProvider);
-    context.goReplacing(switch (session) {
-      _ when !session.biometricOffered => Routes.biometricEnrolment,
-      _ when !session.locationGranted => Routes.location,
-      _ => Routes.home,
-    });
+    // The ladder afterwards is [nextEntryRoute]'s, shared with the two screens
+    // that can reach a verified session without ever showing this one.
+    context.goReplacing(nextEntryRoute(ref.read(sessionProvider)));
   }
 
   @override
@@ -189,28 +270,32 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
                     controller: _code,
                     focusNode: _codeFocus,
                     remaining: _remaining,
-                    onResend: _startCountdown,
+                    resending: _resending,
+                    onResend: _resend,
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'CONSENT · V${Consent.current}',
-                    style: AppTypography.sectionLabel.copyWith(
-                      color: palette.textSecondary,
+                  if (_owesConsent) ...[
+                    const SizedBox(height: 14),
+                    Text(
+                      'CONSENT · V${Consent.current}',
+                      style: AppTypography.sectionLabel.copyWith(
+                        color: palette.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 9),
-                  ConsentCard(
-                    required: true,
-                    value: _agreed,
-                    onChanged: (v) => setState(() => _agreed = v),
-                    label: 'I agree to the Terms of Service and Privacy Policy',
-                  ),
-                  const SizedBox(height: 9),
-                  ConsentCard(
-                    value: _smsUpdates,
-                    onChanged: (v) => setState(() => _smsUpdates = v),
-                    label: ConsentChannel.sms.label,
-                  ),
+                    const SizedBox(height: 9),
+                    ConsentCard(
+                      required: true,
+                      value: _agreed,
+                      onChanged: (v) => setState(() => _agreed = v),
+                      label:
+                          'I agree to the Terms of Service and Privacy Policy',
+                    ),
+                    const SizedBox(height: 9),
+                    ConsentCard(
+                      value: _smsUpdates,
+                      onChanged: (v) => setState(() => _smsUpdates = v),
+                      label: ConsentChannel.sms.label,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -221,7 +306,7 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (_complete && !_agreed)
+                    if (_complete && !_consented)
                       Padding(
                         padding: const EdgeInsets.only(bottom: Space.x2),
                         child: Text(
@@ -259,19 +344,21 @@ class _CodeCard extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.remaining,
+    required this.resending,
     required this.onResend,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final int remaining;
+  final bool resending;
   final VoidCallback onResend;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final text = Theme.of(context).textTheme;
-    final canResend = remaining <= 0;
+    final canResend = remaining <= 0 && !resending;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -334,7 +421,9 @@ class _CodeCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 7),
                   Text(
-                    canResend
+                    resending
+                        ? 'Sending a new code…'
+                        : canResend
                         ? 'Resend code'
                         : 'Resend code in 0:${remaining.toString().padLeft(2, '0')}',
                     style: text.labelSmall?.copyWith(

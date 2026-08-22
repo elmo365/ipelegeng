@@ -197,7 +197,57 @@ That trade is written up in [`../docs/sms-otp.md`](../docs/sms-otp.md).
 
 ---
 
-## 7. Carried — already known, still outstanding
+## 7. The verify screen asks for consent again on every sign-in
+
+**Raised 2026-08-21.**
+
+The verify artboard draws the consent block — required tick plus the optional
+SMS-updates row — and the journey map places verification on both the register
+and the sign-in path. Followed literally, that means a member who agreed months
+ago meets the block again every time they sign in, with both boxes unticked.
+
+The build cannot ship that, because an unticked optional box is not a neutral
+default: it is a **withdrawal of a channel the person granted**, made on their
+behalf, on a screen they did not open to change anything. Consent is versioned
+here precisely so that re-consent is an event with a cause.
+
+**What the build does instead:** the consent block is drawn only when the round
+owes consent — a first account, or a session on a superseded version. A
+returning member on the current version sees the code boxes and the resend
+timer alone.
+
+**What the design side needs to decide:** whether the verify artboard gets a
+second state without the consent block, or whether consent moves to its own
+screen on the register path only. Either resolves it; the current single
+artboard cannot serve both paths.
+
+Written up in [`../docs/entry-flow.md`](../docs/entry-flow.md) §9.2, which is
+now the normative specification for the whole entry flow.
+
+---
+
+## 8. Nothing in the design says what a returning user sees at launch
+
+**Raised 2026-08-21.**
+
+The journey map shows the splash, then the branch on whether a session exists.
+Read as a sequence, that means a member who has an account sees three promise
+cards, "Get started" and "Sign in" before anything notices they are already
+known — and the only control on that screen that leads anywhere for them sends
+an SMS.
+
+The build skips it: a stored session goes straight to unlock, and `/welcome`
+is reached only by someone who has no account or has signed out. The Android
+system splash already covers the gap before the first frame, so nothing flashes.
+
+**What the design side needs to decide:** whether `/welcome` is understood as a
+marketing screen for strangers — which is how the build now treats it — or
+whether a returning-user state of it is wanted. If it is wanted, it needs
+drawing; there is no artboard for it today.
+
+---
+
+## 9. Carried — already known, still outstanding
 
 | | |
 |---|---|

@@ -20,8 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session.dart';
+import '../../../routing/entry_flow.dart';
 import '../../../routing/navigation.dart';
-import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
 import '../../../theme/tokens.dart';
 import '../../components/actions.dart';
@@ -44,12 +44,11 @@ class BiometricEnrolmentScreen extends ConsumerWidget {
 
     void answer({required bool enrol}) {
       ref.read(sessionProvider.notifier).answerBiometricOffer(enrol: enrol);
-      // Location is the next thing asked, and only if it has not been.
-      context.goReplacing(
-        ref.read(sessionProvider).locationGranted
-            ? Routes.home
-            : Routes.location,
-      );
+      // Location is the next rung, and only if it has not been asked. The
+      // ladder is [nextEntryRoute]'s rather than this screen's — it used to
+      // read `locationGranted`, which meant a refusal looked identical to
+      // never having been asked and produced the screen again on every entry.
+      context.goReplacing(nextEntryRoute(ref.read(sessionProvider)));
     }
 
     return Scaffold(

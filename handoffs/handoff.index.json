@@ -3,66 +3,75 @@
   "projectRoot": "c:/Users/Diane/OneDrive/Documents/GitHub/Ipelegeng",
   "current": {
     "file": "HANDOFF.md",
-    "saved": "2026-08-21T22:03:00+02:00",
+    "saved": "2026-08-22T20:08:00+02:00",
     "branch": "main",
     "lastCommit": {
-      "hash": "227b29c",
-      "subject": "Log a successful OTP confirmation, not only a rejected one"
+      "hash": "3382f7c",
+      "subject": "handoff: save session 2026-08-21 2203"
     },
-    "summary": "Very long session. Ran Phase 0's gate on everything since 2026-08-20 (motion then colour) and made it a script; closed Phase 1 by verifying biometrics end to end on a Galaxy S24; built Phase 3.5 after finding dark mode finished and unreachable; dropped OTP-on-every-open because the check does not work against a stolen phone; wired Firebase and got real SMS delivering to a Botswana number on the free Spark plan; extracted a global code-discovery skill after a search-driven conclusion proved wrong. 254 tests to 307. Ended on three entry-flow bugs found on the handset, which are the next session's first job.",
-    "state": "Phases 0-3.5 complete and seen on real hardware; real SMS works; three entry-flow bugs open; VPS is a Spot VM that Azure keeps deallocating; no backend yet",
+    "summary": "Architecture-first session, at the user’s direction. The three entry-flow bugs the handset found were not three bugs but one absence: the flow had never been specified as a process, and all three failures were at the joins between screens that each had passing tests. Wrote docs/entry-flow.md as the normative spec — use cases, DFD level 2, state machine, launch decision, an exhaustive OTP callback contract, and 13 invariants each naming its test — then fixed the code against it. Writing the spec surfaced three further defects nobody had reported. 307 tests to 339, analyze clean. Nothing has been on the handset yet.",
+    "state": "Entry flow specified and fixed in code, pinned by 32 new tests; not yet verified on the Galaxy S24 — that is next session’s first job. Phases 0-3.5 complete on real hardware; real SMS works; VPS is a Spot VM Azure keeps deallocating; no backend yet",
     "decisions": [
-      "Dropped 'an OTP every time the app is opened' - not on cost but because the check does not work: an SMS code proves possession of the SIM, and on a reopen the SIM is in the handset the person is holding. Every reopen asks for the device credential instead",
-      "The OTP is six digits. Firebase sends six and it is not configurable, so the artboard's four boxes cannot accept the code that arrives. Forced, not chosen",
-      "Firebase for messaging and SMS, never for identity - FirebaseOtpVerifier throws the Firebase user away and reports only whether the code was right",
-      "Phase 3.5 pulled forward because dark mode was finished and unreachable",
-      "Both call routes will be built, on competitive parity rather than privacy. Matrix rejected",
-      "A UI tick is earned per element, not per screen",
-      "Device tests are debug builds always - the driver needs the Dart VM service"
+      "Architecture before code, at the user’s explicit instruction. Writing the spec first is what surfaced the three additional defects — none was on the bug list",
+      "Instant verification is accepted and skips the code screen. \"Every fresh login goes through OTP\" means there is no password, not that a message must be billed on every entry — the platform performs the same possession check against the same SIM. It still cannot skip consent",
+      "Cold start only for locking. A warm resume does not lock: a fingerprint prompt every time someone checks a notification is the most common reason people switch biometrics off, and a backgrounded app is already behind the OS lock screen",
+      "A returning member never sees /welcome. It is a marketing screen, and the Android system splash already covers the moment before the first frame",
+      "No consent card on a returning sign-in — an unticked optional box on a screen the member did not open to change anything is a withdrawal they never made",
+      "The launch decision lives in the router, not in SplashScreen.initState: a screen that decides where to go is only consulted when that screen is built, and that is precisely the screen a member must not be shown",
+      "locationAsked mirrors biometricOffered — false and never-asked are different states and only one should produce a screen",
+      "Every invariant names its test. A rule with nothing in the right-hand column is a comment, not a standard"
     ],
     "working": [
-      "Phase 0 closed: 28 screens shot in both modes on a Galaxy S24 and the emulator, palette holds everywhere, and the gate is a re-runnable script",
-      "Biometrics verified end to end on real hardware - both availability branches, a real prompt, a real fingerprint reopening a locked session",
-      "Real SMS works: codeSent at 21:32 delivered to +267 77 744 018 on the free Spark plan, with Play Integrity attestation confirmed in the log",
-      "Dark mode is reachable and the choice survives a restart",
-      "307 tests, flutter analyze clean",
-      "The VPS is up and all four containers returned healthy on their own"
+      "307 tests to 339, flutter analyze clean",
+      "Cannot sign in a second time: verificationCompleted resolved nothing, so on a repeat sign-in Firebase instant-verified the SIM and send() never returned. Fixed and pinned, with a 60s backstop against any future unhandled callback",
+      "Biometric unlock never engages: nothing in lib/ navigated to Routes.unlock. Fixed by the launch decision in the router",
+      "Reopen falling back to SMS then too-many-requests: same root cause — the welcome screen made no launch decision",
+      "Three further defects found while specifying and fixed: resend did not resend; signing in overwrote consent; a refused location was re-asked on every entry",
+      "The code-discovery skill is committed and pushed here (d783e12); the running copy at ~/.claude/skills is identical bar the five-line canonical-source banner"
     ],
     "notWorking": [
-      "THREE ENTRY-FLOW BUGS, next session's first job: cannot sign in a second time; biometric unlock never engages after being allowed; a reopen falls back to SMS and then hits too-many-requests. Causes NOT investigated - all three are consistent with the session not being restored at all, but prove that before assuming it",
-      "The OTP confirm half is unconfirmed - codeSent is proven, signInWithCredential accepting a typed code has never been seen in a log because success only started logging at the end",
+      "NONE OF IT HAS BEEN ON THE HANDSET. This matters more than usual here: the whole argument of entry-flow.md §8.2 is that a green suite proves nothing about reachability. Next session’s first job",
+      "The 60s no-hang backstop has no test — it needs fake_async or an injectable duration. Every other row of the callback table is covered",
+      "The typed-code confirm half has still never been seen succeeding in a real log",
       "No backend: a sent request never becomes a booking, a review is dropped",
-      "The VPS is a Spot VM (evictionPolicy Deallocate) so Azure will keep stopping it. Agreed to deal with it next session",
+      "The VPS is a Spot VM so Azure will keep stopping it",
       "Three brand cuts and one logo still exceed the 256 KiB fetch cap",
-      "Nothing reads keepScreenOnDuringRides yet - Phase 5 owns that"
+      "Nothing reads keepScreenOnDuringRides yet"
     ],
     "doNotRepeat": [
-      "A seam that discards the cause is not observable: _readFailure dropped e.code so a real failure surfaced as 'could not send a code' with nothing saying why. Logging only the failure branch is the same bug half-fixed",
-      "A sleeping screen kills an on-device gate and names nothing useful, and NO screenshots survive because the driver flushes at the end",
-      "An AnimatedSwitcher's outgoing child animates on the controller it was built with",
-      "'Has it changed' is not 'is it different from where it started'",
-      "A widget test pumping a screen needs AppTheme, not a bare MaterialApp",
-      "Do not conclude from a search: I read a gate, said a button was disabled, and the user had already passed that screen. The real bug was one level in",
-      "Do not claim a file is absent after grepping two directories - .env had the VPS host",
-      "Carried: heredocs for large Dart files; bulk string-replacing call shapes; a policy written only into the shipping store; local_auth 3.x is not 2.x; stripping <script> when flattening a canvas; transcribing a binary"
+      "A quoted bash heredoc fails in this environment on content containing apostrophes — twice, with \"unexpected EOF while looking for matching ’\". Use the Write tool, or a Python script in the scratchpad. Do not keep retrying",
+      "grep \"\\.lock()\" inside double quotes silently matched nothing and I briefly said lock() had zero callers. It has four, all in tests. Escaping inside double quotes is not escaping inside single quotes",
+      "dart format lib test reformatted six files the session never touched. The repo is not fully formatted, so a blanket format inflates the diff with unrelated churn",
+      "ref.read(provider.notifier).state is not how to read back a mutation — use ref.read(provider) after the call",
+      "Carried: a seam that discards the cause is not observable; a test that constructs the state it tests cannot prove the state is reachable; do not conclude from a search; local_auth 3.x is not 2.x; never transcribe a binary"
     ],
     "nextSteps": [
-      "Fix the three entry-flow bugs. Reproduce on the handset first - logcat -s flutter:V now reports both OTP outcomes. Begin by proving whether the session is persisted and restored",
-      "Deal with the VPS deallocation - Spot eviction is the cause and it will recur. A ledger cannot live on a VM Azure can deallocate mid-transaction, and Phase 4 puts one there",
-      "Confirm the OTP round trip - watch for 'otp: confirm accepted'",
+      "Run the whole entry flow on the Galaxy S24, debug build: register, kill and reopen (must land on /unlock, never /welcome), unlock by fingerprint, sign out, sign in again — that last one is the instant-verification path",
+      "Watch for \"otp: confirm accepted\" — the typed-code confirm half has never been seen succeeding in a real log",
+      "Decide whether the 60s backstop earns a test; fake_async in dev_dependencies is the smaller change",
+      "Deal with the VPS deallocation before Phase 4 puts a ledger on it",
       "Phase 4: becoming a provider, paired with the admin queue",
-      "Tick the remaining 27 screens element by element - only the splash has had a real one and it produced three findings",
-      "Send design/CORRECTIONS.md to the design side - seven entries now"
+      "Tick the remaining 27 screens element by element",
+      "Send design/CORRECTIONS.md to the design side — nine entries now, two new"
     ],
     "blockers": [
-      "Why the VPS keeps stopping is answered - Spot eviction. What to do about it is next session's call",
+      "From entry-flow.md §10, all genuinely undecided: account recovery when the number is gone; whether a second handset should end the first session; what rate limit is ours once an aggregator replaces Firebase’s unpublished throttle; whether /unlock should add a lockout on top of the OS’s",
       "BLOCKED, user-only: four brand files exceed the 256 KiB get_file cap",
       "Undesigned: the dispute FLOW, messaging, the calling screens, empty and offline states, profile photos",
-      "Unsettled: late-cancellation fee, no-show consequence, commission per category, dispute turnaround, and whether the design wants number privacy back",
-      "Carried: reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA"
+      "Carried: late-cancellation fee, no-show consequence, commission per category, dispute turnaround, number privacy, reversal policy, negative balance, min top-up, hosting durability, EPS licensing, data residency, KYC retention, GPS DPIA"
     ]
   },
   "archive": [
+    {
+      "file": "handoffs/2026-08-22-2008.md",
+      "saved": "2026-08-21T22:03:00+02:00",
+      "branch": "main",
+      "lastCommit": {
+        "hash": "227b29c",
+        "subject": "Log a successful OTP confirmation, not only a rejected one"
+      },
+      "summary": "Very long session. Ran Phase 0's gate on everything since 2026-08-20 (motion then colour) and made it a script; closed Phase 1 by verifying biometrics end to end on a Galaxy S24; built Phase 3.5 after finding dark mode finished and unreachable; dropped OTP-on-every-open because the check does not work against a stolen phone; wired Firebase and got real SMS delivering to a Botswana number on the free Spark plan; extracted a global code-discovery skill after a search-driven conclusion proved wrong. 254 tests to 307. Ended on three entry-flow bugs found on the handset, which are the next session's first job."
+    },
     {
       "file": "handoffs/2026-08-21-2203.md",
       "saved": "2026-08-21T19:40:00+02:00",

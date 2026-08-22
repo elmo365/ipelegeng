@@ -13,6 +13,11 @@ it is not:
 
 ---
 
+> **This file owns the *provider* — who sends the message and what it costs.
+> The *protocol* is [entry-flow.md §6](entry-flow.md#6-the-otp-protocol):
+> the callback contract, what a resend does, and why instant verification is
+> accepted without an SMS. Change the provider here; change the flow there.**
+
 ## 1. Testing — four levels, none of them costing anything
 
 ### Level 1 · The state machine (today)

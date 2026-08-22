@@ -63,8 +63,26 @@ enum OtpOutcome { accepted, wrongCode, locked }
 /// and locked paths are real, and this is the seam the API call lands in rather
 /// than a hook that exists only for tests.
 /// What happened when a code was asked for.
+///
+/// **Every callback the sender can make has a value here.** That is a rule, not
+/// a description: `verifyPhoneNumber` reports through callbacks rather than by
+/// returning, so a branch with no outcome does not fail — it hangs, with the
+/// button stuck on "Sending…" and nothing in the log. That is exactly what
+/// [autoVerified] was missing and what it cost. The contract table is
+/// docs/entry-flow.md §6.2.
 enum OtpSendOutcome {
   sent,
+
+  /// The platform verified the SIM **without sending anything**, before any
+  /// code existed to type. Firebase does this for a number it has recently
+  /// verified on this handset, which is why it shows up on the *second* sign-in
+  /// and never the first.
+  ///
+  /// It is a pass, not a shortcut to be ignored: it is the same possession
+  /// check the SMS performs, done by the platform against the SIM in the
+  /// handset. Refusing it would send a message to prove something already
+  /// proved, and pay for it. See docs/entry-flow.md §6.3.
+  autoVerified,
 
   /// The platform rejected the number itself. Distinct from *not delivered*:
   /// there is something to fix on this screen.
@@ -85,12 +103,27 @@ enum OtpSendOutcome {
 abstract interface class OtpVerifier {
   /// Ask for a code to be sent to [phone].
   ///
-  /// [onAutoVerified] fires only where the **platform reads the SMS itself**.
-  /// On Android that is real — Firebase's auto-retrieval completes without the
-  /// user typing anything, which is why the verify screen must be able to move
-  /// on without a tap. On iOS nothing calls this: the code is offered to the
-  /// field by `AutofillHints.oneTimeCode` and the user still taps.
-  Future<OtpSendOutcome> send(String phone, {void Function()? onAutoVerified});
+  /// Returns once the round has an answer, and **every branch of the sender
+  /// gives it one** — see [OtpSendOutcome].
+  ///
+  /// Calling this a second time for the same number is a **resend**, and an
+  /// implementation is expected to tell the sender so rather than opening a
+  /// fresh round. The attempt counter is not touched either way; that lives in
+  /// [SessionController.submitCode], because the limit is on guessing.
+  Future<OtpSendOutcome> send(String phone);
+
+  /// Fires where the **platform reads the SMS itself**, after a code was
+  /// already sent.
+  ///
+  /// A stream rather than a callback on [send], because the screen that needs
+  /// to know is not the screen that called it: sign-in sends, and it is the
+  /// verify screen — built afterwards — that has to move on without a tap. A
+  /// callback handed to [send] can only ever reach the caller.
+  ///
+  /// On Android this is real: Firebase's auto-retrieval completes with nothing
+  /// typed. On iOS nothing emits — the code is offered to the field by
+  /// `AutofillHints.oneTimeCode` and the user still taps.
+  Stream<void> get autoVerifications;
 
   /// Whether a typed code is the one that was sent.
   Future<bool> isCorrect(String code);
@@ -106,10 +139,13 @@ class DemoOtpVerifier implements OtpVerifier {
   const DemoOtpVerifier();
 
   @override
-  Future<OtpSendOutcome> send(
-    String phone, {
-    void Function()? onAutoVerified,
-  }) async => OtpSendOutcome.sent;
+  Future<OtpSendOutcome> send(String phone) async => OtpSendOutcome.sent;
+
+  /// Nothing auto-verifies without a platform, so this never emits. It is not a
+  /// stub for a missing feature — a fake that fired it would let a test pass on
+  /// a path the fake invented.
+  @override
+  Stream<void> get autoVerifications => const Stream<void>.empty();
 
   @override
   Future<bool> isCorrect(String code) async =>
@@ -164,6 +200,7 @@ class Session {
     this.consentVersion,
     this.channels = const <ConsentChannel>{},
     this.locationGranted = false,
+    this.locationAsked = false,
     this.biometricOffered = false,
     this.biometricUnlock = false,
     this.codeAttemptsLeft = maxCodeAttempts,
@@ -183,6 +220,15 @@ class Session {
   /// Answered separately from consent, and it is allowed to be refused —
   /// picking an area from a list is a first-class path, not a degraded one.
   final bool locationGranted;
+
+  /// Whether the ask has been made. Held separately from the answer for the
+  /// same reason [biometricOffered] is: **false and never-asked are different
+  /// states**, and only one of them should produce the screen.
+  ///
+  /// Without this, refusing location once meant being asked again on every
+  /// entry — which is not a nag the design ever specified, and is exactly the
+  /// pressure that makes "Choose my area instead" stop reading as first-class.
+  final bool locationAsked;
 
   /// Whether the enrolment offer has been made. The design offers it **once**,
   /// after the first OTP, and a declined offer is never re-asked — so this is
@@ -246,6 +292,7 @@ class Session {
     String? consentVersion,
     Set<ConsentChannel>? channels,
     bool? locationGranted,
+    bool? locationAsked,
     bool? biometricOffered,
     bool? biometricUnlock,
     int? codeAttemptsLeft,
@@ -257,6 +304,7 @@ class Session {
       consentVersion: consentVersion ?? this.consentVersion,
       channels: channels ?? this.channels,
       locationGranted: locationGranted ?? this.locationGranted,
+      locationAsked: locationAsked ?? this.locationAsked,
       biometricOffered: biometricOffered ?? this.biometricOffered,
       biometricUnlock: biometricUnlock ?? this.biometricUnlock,
       codeAttemptsLeft: codeAttemptsLeft ?? this.codeAttemptsLeft,
@@ -346,6 +394,23 @@ class SessionController extends Notifier<Session> {
     );
   }
 
+  /// The platform verified the SIM and no code was ever sent.
+  ///
+  /// Goes through [requestCode] rather than jumping straight to a stage, so the
+  /// invariant at the top of this file still holds: nothing reaches
+  /// [SessionStage.active] without passing through
+  /// [SessionStage.confirmingNumber]. The round was opened and it passed — it
+  /// simply passed without a message being billed.
+  ///
+  /// It cannot skip consent. [confirmCode] routes a session with no current
+  /// consent version to [SessionStage.needsConsent], which is what keeps
+  /// FR-1.10 satisfied by the state machine rather than by the code screen
+  /// happening to carry a checkbox. See docs/entry-flow.md §6.3.
+  void verifiedWithoutCode({String? name, required String phone}) {
+    requestCode(name: name, phone: phone);
+    confirmCode();
+  }
+
   void agree({Set<ConsentChannel> channels = const <ConsentChannel>{}}) {
     _set(
       state.copyWith(
@@ -356,8 +421,10 @@ class SessionController extends Notifier<Session> {
     );
   }
 
+  /// The location ask, answered. Recorded as *asked* either way — see
+  /// [Session.locationAsked]. A refusal is an answer, not a deferral.
   void setLocationGranted(bool granted) =>
-      _set(state.copyWith(locationGranted: granted));
+      _set(state.copyWith(locationGranted: granted, locationAsked: true));
 
   /// The enrolment offer, answered. Recorded as *offered* either way, because
   /// the design offers it once after the first OTP and never asks again —
@@ -370,8 +437,20 @@ class SessionController extends Notifier<Session> {
   /// which is what that screen says in those words.
   void setBiometricUnlock(bool on) => _set(state.copyWith(biometricUnlock: on));
 
-  /// The app was reopened. Only a session that was active can lock — a visitor
-  /// has nothing to unlock.
+  /// Lock an active session. Only a session that was active can lock — a
+  /// visitor has nothing to unlock.
+  ///
+  /// **Nothing in `lib/` calls this, and that is correct.** Locking happens on
+  /// a process restart, inside [SessionCodec.reopened], because the decision
+  /// taken on 2026-08-21 is cold-start-only: a warm resume does not lock. A
+  /// fingerprint prompt every time someone checks a notification is the most
+  /// common reason people switch biometrics off, and a backgrounded app is
+  /// already behind the OS lock screen.
+  ///
+  /// It stays because it is the transition itself, and tests use it to reach
+  /// [SessionStage.locked] through the state machine rather than by
+  /// constructing one. If a background timeout is ever wanted, this is what it
+  /// would call — see docs/entry-flow.md §9.3.
   void lock() {
     if (state.stage != SessionStage.active) return;
     _set(state.copyWith(stage: SessionStage.locked));

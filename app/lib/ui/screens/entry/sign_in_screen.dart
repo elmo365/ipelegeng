@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/haptics.dart';
 import '../../../core/phone.dart';
 import '../../../core/session.dart';
+import '../../../routing/entry_flow.dart';
 import '../../../routing/navigation.dart';
 import '../../../routing/routes.dart';
 import '../../../theme/dimens.dart';
@@ -76,6 +77,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       case OtpSendOutcome.sent:
         ref.read(sessionProvider.notifier).requestCode(phone: phone);
         context.goReplacing(Routes.verify);
+      // The platform verified the SIM outright — the common case on a repeat
+      // sign-in, and the one that used to hang here forever. Nothing to type,
+      // nothing to wait for. See docs/entry-flow.md §6.3.
+      case OtpSendOutcome.autoVerified:
+        ref.read(sessionProvider.notifier).verifiedWithoutCode(phone: phone);
+        context.goReplacing(nextEntryRoute(ref.read(sessionProvider)));
       case OtpSendOutcome.invalidNumber:
         setState(() => _error = Phone.requirement);
       case OtpSendOutcome.tooManyRequests:

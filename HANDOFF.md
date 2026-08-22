@@ -1,172 +1,193 @@
 # Work Handoff - Ipelege
 
-**Saved:** Friday 21 August 2026, 22:03 (+02:00)
+**Saved:** Saturday 22 August 2026, 20:08 (+02:00)
 **Branch:** main
-**Last commit:** 227b29c Log a successful OTP confirmation, not only a rejected one
+**Last commit:** 3382f7c handoff: save session 2026-08-21 2203
 
 ## What I was working on
 
-Resumed the 13:28 handoff and ran a very long session that went well past its
-plan. In order: ran **Phase 0's gate** on everything built since 2026-08-20
-(both halves), **closed Phase 1** by verifying biometrics on a real handset,
-built **Phase 3.5** (the settings spine), **changed the auth model**, **wired
-Firebase** and got **real SMS delivering to a Botswana number**, and extracted
-a **code-discovery skill** after a search-driven conclusion turned out wrong.
+The three entry-flow bugs the handset found on 2026-08-21, and the reason all
+three existed.
 
-The session ended on three bugs found by testing the entry flow on the handset.
-**They are the next session's first job** — see *What is NOT working yet*.
+They were **not three bugs**. They were one absence: the entry flow — account
+creation, sign in, OTP, reopen, unlock — had never been specified *as a
+process*. Every screen in it had been built correctly against its artboard and
+had passing tests. The failures were all at the **joins between** screens, which
+is exactly what no artboard draws and what no screen test can see.
+
+So the session went architecture first, at the user's direction: write the fixed
+process and the standards, then fix the code against them. `docs/entry-flow.md`
+is that specification and is normative. The bugs are fixed and pinned; the fixes
+have **not** yet been re-run on the Galaxy S24.
 
 ## Files changed this session
 
-Fourteen commits, `599d16e` … `227b29c`. The shape of it:
+**New**
 
-- **Motion & colour gate** — `motion.dart` consumers built
-  (`enter_in_place.dart`, `MoneyCounter`, the booking state table),
-  `integration_test/gate_test.dart` + `test_driver/`,
-  `AppPalette.controlOutline`, `contrast_test.dart`.
-- **Biometrics on hardware** — `integration_test/biometric_test.dart`,
-  `unlock_screen.dart` glyph fix.
-- **Phase 3.5** — `core/settings.dart`,
-  `ui/screens/settings/preferences_screen.dart`, `theme/theme_mode.dart`
-  **deleted**, `preferences_test.dart`.
-- **Auth model** — `session_store.dart` (`reopened` always → `locked`),
-  `unlock_screen.dart` (no-device-lock fallback).
-- **Firebase** — `firebase_options.dart`, `google-services.json`,
-  `core/otp_firebase.dart`, `OtpVerifier` made async with a `send` half,
-  `main.dart` init, `Session.codeLength` 4 → **6**.
-- **Docs** — `device-permissions.md`, `sms-otp.md`, `CODE-DISCOVERY-GUIDE.md`
-  (retargeted), `design/CORRECTIONS.md` (new, 7 entries), `design-deltas.md`
-  §17–§21, calling folded into `architecture.md`, `docs/calling.md` deleted.
-- **Skill** — `.claude/skills/code-discovery/SKILL.md`, its global copy, and two
-  `PostToolUse` hooks in `~/.claude/settings.json`.
+- `docs/entry-flow.md` — the normative specification. Actors, four use cases
+  (register, sign in on a known device, reopen, sign out), the DFD Level 2 of
+  process 1.0, the full state machine, the launch decision, the OTP protocol
+  including a callback contract table, 13 invariants each naming its test, the
+  three defects, four canvas departures, and what is still open.
+- `app/lib/routing/entry_flow.dart` — `launchRoute` and `nextEntryRoute`. Two
+  pure functions, the only place either question is answered.
+- `app/test/routing/launch_test.dart` — 10 tests. Every one starts at a real
+  launch with a session read from the **store**, never constructed.
+- `app/test/ui/entry_flow_test.dart` — 12 tests. Drives real screens against a
+  fake sender and asks where the app ended up.
+- `app/test/core/otp_firebase_test.dart` — 10 tests. A fake `FirebaseAuth`
+  driven through every callback branch in the contract table.
+
+**Changed**
+
+- `app/lib/core/otp_firebase.dart` — `verificationCompleted` now resolves the
+  round; a broadcast `autoVerifications` stream; a 60s backstop so no future
+  unhandled callback can hang `send()` again.
+- `app/lib/core/session.dart` — `OtpSendOutcome.autoVerified`;
+  `OtpVerifier.autoVerifications`; `send()` lost its `onAutoVerified` parameter;
+  `Session.locationAsked`; `verifiedWithoutCode()`; `lock()` documented as
+  deliberately uncalled from `lib/`.
+- `app/lib/core/session_store.dart` — `locationAsked` persisted, defaulting
+  false so an older record is read as never-asked.
+- `app/lib/routing/app_router.dart` — the launch decision, in the redirect.
+- `app/lib/ui/screens/entry/verify_screen.dart` — the big one. Resend actually
+  sends; consent block drawn only when the round owes consent; subscribes to
+  auto-retrieval; routes through `nextEntryRoute`.
+- `app/lib/ui/screens/entry/sign_in_screen.dart`, `register_screen.dart` —
+  handle `autoVerified`.
+- `app/lib/ui/screens/entry/biometric_enrolment_screen.dart` — uses the shared
+  ladder instead of its own.
+- `docs/use-cases.md`, `docs/dfd.md`, `docs/system-flowcharts.md`,
+  `docs/activity-diagrams.md`, `docs/sms-otp.md`, `README.md` — cross-linked to
+  the new spec. `system-flowcharts.md`'s account gate was wrong about both
+  halves of the launch branch and is corrected. `activity-diagrams.md` gained
+  A-0, the whole entry arc as one process flow.
+- `docs/design-deltas.md` §22 — the four departures.
+- `design/CORRECTIONS.md` §7 and §8 — two new items for the design side.
 
 ## What is working
 
-- **Phase 0 closed.** 28 screens shot in both modes on a Galaxy S24 **and** the
-  emulator; the palette holds everywhere. The gate is a script now:
-  `flutter drive --debug --driver=test_driver/integration_test.dart
-  --target=integration_test/gate_test.dart -d <device>`.
-- **Biometrics verified end to end on real hardware.** Both availability
-  branches, a real system prompt, and a real fingerprint reopening a locked
-  session with the same name on the far side.
-- **Real SMS works.** `otp: codeSent` at 21:32, delivered to +267 77 744 018,
-  on the **free Spark plan**. Play Integrity attestation confirmed in the log.
-- **Dark mode is reachable** — Preferences ships Appearance and the
-  keep-screen-on preference, and the choice survives a restart.
-- **307 tests**, `flutter analyze` clean.
-- **The VPS is up again** and all four containers returned healthy on their own.
+- **307 tests → 339. `flutter analyze` clean.**
+- All three handset bugs have a cause confirmed in code, a fix, and a test:
+  - *Cannot sign in a second time*: `verificationCompleted` completed nothing.
+    On a repeat sign-in Firebase instant-verifies the SIM and fires that
+    **instead of** `codeSent`, so `send()` never returned and the button sat on
+    "Sending…". `_verificationId` was null on that path too, so even a typed
+    code could not have worked.
+  - *Biometric unlock never engages*: nothing in `lib/` navigated to
+    `Routes.unlock`. Reachable only from tests passing `initialLocation`.
+  - *Reopen → SMS → too-many-requests*: same root. The welcome screen made no
+    launch decision, so a restored session landed on "Get started / Sign in" and
+    the only way forward sent a message.
+- Three more found while specifying, all fixed: **resend did not resend** (wired
+  to the countdown alone); **signing in overwrote consent** (`agree()` ran
+  unconditionally, so an unticked optional box withdrew a granted channel); **a
+  refused location was re-asked forever** (no `locationAsked`, only
+  `locationGranted`).
+- `.claude/skills/code-discovery/SKILL.md` is committed and pushed here
+  (`d783e12`). The running copy at `~/.claude/skills/code-discovery/` is
+  byte-identical except that it omits the five-line "this file is canonical"
+  banner, which is the only intended difference.
 
 ## What is NOT working yet
 
-**The three entry-flow bugs the next session starts on.** Found on the handset.
-Symptoms are as observed; **causes have not been investigated** — the
-hypotheses below are starting points, not findings.
-
-1. **Cannot sign in a second time.** After a successful login, signing in again
-   fails.
-2. **Biometric unlock never engages.** The offer to allow it appears and is
-   accepted, but no biometric prompt is ever raised afterwards.
-3. **A reopen falls back to SMS and then hits `too-many-requests`.** Because 2
-   never engages, every reopen goes back through a code and Firebase
-   rate-limits the device.
-
-*Unverified hypothesis, recorded only so there is somewhere to start:* all
-three are consistent with **the session not being restored at all** — a reopen
-landing on `SessionStage.none` rather than `locked` would produce exactly this
-trio. `SessionCodec.reopened` was changed this session to always return
-`locked`, and `PrefsSessionStore` is wired only in `main()`. **Prove whether
-the session is written and read back before assuming the reopen logic is
-wrong.** Give this the code-discovery treatment rather than a guess — this
-session has already produced two confident wrong answers from not doing that.
-
-Also outstanding:
-
-- **The OTP confirm half is unconfirmed.** `codeSent` is proven; whether
-  `signInWithCredential` accepts the typed code has never been seen in a log,
-  because success only started logging in the final commit.
-- **No backend.** A sent request never becomes a booking; a review is dropped.
-- **The VPS is a Spot VM** — `Standard_D2pds_v6`, `priority: Spot`,
-  `evictionPolicy: Deallocate`. Azure will keep deallocating it; it went down
-  once during this session. **Agreed to deal with this next session.**
-- Three brand cuts and one logo still exceed the 256 KiB fetch cap.
-- Nothing reads `keepScreenOnDuringRides` yet — Phase 5 owns that.
+- **None of it has been on the handset.** This matters more here than usual:
+  the whole argument of `entry-flow.md` §8.2 is that a green suite proved
+  nothing about reachability. `launch_test.dart` now starts from the store
+  rather than constructing state, which is a real improvement, but the S24 run
+  is still owed. **That is the next session's first job.**
+- The 60s no-hang backstop in `otp_firebase.dart` has **no test**. Testing it
+  needs `fake_async` or an injectable duration, and neither was added. Every
+  other row of the callback table is covered.
+- Unchanged from last session: no backend, so a sent request never becomes a
+  booking and a review is dropped. The VPS is a Spot VM Azure keeps
+  deallocating. Three brand cuts and one logo still exceed the 256 KiB cap.
+  Nothing reads `keepScreenOnDuringRides`.
 
 ## Decisions made (and why)
 
-- **Dropped "an OTP every time the app is opened".** Not on cost — the check
-  does not work. An SMS code proves possession of the SIM, and on a reopen the
-  SIM is inside the handset the person is holding, so against a stolen phone it
-  proves nothing while costing a message per launch. Every reopen asks for the
-  device credential instead. §20.
-- **The OTP is six digits.** Firebase sends six and it is not configurable, so
-  the artboard's four boxes cannot accept the code that arrives. Forced, not
-  chosen. §21.
-- **Firebase for messaging and SMS, never for identity.** `FirebaseOtpVerifier`
-  throws the Firebase user away and reports only whether the code was right.
-  The account of record stays the app's own session, and later the Postgres row
-  beside the wallet and the KYC documents — the same lock-in argument
-  `architecture.md` already made against Firebase as a backend.
-- **Phase 3.5 was pulled forward** because dark mode was finished and
-  unreachable: both themes and the provider existed with no control anywhere.
-- **Both call routes will be built**, on competitive parity rather than privacy —
-  inDrive and the others offer an in-app call *and* a phone call in this market.
-  Matrix rejected: a homeserver and a second identity system for two features.
-- **A UI tick is earned per element, not per screen.** Adopted after a
-  whole-screen review passed a flat-white wordmark plainly visible in the image.
-- **Device tests are debug builds, always** — the driver attaches to the Dart VM
-  service, which a release build does not have.
+- **Architecture before code, at the user's explicit direction.** Their words:
+  "this is where the architecture must come into play to define the use cases,
+  dfd, system flow chart and process flow for login and account creation so we
+  have a fixed process and standards." Writing the spec first is what surfaced
+  the three *additional* defects — none of them was on the bug list.
+- **Instant verification is accepted; the code screen is skipped.** Firebase
+  verifies a recently-seen number on the same handset with no SMS at all. "Every
+  fresh login goes through OTP" is read as *there is no password*, not *a
+  message must be billed on every entry* — the platform performs the same
+  possession check against the same SIM. It cannot skip consent: a new account
+  lands on `needsConsent` and is routed to `/consent`.
+- **Cold start only for locking.** A warm resume does not lock. A fingerprint
+  prompt every time someone checks a notification is the most common reason
+  people switch biometrics off, and a backgrounded app is already behind the OS
+  lock screen. This is why `SessionController.lock()` has no caller in `lib/`
+  and is documented as such rather than deleted.
+- **A returning member never sees `/welcome`.** It is a marketing screen. The
+  Android system splash already covers the moment before the first frame.
+- **No consent card on a returning sign-in.** An unticked optional box on a
+  screen the member did not open to change anything is a withdrawal they never
+  made. Raised to the design side as CORRECTIONS §7.
+- **`locationAsked` mirrors `biometricOffered`.** False and never-asked are
+  different states; only one should produce a screen.
+- **The launch decision lives in the router, not in `SplashScreen.initState`.**
+  A screen that decides where to go is only consulted when that screen is built
+  — and that screen is precisely the one a member must not be shown.
+- **Every invariant names its test.** §7 of the spec is a table of 13; a rule
+  with nothing in the right-hand column is a comment, not a standard.
 
 ## Things I tried that did NOT work - do not repeat these
 
-- **A seam that discards the cause is not observable.** `_readFailure` mapped a
-  `FirebaseAuthException` onto four enum values and dropped `e.code`, so a real
-  failure surfaced as "could not send a code" with nothing saying why. No amount
-  of watching logcat recovers information that was never emitted. **Logging only
-  the failure branch is the same bug half-fixed** — success and never-attempted
-  looked identical until the last commit.
-- **A sleeping screen kills an on-device gate and names nothing useful.**
-  `PixelCopy` throws `Window doesn't have a backing surface!`, the app takes
-  SIGKILL, the driver reports `Service has disappeared`, and **no screenshots
-  survive** — the driver flushes at the end.
-- **An `AnimatedSwitcher`'s outgoing child animates on the controller it was
-  built with.** Flipping `duration` from zero at the moment of the change leaves
-  the outgoing half at zero. Instantness must come from unmounting the switcher.
-- **"Has it changed" is not "is it different from where it started."**
-- **A widget test pumping a screen needs `AppTheme`**, not a bare `MaterialApp` —
-  the palette is a `ThemeExtension`.
-- **Do not conclude from a search.** I read a gate, concluded a button was
-  disabled, and said so; the user had already passed that screen. The real bug
-  was one level in — `_send()` navigated without ever asking for a code.
-- **Do not claim a file is absent after grepping two directories.** I said no
-  VPS host was recorded anywhere; `.env` had it, with the Azure IDs.
-- Carried: heredocs for large Dart files; bulk string-replacing call shapes;
-  a policy written only into the shipping store; `local_auth` 3.x ≠ 2.x;
-  stripping `<script>` when flattening a canvas; transcribing a binary.
+- **A quoted bash heredoc (`<<'EOF'`) fails in this environment** on content
+  containing apostrophes — twice, with `unexpected EOF while looking for
+  matching '`. Something between here and bash is re-parsing the command. Write
+  the file with the Write tool, or write a Python script to a scratchpad file
+  and run it. Do not keep retrying the heredoc.
+- **`grep "\.lock()"` inside double quotes silently matched nothing**, and I
+  briefly concluded `lock()` had zero callers. It has four, all in tests. The
+  production-caller claim survived; the blanket one did not. Escaping inside
+  double quotes is not the same as inside single quotes.
+- **`dart format lib test` reformatted six files this session never touched.**
+  Reverted them. The repo is not fully formatted, so a blanket format inflates
+  the diff with unrelated churn.
+- **`ref.read(provider.notifier).state` is not the way to read back a mutation.**
+  Use `ref.read(provider)` after the call.
+- Carried and still true: a seam that discards the cause is not observable; a
+  test that constructs the state it tests cannot prove the state is reachable;
+  do not conclude from a search; heredocs for large Dart files; `local_auth` 3.x
+  is not 2.x; never transcribe a binary.
 
 ## Exact next steps to continue
 
-1. **Fix the three entry-flow bugs.** Reproduce on the handset first —
-   `adb -s adb-RZCXA17Z2JK-ig29zg._adb-tls-connect._tcp logcat -s flutter:V`
-   now reports both OTP outcomes. Begin by proving whether the session is
-   persisted and restored at all.
-2. **Deal with the VPS deallocation.** Spot eviction is the cause and it will
-   recur. Convert to Regular, automate a restart, or accept it knowingly — but a
-   ledger cannot live on a VM Azure can deallocate mid-transaction, and Phase 4
-   puts one there.
-3. **Confirm the OTP round trip** — watch for `otp: confirm accepted`.
-4. **Phase 4:** becoming a provider, paired with the admin queue.
-5. **Tick the remaining 27 screens** element by element. Only the splash has had
-   a real one and it produced three findings.
-6. **Send `design/CORRECTIONS.md` to the design side** — seven entries now.
+1. **Run the entry flow on the Galaxy S24, debug build.** In order: cold start
+   with no account → register → verify → enrol → location → home; kill and
+   reopen → must land on `/unlock`, never on `/welcome`; unlock with a
+   fingerprint; sign out; sign in again → this is the instant-verification path,
+   watch for `otp: verificationCompleted, no code needed` and confirm no SMS is
+   billed. `logcat -s flutter:V` reports every OTP outcome now.
+2. **Watch for `otp: confirm accepted`** — the typed-code confirm half has still
+   never been seen succeeding in a real log.
+3. Decide whether the 60s backstop earns a test. If yes, `fake_async` in
+   `dev_dependencies` is the smaller change.
+4. Deal with the VPS deallocation. Spot eviction is the cause and it will recur;
+   Phase 4 puts a ledger there and a ledger cannot live on a VM Azure can stop
+   mid-transaction.
+5. Phase 4: becoming a provider, paired with the admin queue.
+6. Tick the remaining 27 screens element by element.
+7. Send `design/CORRECTIONS.md` to the design side — nine entries now, two of
+   them new this session.
 
 ## Open questions / blockers
 
-- **Why the VPS keeps stopping is answered — Spot eviction.** What to do about
-  it is next session's call.
-- **BLOCKED, user-only:** four brand files exceed the 256 KiB `get_file` cap.
-- **Undesigned:** the dispute *flow*, messaging, the calling screens, empty and
+- **From the spec's §10, all genuinely undecided:** account recovery when the
+  number is gone (the number *is* the identity, so a lost SIM currently loses
+  the account, and every option has a fraud shape); whether signing in on a
+  second handset should end the first; what rate limit is ours to set once an
+  aggregator replaces Firebase's unpublished per-number throttle; whether
+  `/unlock` should add a lockout on top of the OS's own.
+- BLOCKED, user-only: four brand files exceed the 256 KiB `get_file` cap.
+- Undesigned: the dispute flow, messaging, the calling screens, empty and
   offline states, profile photos.
-- **Unsettled:** late-cancellation fee, no-show consequence, commission per
-  category, dispute turnaround, and whether the design wants number privacy back.
-- Carried: reversal policy, negative balance, minimum top-up, hosting
-  durability, EPS licensing, data residency, KYC retention, GPS DPIA.
+- Unsettled and carried: late-cancellation fee, no-show consequence, commission
+  per category, dispute turnaround, whether the design wants number privacy
+  back, reversal policy, negative balance, min top-up, hosting durability, EPS
+  licensing, data residency, KYC retention, GPS DPIA.

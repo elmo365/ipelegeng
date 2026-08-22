@@ -36,6 +36,7 @@ import '../ui/screens/provider/dashboard_screen.dart';
 import '../ui/screens/provider/wallet_screen.dart';
 import '../ui/screens/settings/preferences_screen.dart';
 import '../ui/shell/app_shell.dart';
+import 'entry_flow.dart';
 import 'nav_tabs.dart';
 import 'navigation.dart';
 import 'routes.dart';
@@ -68,7 +69,23 @@ GoRouter createRouter({
     // version, which is the case it exists for.
     redirect: (context, state) {
       final session = readSession?.call();
-      if (session == null || !session.needsReconsent) return null;
+      if (session == null) return null;
+
+      // **The launch decision.** Only the welcome screen is guarded, because
+      // that is the only place a launch can land: `initialLocation` is the
+      // splash and nothing else navigates to it except a sign-out, which
+      // leaves stage `none` and so falls through here untouched.
+      //
+      // It lives in the router rather than in SplashScreen.initState because a
+      // screen that decides where to go is only consulted when that screen is
+      // built — and the welcome screen is exactly the screen a returning
+      // member must never be shown. See docs/entry-flow.md §5.2.
+      if (state.matchedLocation == Routes.splash) {
+        final destination = launchRoute(session);
+        return destination == Routes.splash ? null : destination;
+      }
+
+      if (!session.needsReconsent) return null;
       // Not a loop: the consent screen is where we are sending them.
       if (state.matchedLocation == Routes.consent) return null;
       return Routes.consent;

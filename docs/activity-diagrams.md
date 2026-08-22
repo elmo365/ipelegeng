@@ -5,6 +5,73 @@ are in [system flowcharts](system-flowcharts.md).
 
 ---
 
+## A-0 · Account creation and sign in
+
+The process flow for the whole entry arc, end to end. It is the activity view of
+[entry-flow.md](entry-flow.md), which is normative — the use cases are in its
+§2, the state machine in §5 and the OTP contract in §6.
+
+Register and sign in are **one** flow that differs in a single field. Everything
+after the number is shared, which is the point: a second code path for
+"returning user" is how the two drift apart.
+
+```mermaid
+flowchart TD
+    S([App launches]) --> L{Session stored on this device?}
+
+    L -->|Yes| R1[Restore, and lock it]
+    R1 --> R2{Stage after restore}
+    R2 -->|locked| U1[Unlock: fingerprint or device passcode]
+    R2 -->|needsConsent| K1[Consent screen]
+    U1 -->|Reopened| Home([Home, signed in])
+    U1 -->|Sign in as someone else| A2
+    K1 --> Home
+
+    L -->|No| V1[Welcome]
+    V1 --> V2[Browse as a Visitor]
+    V2 --> V3{Action behind the account gate?}
+    V3 -->|No| V2
+    V3 -->|Yes| A1{New here?}
+
+    A1 -->|Yes, register| A2b[Give name and number]
+    A1 -->|No, sign in| A2[Confirm the remembered number]
+    A2b --> B1
+    A2 --> B1
+
+    B1[Request verification] --> B2{Provider answers}
+    B2 -->|verificationFailed| B3[Stay put, name the reason]
+    B3 --> A1
+    B2 -->|verificationCompleted first: instant verification| D1
+    B2 -->|codeSent| C1[Confirm your number]
+
+    C1 --> C2{What happens next}
+    C2 -->|Auto-retrieval reads the SMS| D1
+    C2 -->|Code typed| C3{Correct?}
+    C2 -->|Resend after the timer| B1
+    C3 -->|No, attempts remain| C4[Decrement and say so]
+    C4 --> C1
+    C3 -->|No, attempts exhausted| C5([Round dead - only a fresh number revives it])
+    C3 -->|Yes| D1
+
+    D1[Verified] --> D2{Consent version current?}
+    D2 -->|No, or absent| K2[Capture consent - required tick, channels default off]
+    D2 -->|Yes| E1
+    K2 --> E1{Biometric offer already spent?}
+    E1 -->|No| E2[Offer biometric unlock, once]
+    E1 -->|Yes| F1
+    E2 --> F1{Location already answered?}
+    F1 -->|No| F2[Ask for location, refusable]
+    F1 -->|Yes| Home
+    F2 --> Home
+```
+
+Three joins in this diagram are the ones that were missing and cost three bugs
+on real hardware — the `verificationCompleted`-first branch out of `B2`, the
+`L -->|Yes|` launch decision, and `U1` being reachable at all. See
+[entry-flow §8](entry-flow.md#8-the-three-defects-this-specification-closes).
+
+---
+
 ## A-1 · Provider onboarding
 
 ```mermaid
